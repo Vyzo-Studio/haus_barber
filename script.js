@@ -332,12 +332,11 @@ filterButtons.forEach((button) => {
 
 const initialPortfolioFilter =
   document.querySelector(
-    '.portfolio-filter.active'
+    '.portfolio-filter[data-filter="freestyle"]'
   );
 
 applyPortfolioFilter(
-  initialPortfolioFilter?.dataset.filter ||
-    'freestyle',
+  'freestyle',
   initialPortfolioFilter
 );
 
