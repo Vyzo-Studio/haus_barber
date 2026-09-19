@@ -117,13 +117,23 @@ section {
 
 .brand {
   width: 72px;
-  flex: 0 0 auto;
+  height: 72px;
+  flex: 0 0 72px;
+  display: block;
+  padding: 4px;
+  border: 1px solid rgba(241, 237, 231, .18);
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(241, 237, 231, .08);
 }
 
 .brand img {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .main-nav {
@@ -256,14 +266,23 @@ section {
 
 .hero-logo {
   width: 96px;
+  height: 96px;
   margin-bottom: 18px;
+  padding: 6px;
+  border: 1px solid rgba(241, 237, 231, .18);
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(241, 237, 231, .08);
   filter: drop-shadow(0 12px 30px rgba(0, 0, 0, .28));
 }
 
 .hero-logo img {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .eyebrow,
@@ -920,12 +939,22 @@ section {
 
 .footer-brand {
   width: 86px;
+  height: 86px;
+  display: block;
+  padding: 5px;
+  border: 1px solid rgba(241, 237, 231, .16);
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(241, 237, 231, .08);
 }
 
 .footer-brand img {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .footer-main > p {
@@ -1481,17 +1510,25 @@ section {
 }
 
 .portfolio-gallery .gallery-item > span {
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 5px;
+  left: 18px;
+  right: auto;
+  bottom: 18px;
+  display: block;
 }
 
 .portfolio-gallery .gallery-item small {
+  display: block;
+  margin: 0;
   color: #e5d7c8;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
 }
 
 .portfolio-gallery .gallery-item strong {
-  font-size: clamp(21px, 2vw, 28px);
+  display: none !important;
 }
 
 .portfolio-empty {
@@ -1660,7 +1697,7 @@ section {
 
   .portfolio-gallery .gallery-item > span {
     left: 10px;
-    right: 10px;
+    right: auto;
     bottom: 10px;
   }
 
@@ -1670,6 +1707,42 @@ section {
   }
 
   .portfolio-gallery .gallery-item strong {
-    font-size: 18px;
+    display: none !important;
+  }
+}
+
+
+.portfolio-gallery .gallery-item strong {
+  display: none !important;
+}
+
+.portfolio-gallery .gallery-item > span {
+  left: 18px;
+  right: auto;
+  bottom: 18px;
+  display: block;
+}
+
+.portfolio-gallery .gallery-item > span small {
+  display: block;
+  margin: 0;
+  color: #e5d7c8;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .portfolio-gallery .gallery-item > span {
+    left: 10px;
+    right: auto;
+    bottom: 10px;
+  }
+
+  .portfolio-gallery .gallery-item > span small {
+    font-size: 6.5px;
+    letter-spacing: 1.1px;
   }
 }
