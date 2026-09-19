@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vyzo-studio.github.io/haus-barber/sitemap.xml
