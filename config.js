@@ -1,6 +1,7 @@
 const SUPABASE_URL = 'COLE_AQUI_A_PROJECT_URL';
 
-const SUPABASE_PUBLIC_KEY = 'COLE_AQUI_A_PUBLISHABLE_KEY';
+const SUPABASE_PUBLIC_KEY =
+  'sb_publishable_pTdf3oXkrwazZbligXLmQg_OCc0TEyW';
 
 if (
   !SUPABASE_URL ||
@@ -12,8 +13,7 @@ if (
 }
 
 if (
-  !SUPABASE_PUBLIC_KEY ||
-  SUPABASE_PUBLIC_KEY === 'COLE_AQUI_A_PUBLISHABLE_KEY'
+  !SUPABASE_PUBLIC_KEY
 ) {
   throw new Error(
     'A Publishable Key do Supabase ainda não foi configurada.'
