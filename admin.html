@@ -46,7 +46,7 @@
 
   <link
     rel="stylesheet"
-    href="admin.css?v=2.0"
+    href="admin.css?v=3.0"
   >
 </head>
 
@@ -463,53 +463,18 @@
                     id="cash-history-month"
                     aria-label="Mês do histórico"
                   >
-                    <option value="1">
-                      Janeiro
-                    </option>
-
-                    <option value="2">
-                      Fevereiro
-                    </option>
-
-                    <option value="3">
-                      Março
-                    </option>
-
-                    <option value="4">
-                      Abril
-                    </option>
-
-                    <option value="5">
-                      Maio
-                    </option>
-
-                    <option value="6">
-                      Junho
-                    </option>
-
-                    <option value="7">
-                      Julho
-                    </option>
-
-                    <option value="8">
-                      Agosto
-                    </option>
-
-                    <option value="9">
-                      Setembro
-                    </option>
-
-                    <option value="10">
-                      Outubro
-                    </option>
-
-                    <option value="11">
-                      Novembro
-                    </option>
-
-                    <option value="12">
-                      Dezembro
-                    </option>
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
                   </select>
 
                   <select
@@ -613,9 +578,7 @@
               PENDENTES
             </span>
 
-            <strong
-              id="stat-pending"
-            >
+            <strong id="stat-pending">
               0
             </strong>
 
@@ -631,9 +594,7 @@
               CONFIRMADOS
             </span>
 
-            <strong
-              id="stat-confirmed"
-            >
+            <strong id="stat-confirmed">
               0
             </strong>
 
@@ -649,9 +610,7 @@
               HOJE
             </span>
 
-            <strong
-              id="stat-today"
-            >
+            <strong id="stat-today">
               0
             </strong>
 
@@ -667,9 +626,7 @@
               TOTAL VISÍVEL
             </span>
 
-            <strong
-              id="stat-visible"
-            >
+            <strong id="stat-visible">
               0
             </strong>
 
@@ -723,16 +680,111 @@
 
           </div>
 
-          <div class="admin-control">
+          <div class="admin-control admin-control-date">
 
-            <label for="admin-date-filter">
+            <label>
               Data
             </label>
 
-            <input
-              id="admin-date-filter"
-              type="date"
+            <div
+              class="admin-date-picker"
+              id="admin-date-picker"
             >
+
+              <button
+                class="admin-date-trigger"
+                id="admin-date-trigger"
+                type="button"
+                aria-expanded="false"
+                aria-controls="admin-date-popover"
+              >
+
+                <span
+                  id="admin-date-trigger-label"
+                >
+                  TODAS AS DATAS
+                </span>
+
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 2v3M17 2v3M3.5 9h17M5.5 4h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+              </button>
+
+              <div
+                class="admin-date-popover"
+                id="admin-date-popover"
+                hidden
+              >
+
+                <div class="admin-date-calendar-head">
+
+                  <button
+                    class="admin-date-nav"
+                    id="admin-date-prev-week"
+                    type="button"
+                    aria-label="Semana anterior"
+                  >
+                    ←
+                  </button>
+
+                  <div class="admin-date-week-title">
+
+                    <small>
+                      SEMANA
+                    </small>
+
+                    <strong
+                      id="admin-date-week-label"
+                    ></strong>
+
+                  </div>
+
+                  <button
+                    class="admin-date-nav"
+                    id="admin-date-next-week"
+                    type="button"
+                    aria-label="Próxima semana"
+                  >
+                    →
+                  </button>
+
+                </div>
+
+                <div
+                  class="admin-date-days"
+                  id="admin-date-days"
+                  role="group"
+                  aria-label="Selecionar data"
+                ></div>
+
+                <button
+                  class="admin-date-clear"
+                  id="admin-date-clear"
+                  type="button"
+                >
+                  VER TODOS OS DIAS
+                </button>
+
+              </div>
+
+              <input
+                id="admin-date-filter"
+                type="hidden"
+                value=""
+              >
+
+            </div>
 
           </div>
 
@@ -1071,7 +1123,7 @@
   ></script>
 
   <script
-    src="admin.js?v=2.2"
+    src="admin.js?v=3.0"
     defer
   ></script>
 
