@@ -18,9 +18,7 @@
     content="#101936"
   >
 
-  <title>
-    Painel Administrativo | Haus Barber
-  </title>
+  <title>Painel Administrativo | Haus Barber</title>
 
   <link
     rel="icon"
@@ -70,15 +68,11 @@
             height="120"
           >
 
-          <span>
-            ÁREA RESTRITA
-          </span>
+          <span>ÁREA RESTRITA</span>
 
           <h1>
             PAINEL
-            <b>
-              HAUS BARBER
-            </b>
+            <b>HAUS BARBER</b>
           </h1>
 
           <p>
@@ -190,9 +184,7 @@
 
             <div>
 
-              <span>
-                HAUS BARBER
-              </span>
+              <span>HAUS BARBER</span>
 
               <strong>
                 Gestão Administrativa
@@ -244,9 +236,7 @@
 
             <h1>
               PAINEL
-              <b>
-                HAUS BARBER
-              </b>
+              <b>HAUS BARBER</b>
             </h1>
 
             <p>
@@ -678,6 +668,7 @@
                     id="cash-history-month"
                     aria-label="Mês do histórico"
                   >
+
                     <option value="1">
                       Janeiro
                     </option>
@@ -725,6 +716,7 @@
                     <option value="12">
                       Dezembro
                     </option>
+
                   </select>
 
                   <select
@@ -889,59 +881,139 @@
             </strong>
 
             <small>
-              conforme os filtros
+              conforme a aba selecionada
             </small>
 
           </article>
 
         </section>
 
-        <section class="admin-controls">
+        <section
+          class="admin-booking-workspace"
+          aria-labelledby="booking-workspace-title"
+        >
 
-          <div class="admin-control">
+          <div class="admin-booking-workspace-head">
 
-            <label for="admin-status-filter">
-              Status
-            </label>
+            <div>
 
-            <select id="admin-status-filter">
+              <span>
+                AGENDA DO DIA
+              </span>
 
-              <option value="active">
-                Pendentes + Confirmados
-              </option>
+              <h2 id="booking-workspace-title">
+                ATENDIMENTOS
+              </h2>
 
-              <option value="pending">
-                Somente Pendentes
-              </option>
+            </div>
 
-              <option value="confirmed">
-                Somente Confirmados
-              </option>
+            <div class="admin-selected-day">
 
-              <option value="rejected">
-                Recusados
-              </option>
+              <small>
+                DATA SELECIONADA
+              </small>
 
-              <option value="cancelled">
-                Cancelados
-              </option>
+              <strong
+                id="admin-selected-day-label"
+              >
+                CARREGANDO...
+              </strong>
 
-              <option value="expired">
-                Expirados
-              </option>
-
-              <option value="all">
-                Todos
-              </option>
-
-            </select>
+            </div>
 
           </div>
+
+          <div
+            class="admin-booking-tabs"
+            role="tablist"
+            aria-label="Situação dos agendamentos"
+          >
+
+            <button
+              class="admin-booking-tab is-active"
+              id="booking-tab-pending"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-booking-view="pending"
+            >
+
+              <span class="admin-booking-tab-label">
+                PENDENTES
+              </span>
+
+              <small>
+                aguardando confirmação
+              </small>
+
+              <strong
+                id="booking-tab-pending-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+            <button
+              class="admin-booking-tab"
+              id="booking-tab-scheduled"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-booking-view="scheduled"
+            >
+
+              <span class="admin-booking-tab-label">
+                AGENDADOS
+              </span>
+
+              <small>
+                confirmados e em aberto
+              </small>
+
+              <strong
+                id="booking-tab-scheduled-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+            <button
+              class="admin-booking-tab"
+              id="booking-tab-finalized"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-booking-view="finalized"
+            >
+
+              <span class="admin-booking-tab-label">
+                FINALIZADOS
+              </span>
+
+              <small>
+                atendimentos recebidos
+              </small>
+
+              <strong
+                id="booking-tab-finalized-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+          </div>
+
+        </section>
+
+        <section class="admin-controls admin-controls-daily">
 
           <div class="admin-control admin-control-date">
 
             <label>
-              Data
+              Dia da agenda
             </label>
 
             <div
@@ -960,13 +1032,14 @@
                 <span
                   id="admin-date-trigger-label"
                 >
-                  TODAS AS DATAS
+                  CARREGANDO DATA...
                 </span>
 
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 24 24"
                 >
+
                   <path
                     d="M7 2v3M17 2v3M3.5 9h17M5.5 4h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
                     fill="none"
@@ -975,6 +1048,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
+
                 </svg>
 
               </button>
@@ -1023,15 +1097,15 @@
                   class="admin-date-days"
                   id="admin-date-days"
                   role="group"
-                  aria-label="Selecionar data"
+                  aria-label="Selecionar dia da agenda"
                 ></div>
 
                 <button
-                  class="admin-date-clear"
-                  id="admin-date-clear"
+                  class="admin-date-today"
+                  id="admin-date-today"
                   type="button"
                 >
-                  VER TODOS OS DIAS
+                  VOLTAR PARA HOJE
                 </button>
 
               </div>
@@ -1049,7 +1123,7 @@
           <div class="admin-control admin-control-search">
 
             <label for="admin-search">
-              Buscar
+              Buscar neste dia
             </label>
 
             <input
@@ -1066,7 +1140,7 @@
             id="clear-filters-button"
             type="button"
           >
-            LIMPAR FILTROS
+            LIMPAR BUSCA
           </button>
 
         </section>
@@ -1088,12 +1162,14 @@
 
             <div>
 
-              <span>
-                AGENDA
+              <span
+                id="admin-bookings-kicker"
+              >
+                PENDENTES
               </span>
 
               <h2 id="admin-bookings-title">
-                SOLICITAÇÕES
+                AGENDAMENTOS DO DIA
               </h2>
 
             </div>
@@ -1118,12 +1194,16 @@
             hidden
           >
 
-            <strong>
+            <strong
+              id="admin-empty-title"
+            >
               NENHUM AGENDAMENTO
             </strong>
 
-            <p>
-              Não há solicitações correspondentes aos filtros selecionados.
+            <p
+              id="admin-empty-text"
+            >
+              Não há agendamentos nesta categoria para o dia selecionado.
             </p>
 
           </div>
@@ -1170,17 +1250,24 @@
 
         <div class="booking-card-date">
 
-          <span data-booking-weekday></span>
+          <span
+            data-booking-weekday
+          ></span>
 
-          <strong data-booking-date></strong>
+          <strong
+            data-booking-date
+          ></strong>
 
-          <b data-booking-time></b>
+          <b
+            data-booking-time
+          ></b>
 
         </div>
 
         <div class="booking-card-info">
 
           <div>
+
             <span>
               CLIENTE
             </span>
@@ -1188,9 +1275,11 @@
             <strong
               data-booking-name
             ></strong>
+
           </div>
 
           <div>
+
             <span>
               SERVIÇO
             </span>
@@ -1198,9 +1287,11 @@
             <strong
               data-booking-service
             ></strong>
+
           </div>
 
           <div>
+
             <span>
               VALOR
             </span>
@@ -1210,9 +1301,11 @@
             >
               R$ 0,00
             </strong>
+
           </div>
 
           <div>
+
             <span>
               PAGAMENTO
             </span>
@@ -1222,9 +1315,11 @@
             >
               NÃO RECEBIDO
             </strong>
+
           </div>
 
           <div>
+
             <span>
               SOLICITADO EM
             </span>
@@ -1232,6 +1327,7 @@
             <strong
               data-booking-created
             ></strong>
+
           </div>
 
         </div>
@@ -1293,6 +1389,7 @@
     <article class="cash-day-row">
 
       <div>
+
         <span
           data-cash-day-date
         ></span>
@@ -1300,9 +1397,11 @@
         <small
           data-cash-day-status
         ></small>
+
       </div>
 
       <div>
+
         <span>
           ATENDIMENTOS
         </span>
@@ -1312,9 +1411,11 @@
         >
           0
         </strong>
+
       </div>
 
       <div>
+
         <span>
           BRUTO
         </span>
@@ -1324,9 +1425,11 @@
         >
           R$ 0,00
         </strong>
+
       </div>
 
       <div>
+
         <span>
           ESTORNOS
         </span>
@@ -1336,9 +1439,11 @@
         >
           R$ 0,00
         </strong>
+
       </div>
 
       <div>
+
         <span>
           LÍQUIDO
         </span>
@@ -1348,6 +1453,7 @@
         >
           R$ 0,00
         </strong>
+
       </div>
 
     </article>
@@ -1569,8 +1675,9 @@
   ></script>
 
   <script
-  src="admin.js?v=4.2"
-  defer
-></script>
+    src="admin.js?v=4.2"
+    defer
+  ></script>
+
 </body>
 </html>
