@@ -1,4 +1,5 @@
-const SUPABASE_URL = 'COLE_AQUI_A_PROJECT_URL';
+const SUPABASE_URL =
+  'https://pmhpgrdeknzbvegkrnxi.supabase.co';
 
 const SUPABASE_PUBLIC_KEY =
   'sb_publishable_pTdf3oXkrwazZbligXLmQg_OCc0TEyW';
