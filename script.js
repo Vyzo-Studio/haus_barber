@@ -2,7 +2,6 @@ const menuButton = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('.main-nav');
 const navLinks = document.querySelectorAll('.main-nav a');
 const bookingForm = document.querySelector('#booking-form');
-const dateInput = document.querySelector('#data');
 
 const lightbox = document.querySelector('#lightbox');
 const lightboxImage = lightbox?.querySelector('img');
@@ -66,83 +65,6 @@ window.addEventListener('resize', () => {
     closeMenu();
   }
 });
-
-function getLocalDateString() {
-  const now = new Date();
-
-  const year = now.getFullYear();
-
-  const month = String(
-    now.getMonth() + 1
-  ).padStart(2, '0');
-
-  const day = String(
-    now.getDate()
-  ).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-if (dateInput) {
-  dateInput.min = getLocalDateString();
-}
-
-bookingForm?.addEventListener(
-  'submit',
-  (event) => {
-    event.preventDefault();
-
-    if (!bookingForm.reportValidity()) {
-      return;
-    }
-
-    const data = new FormData(bookingForm);
-
-    const nome = String(
-      data.get('nome') || ''
-    ).trim();
-
-    const servico = String(
-      data.get('servico') || ''
-    ).trim();
-
-    const dataDesejada = String(
-      data.get('data') || ''
-    ).trim();
-
-    const horario = String(
-      data.get('horario') || ''
-    ).trim();
-
-    const [year, month, day] =
-      dataDesejada.split('-');
-
-    const formattedDate =
-      year && month && day
-        ? `${day}/${month}/${year}`
-        : dataDesejada;
-
-    const message = [
-      'Olá! Vim pelo site da Haus Barber.',
-      '',
-      `👤 Nome: ${nome}`,
-      `✂️ Serviço: ${servico}`,
-      `📅 Data desejada: ${formattedDate}`,
-      `🕐 Horário desejado: ${horario}`,
-      '',
-      'Gostaria de confirmar a disponibilidade desse horário.'
-    ].join('\n');
-
-    const whatsappUrl =
-      `https://wa.me/5561995705082?text=${encodeURIComponent(message)}`;
-
-    window.open(
-      whatsappUrl,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  }
-);
 
 function getVisibleGalleryItems() {
   return galleryItems.filter(
@@ -411,3 +333,507 @@ if (
     observer.observe(item);
   });
 }
+
+const scheduleDays =
+  document.querySelector('#schedule-days');
+
+const scheduleTimes =
+  document.querySelector('#schedule-times');
+
+const scheduleSummary =
+  document.querySelector('#schedule-summary');
+
+const selectedDateInput =
+  document.querySelector('#data');
+
+const selectedTimeInput =
+  document.querySelector('#horario');
+
+const WEEKDAYS = [
+  'DOM',
+  'SEG',
+  'TER',
+  'QUA',
+  'QUI',
+  'SEX',
+  'SÁB'
+];
+
+const MONTHS = [
+  'JAN',
+  'FEV',
+  'MAR',
+  'ABR',
+  'MAI',
+  'JUN',
+  'JUL',
+  'AGO',
+  'SET',
+  'OUT',
+  'NOV',
+  'DEZ'
+];
+
+function cloneDate(date) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+}
+
+function formatDateValue(date) {
+  const year = date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateForMessage(dateValue) {
+  const [year, month, day] =
+    dateValue.split('-');
+
+  if (!year || !month || !day) {
+    return dateValue;
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+function isSameCalendarDay(
+  firstDate,
+  secondDate
+) {
+  return (
+    firstDate.getFullYear() ===
+      secondDate.getFullYear() &&
+    firstDate.getMonth() ===
+      secondDate.getMonth() &&
+    firstDate.getDate() ===
+      secondDate.getDate()
+  );
+}
+
+function buildAllTimeSlots() {
+  const slots = [];
+
+  for (
+    let hour = 9;
+    hour <= 20;
+    hour += 1
+  ) {
+    slots.push(
+      `${String(hour).padStart(2, '0')}:00`
+    );
+
+    if (hour < 20) {
+      slots.push(
+        `${String(hour).padStart(2, '0')}:30`
+      );
+    }
+  }
+
+  return slots;
+}
+
+const ALL_TIME_SLOTS =
+  buildAllTimeSlots();
+
+function getAvailableSlotsForDate(date) {
+  const now = new Date();
+
+  if (!isSameCalendarDay(date, now)) {
+    return ALL_TIME_SLOTS;
+  }
+
+  const nowInMinutes =
+    now.getHours() * 60 +
+    now.getMinutes();
+
+  return ALL_TIME_SLOTS.filter(
+    (slot) => {
+      const [hour, minute] =
+        slot
+          .split(':')
+          .map(Number);
+
+      const slotInMinutes =
+        hour * 60 + minute;
+
+      return slotInMinutes >
+        nowInMinutes;
+    }
+  );
+}
+
+function getScheduleDates() {
+  const now = new Date();
+
+  let startDate =
+    cloneDate(now);
+
+  while (
+    startDate.getDay() === 0 ||
+    getAvailableSlotsForDate(
+      startDate
+    ).length === 0
+  ) {
+    startDate.setDate(
+      startDate.getDate() + 1
+    );
+  }
+
+  const dates = [];
+  let cursor =
+    cloneDate(startDate);
+
+  while (dates.length < 7) {
+    if (cursor.getDay() !== 0) {
+      dates.push(
+        cloneDate(cursor)
+      );
+    }
+
+    cursor.setDate(
+      cursor.getDate() + 1
+    );
+  }
+
+  return dates;
+}
+
+let selectedScheduleDate = null;
+let selectedScheduleTime = '';
+
+function updateScheduleSummary() {
+  if (!scheduleSummary) {
+    return;
+  }
+
+  if (
+    !selectedScheduleDate ||
+    !selectedScheduleTime
+  ) {
+    scheduleSummary.textContent =
+      'Selecione um dia e um horário.';
+
+    return;
+  }
+
+  const weekday =
+    WEEKDAYS[
+      selectedScheduleDate.getDay()
+    ];
+
+  const day = String(
+    selectedScheduleDate.getDate()
+  ).padStart(2, '0');
+
+  const month = String(
+    selectedScheduleDate.getMonth() + 1
+  ).padStart(2, '0');
+
+  scheduleSummary.innerHTML =
+    `Selecionado: <strong>${weekday} • ${day}/${month} • ${selectedScheduleTime}</strong>`;
+}
+
+function selectScheduleTime(
+  time,
+  button
+) {
+  selectedScheduleTime = time;
+
+  if (selectedTimeInput) {
+    selectedTimeInput.value = time;
+  }
+
+  scheduleTimes
+    ?.querySelectorAll(
+      '.schedule-time'
+    )
+    .forEach((item) => {
+      const active =
+        item === button;
+
+      item.classList.toggle(
+        'is-active',
+        active
+      );
+
+      item.setAttribute(
+        'aria-pressed',
+        String(active)
+      );
+    });
+
+  updateScheduleSummary();
+}
+
+function renderScheduleTimes(date) {
+  if (!scheduleTimes) {
+    return;
+  }
+
+  scheduleTimes.innerHTML = '';
+  selectedScheduleTime = '';
+
+  if (selectedTimeInput) {
+    selectedTimeInput.value = '';
+  }
+
+  const availableSlots =
+    getAvailableSlotsForDate(date);
+
+  if (!availableSlots.length) {
+    const message =
+      document.createElement('p');
+
+    message.className =
+      'schedule-empty';
+
+    message.textContent =
+      'Não há mais horários disponíveis neste dia.';
+
+    scheduleTimes.appendChild(
+      message
+    );
+
+    updateScheduleSummary();
+    return;
+  }
+
+  availableSlots.forEach(
+    (time, index) => {
+      const button =
+        document.createElement(
+          'button'
+        );
+
+      button.type = 'button';
+
+      button.className =
+        'schedule-time';
+
+      button.textContent = time;
+
+      button.setAttribute(
+        'aria-pressed',
+        'false'
+      );
+
+      button.setAttribute(
+        'aria-label',
+        `Selecionar ${time}`
+      );
+
+      button.addEventListener(
+        'click',
+        () => {
+          selectScheduleTime(
+            time,
+            button
+          );
+        }
+      );
+
+      scheduleTimes.appendChild(
+        button
+      );
+
+      if (index === 0) {
+        selectScheduleTime(
+          time,
+          button
+        );
+      }
+    }
+  );
+}
+
+function selectScheduleDate(
+  date,
+  button
+) {
+  selectedScheduleDate =
+    cloneDate(date);
+
+  if (selectedDateInput) {
+    selectedDateInput.value =
+      formatDateValue(date);
+  }
+
+  scheduleDays
+    ?.querySelectorAll(
+      '.schedule-day'
+    )
+    .forEach((item) => {
+      const active =
+        item === button;
+
+      item.classList.toggle(
+        'is-active',
+        active
+      );
+
+      item.setAttribute(
+        'aria-pressed',
+        String(active)
+      );
+    });
+
+  renderScheduleTimes(date);
+  updateScheduleSummary();
+}
+
+function renderScheduleDays() {
+  if (!scheduleDays) {
+    return;
+  }
+
+  scheduleDays.innerHTML = '';
+
+  const dates =
+    getScheduleDates();
+
+  dates.forEach(
+    (date, index) => {
+      const button =
+        document.createElement(
+          'button'
+        );
+
+      button.type = 'button';
+
+      button.className =
+        'schedule-day';
+
+      button.setAttribute(
+        'aria-pressed',
+        'false'
+      );
+
+      button.setAttribute(
+        'aria-label',
+        `Selecionar ${WEEKDAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]}`
+      );
+
+      button.innerHTML = `
+        <small>${WEEKDAYS[date.getDay()]}</small>
+        <strong>${String(date.getDate()).padStart(2, '0')}</strong>
+        <span>${MONTHS[date.getMonth()]}</span>
+      `;
+
+      button.addEventListener(
+        'click',
+        () => {
+          selectScheduleDate(
+            date,
+            button
+          );
+        }
+      );
+
+      scheduleDays.appendChild(
+        button
+      );
+
+      if (index === 0) {
+        selectScheduleDate(
+          date,
+          button
+        );
+      }
+    }
+  );
+}
+
+renderScheduleDays();
+
+bookingForm?.addEventListener(
+  'submit',
+  (event) => {
+    event.preventDefault();
+
+    const nomeInput =
+      document.querySelector(
+        '#nome'
+      );
+
+    const serviceInput =
+      document.querySelector(
+        '#servico'
+      );
+
+    if (!nomeInput?.value.trim()) {
+      nomeInput?.focus();
+      nomeInput?.reportValidity();
+      return;
+    }
+
+    if (!serviceInput?.value) {
+      serviceInput?.focus();
+      serviceInput?.reportValidity();
+      return;
+    }
+
+    const nome =
+      nomeInput.value.trim();
+
+    const servico =
+      serviceInput.value.trim();
+
+    const dataDesejada =
+      selectedDateInput?.value ||
+      '';
+
+    const horario =
+      selectedTimeInput?.value ||
+      '';
+
+    if (
+      !dataDesejada ||
+      !horario
+    ) {
+      if (scheduleSummary) {
+        scheduleSummary.textContent =
+          'Escolha um dia e um horário antes de continuar.';
+
+        scheduleSummary.scrollIntoView(
+          {
+            behavior: 'smooth',
+            block: 'center'
+          }
+        );
+      }
+
+      return;
+    }
+
+    const message = [
+      'Olá! Vim pelo site da Haus Barber.',
+      '',
+      `Nome: ${nome}`,
+      `Serviço: ${servico}`,
+      `Data desejada: ${formatDateForMessage(dataDesejada)}`,
+      `Horário desejado: ${horario}`,
+      '',
+      'Gostaria de confirmar a disponibilidade desse horário.'
+    ].join('\n');
+
+    const whatsappUrl =
+      `https://wa.me/5561995705082?text=${encodeURIComponent(message)}`;
+
+    window.open(
+      whatsappUrl,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  }
+);
