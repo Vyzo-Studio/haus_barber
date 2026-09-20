@@ -16,6 +16,16 @@ const adminDateFilter = document.querySelector('#admin-date-filter');
 const adminSearch = document.querySelector('#admin-search');
 const clearFiltersButton = document.querySelector('#clear-filters-button');
 
+const adminDatePicker = document.querySelector('#admin-date-picker');
+const adminDateTrigger = document.querySelector('#admin-date-trigger');
+const adminDateTriggerLabel = document.querySelector('#admin-date-trigger-label');
+const adminDatePopover = document.querySelector('#admin-date-popover');
+const adminDatePrevWeek = document.querySelector('#admin-date-prev-week');
+const adminDateNextWeek = document.querySelector('#admin-date-next-week');
+const adminDateWeekLabel = document.querySelector('#admin-date-week-label');
+const adminDateDays = document.querySelector('#admin-date-days');
+const adminDateClear = document.querySelector('#admin-date-clear');
+
 const adminGlobalMessage = document.querySelector('#admin-global-message');
 const adminLoading = document.querySelector('#admin-loading');
 const adminEmpty = document.querySelector('#admin-empty');
@@ -114,6 +124,21 @@ const MONTH_NAMES = [
   'Dezembro'
 ];
 
+const MONTH_SHORT = [
+  'JAN',
+  'FEV',
+  'MAR',
+  'ABR',
+  'MAI',
+  'JUN',
+  'JUL',
+  'AGO',
+  'SET',
+  'OUT',
+  'NOV',
+  'DEZ'
+];
+
 let allBookings = [];
 let currentSession = null;
 let currentUser = null;
@@ -126,6 +151,8 @@ let loadingCash = false;
 
 let currentCashStatus = 'not_opened';
 let currentCashDashboard = null;
+
+let calendarWeekStart = null;
 
 function showLoginMessage(message, type = 'info') {
   if (!loginMessage) {
@@ -337,26 +364,21 @@ function showDashboardScreen() {
 }
 
 function getBrazilDateValue(date = new Date()) {
-  const parts =
-    new Intl.DateTimeFormat(
-      'pt-BR',
-      {
-        timeZone: 'America/Sao_Paulo',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      }
-    ).formatToParts(date);
+  const parts = new Intl.DateTimeFormat(
+    'pt-BR',
+    {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }
+  ).formatToParts(date);
 
   const values = {};
 
   parts.forEach((part) => {
-    if (
-      part.type !==
-      'literal'
-    ) {
-      values[part.type] =
-        part.value;
+    if (part.type !== 'literal') {
+      values[part.type] = part.value;
     }
   });
 
@@ -427,6 +449,56 @@ function parseBookingDate(value) {
     year,
     month - 1,
     day
+  );
+}
+
+function cloneDate(date) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+}
+
+function getBrazilTodayDate() {
+  const value = getBrazilDateValue();
+
+  return parseBookingDate(value);
+}
+
+function getMondayOfWeek(date) {
+  const result = cloneDate(date);
+
+  const day = result.getDay();
+
+  const difference =
+    day === 0
+      ? -6
+      : 1 - day;
+
+  result.setDate(
+    result.getDate() +
+    difference
+  );
+
+  return result;
+}
+
+function isSameCalendarDay(dateA, dateB) {
+  if (
+    !dateA ||
+    !dateB
+  ) {
+    return false;
+  }
+
+  return (
+    dateA.getFullYear() ===
+      dateB.getFullYear() &&
+    dateA.getMonth() ===
+      dateB.getMonth() &&
+    dateA.getDate() ===
+      dateB.getDate()
   );
 }
 
@@ -567,6 +639,377 @@ function formatCurrency(cents) {
       currency: 'BRL'
     }
   ).format(value);
+}
+
+function formatAdminDateTrigger(value) {
+  const date =
+    parseBookingDate(value);
+
+  if (!date) {
+    return 'TODAS AS DATAS';
+  }
+
+  const weekday =
+    WEEKDAY_LABELS[
+      date.getDay()
+    ];
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, '0');
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
+
+  const year =
+    date.getFullYear();
+
+  return `${weekday} • ${day}/${month}/${year}`;
+}
+
+function formatCalendarWeekLabel(startDate) {
+  if (!startDate) {
+    return '';
+  }
+
+  const endDate =
+    cloneDate(startDate);
+
+  endDate.setDate(
+    endDate.getDate() + 5
+  );
+
+  const startDay =
+    String(
+      startDate.getDate()
+    ).padStart(2, '0');
+
+  const endDay =
+    String(
+      endDate.getDate()
+    ).padStart(2, '0');
+
+  const startMonth =
+    MONTH_SHORT[
+      startDate.getMonth()
+    ];
+
+  const endMonth =
+    MONTH_SHORT[
+      endDate.getMonth()
+    ];
+
+  const startYear =
+    startDate.getFullYear();
+
+  const endYear =
+    endDate.getFullYear();
+
+  if (
+    startYear !== endYear
+  ) {
+    return `${startDay} ${startMonth} ${startYear} — ${endDay} ${endMonth} ${endYear}`;
+  }
+
+  if (
+    startDate.getMonth() !==
+    endDate.getMonth()
+  ) {
+    return `${startDay} ${startMonth} — ${endDay} ${endMonth} ${endYear}`;
+  }
+
+  return `${startDay} — ${endDay} ${endMonth} ${endYear}`;
+}
+
+function setAdminDateTriggerLabel() {
+  if (!adminDateTriggerLabel) {
+    return;
+  }
+
+  adminDateTriggerLabel.textContent =
+    formatAdminDateTrigger(
+      adminDateFilter?.value ||
+      ''
+    );
+}
+
+function renderAdminDateCalendar() {
+  if (
+    !adminDateDays ||
+    !calendarWeekStart
+  ) {
+    return;
+  }
+
+  adminDateDays.innerHTML = '';
+
+  const selectedValue =
+    adminDateFilter?.value ||
+    '';
+
+  const selectedDate =
+    parseBookingDate(
+      selectedValue
+    );
+
+  const today =
+    getBrazilTodayDate();
+
+  for (
+    let offset = 0;
+    offset < 6;
+    offset += 1
+  ) {
+    const date =
+      cloneDate(
+        calendarWeekStart
+      );
+
+    date.setDate(
+      calendarWeekStart.getDate() +
+      offset
+    );
+
+    const button =
+      document.createElement(
+        'button'
+      );
+
+    const dateValue =
+      formatDateValue(date);
+
+    const weekday =
+      WEEKDAY_LABELS[
+        date.getDay()
+      ];
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, '0');
+
+    const month =
+      MONTH_SHORT[
+        date.getMonth()
+      ];
+
+    button.type = 'button';
+
+    button.className =
+      'admin-calendar-day';
+
+    button.dataset.date =
+      dateValue;
+
+    button.setAttribute(
+      'aria-label',
+      `Filtrar agendamentos de ${weekday}, ${day} de ${MONTH_NAMES[date.getMonth()]} de ${date.getFullYear()}`
+    );
+
+    button.setAttribute(
+      'aria-pressed',
+      String(
+        selectedValue ===
+        dateValue
+      )
+    );
+
+    button.innerHTML = `
+      <small>${weekday}</small>
+      <strong>${day}</strong>
+      <span>${month}</span>
+    `;
+
+    if (
+      selectedDate &&
+      isSameCalendarDay(
+        selectedDate,
+        date
+      )
+    ) {
+      button.classList.add(
+        'is-selected'
+      );
+    }
+
+    if (
+      today &&
+      isSameCalendarDay(
+        today,
+        date
+      )
+    ) {
+      button.classList.add(
+        'is-today'
+      );
+    }
+
+    button.addEventListener(
+      'click',
+      () => {
+        selectAdminCalendarDate(
+          dateValue
+        );
+      }
+    );
+
+    adminDateDays.appendChild(
+      button
+    );
+  }
+
+  if (adminDateWeekLabel) {
+    adminDateWeekLabel.textContent =
+      formatCalendarWeekLabel(
+        calendarWeekStart
+      );
+  }
+}
+
+function openAdminDatePopover() {
+  if (
+    !adminDatePopover ||
+    !adminDateTrigger
+  ) {
+    return;
+  }
+
+  const selectedDate =
+    parseBookingDate(
+      adminDateFilter?.value ||
+      ''
+    );
+
+  if (selectedDate) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        selectedDate
+      );
+  } else if (!calendarWeekStart) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        getBrazilTodayDate()
+      );
+  }
+
+  renderAdminDateCalendar();
+
+  adminDatePopover.hidden =
+    false;
+
+  adminDateTrigger.setAttribute(
+    'aria-expanded',
+    'true'
+  );
+}
+
+function closeAdminDatePopover() {
+  if (
+    !adminDatePopover ||
+    !adminDateTrigger
+  ) {
+    return;
+  }
+
+  adminDatePopover.hidden =
+    true;
+
+  adminDateTrigger.setAttribute(
+    'aria-expanded',
+    'false'
+  );
+}
+
+function toggleAdminDatePopover() {
+  if (!adminDatePopover) {
+    return;
+  }
+
+  if (
+    adminDatePopover.hidden
+  ) {
+    openAdminDatePopover();
+  } else {
+    closeAdminDatePopover();
+  }
+}
+
+function selectAdminCalendarDate(
+  dateValue
+) {
+  if (!adminDateFilter) {
+    return;
+  }
+
+  adminDateFilter.value =
+    dateValue;
+
+  setAdminDateTriggerLabel();
+  renderAdminDateCalendar();
+  renderBookings();
+  closeAdminDatePopover();
+}
+
+function clearAdminDateSelection(
+  {
+    close = true,
+    resetWeek = false
+  } = {}
+) {
+  if (adminDateFilter) {
+    adminDateFilter.value = '';
+  }
+
+  if (resetWeek) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        getBrazilTodayDate()
+      );
+  }
+
+  setAdminDateTriggerLabel();
+  renderAdminDateCalendar();
+  renderBookings();
+
+  if (close) {
+    closeAdminDatePopover();
+  }
+}
+
+function moveAdminCalendarWeek(
+  amount
+) {
+  if (!calendarWeekStart) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        getBrazilTodayDate()
+      );
+  }
+
+  calendarWeekStart =
+    cloneDate(
+      calendarWeekStart
+    );
+
+  calendarWeekStart.setDate(
+    calendarWeekStart.getDate() +
+    amount * 7
+  );
+
+  renderAdminDateCalendar();
+}
+
+function initializeAdminCalendar() {
+  calendarWeekStart =
+    getMondayOfWeek(
+      getBrazilTodayDate()
+    );
+
+  setAdminDateTriggerLabel();
+  renderAdminDateCalendar();
 }
 
 function isPendingExpired(booking) {
@@ -1313,11 +1756,16 @@ async function loadBookings(
             {
               timeZone:
                 'America/Sao_Paulo',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
+              hour:
+                '2-digit',
+              minute:
+                '2-digit',
+              second:
+                '2-digit'
             }
-          ).format(new Date())
+          ).format(
+            new Date()
+          )
         }`;
     }
   } catch (error) {
@@ -2173,6 +2621,8 @@ function openActionModal(
     return;
   }
 
+  closeAdminDatePopover();
+
   currentAction = {
     booking,
     action
@@ -2596,6 +3046,7 @@ async function loginAdmin(
     showDashboardScreen();
 
     populateCashYears();
+    initializeAdminCalendar();
 
     await refreshAllData();
   } catch (error) {
@@ -2674,9 +3125,18 @@ async function logoutAdmin() {
     adminLoginForm.reset();
   }
 
+  if (adminDateFilter) {
+    adminDateFilter.value =
+      '';
+  }
+
+  initializeAdminCalendar();
+
   hideGlobalMessage();
   hideCashMessage();
   hideLoginMessage();
+
+  closeAdminDatePopover();
 
   showLoginScreen();
 }
@@ -2737,6 +3197,7 @@ async function restoreSession() {
     showDashboardScreen();
 
     populateCashYears();
+    initializeAdminCalendar();
 
     await refreshAllData();
   } catch (error) {
@@ -2905,14 +3366,53 @@ adminStatusFilter?.addEventListener(
   renderBookings
 );
 
-adminDateFilter?.addEventListener(
-  'change',
-  renderBookings
-);
-
 adminSearch?.addEventListener(
   'input',
   renderBookings
+);
+
+adminDateTrigger?.addEventListener(
+  'click',
+  (event) => {
+    event.stopPropagation();
+
+    toggleAdminDatePopover();
+  }
+);
+
+adminDatePopover?.addEventListener(
+  'click',
+  (event) => {
+    event.stopPropagation();
+  }
+);
+
+adminDatePrevWeek?.addEventListener(
+  'click',
+  () => {
+    moveAdminCalendarWeek(
+      -1
+    );
+  }
+);
+
+adminDateNextWeek?.addEventListener(
+  'click',
+  () => {
+    moveAdminCalendarWeek(
+      1
+    );
+  }
+);
+
+adminDateClear?.addEventListener(
+  'click',
+  () => {
+    clearAdminDateSelection({
+      close: true,
+      resetWeek: true
+    });
+  }
 );
 
 clearFiltersButton?.addEventListener(
@@ -2923,15 +3423,15 @@ clearFiltersButton?.addEventListener(
         'active';
     }
 
-    if (adminDateFilter) {
-      adminDateFilter.value =
-        '';
-    }
-
     if (adminSearch) {
       adminSearch.value =
         '';
     }
+
+    clearAdminDateSelection({
+      close: true,
+      resetWeek: true
+    });
 
     renderBookings();
   }
@@ -2953,14 +3453,44 @@ adminConfirmSubmit?.addEventListener(
 );
 
 document.addEventListener(
+  'click',
+  (event) => {
+    if (
+      adminDatePicker &&
+      !adminDatePicker.contains(
+        event.target
+      )
+    ) {
+      closeAdminDatePopover();
+    }
+  }
+);
+
+document.addEventListener(
   'keydown',
   (event) => {
     if (
-      event.key === 'Escape' &&
+      event.key !==
+      'Escape'
+    ) {
+      return;
+    }
+
+    if (
       adminConfirmModal &&
       !adminConfirmModal.hidden
     ) {
       closeActionModal();
+      return;
+    }
+
+    if (
+      adminDatePopover &&
+      !adminDatePopover.hidden
+    ) {
+      closeAdminDatePopover();
+
+      adminDateTrigger?.focus();
     }
   }
 );
@@ -2990,4 +3520,5 @@ window.addEventListener(
   }
 );
 
+initializeAdminCalendar();
 restoreSession();
