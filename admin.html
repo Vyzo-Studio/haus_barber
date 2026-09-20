@@ -439,6 +439,221 @@
 
           </div>
 
+          <section
+            class="cash-payment-section"
+            aria-labelledby="cash-payment-title"
+          >
+
+            <div class="cash-payment-section-head">
+
+              <div>
+
+                <span>
+                  RECEBIMENTOS
+                </span>
+
+                <h3 id="cash-payment-title">
+                  FORMAS DE PAGAMENTO
+                </h3>
+
+              </div>
+
+              <small>
+                MOVIMENTAÇÃO LÍQUIDA DE HOJE
+              </small>
+
+            </div>
+
+            <div class="cash-payment-grid">
+
+              <article class="cash-payment-card">
+
+                <div class="cash-payment-card-head">
+
+                  <span class="cash-payment-icon">
+                    $
+                  </span>
+
+                  <div>
+
+                    <span>
+                      DINHEIRO
+                    </span>
+
+                    <small>
+                      recebido em espécie
+                    </small>
+
+                  </div>
+
+                </div>
+
+                <strong
+                  id="cash-payment-cash-total"
+                >
+                  R$ 0,00
+                </strong>
+
+                <div class="cash-payment-meta">
+
+                  <span
+                    id="cash-payment-cash-count"
+                  >
+                    0 pagamentos
+                  </span>
+
+                  <span
+                    id="cash-payment-cash-refunds"
+                  >
+                    Estornos: R$ 0,00
+                  </span>
+
+                </div>
+
+              </article>
+
+              <article class="cash-payment-card">
+
+                <div class="cash-payment-card-head">
+
+                  <span class="cash-payment-icon">
+                    P
+                  </span>
+
+                  <div>
+
+                    <span>
+                      PIX
+                    </span>
+
+                    <small>
+                      pagamento instantâneo
+                    </small>
+
+                  </div>
+
+                </div>
+
+                <strong
+                  id="cash-payment-pix-total"
+                >
+                  R$ 0,00
+                </strong>
+
+                <div class="cash-payment-meta">
+
+                  <span
+                    id="cash-payment-pix-count"
+                  >
+                    0 pagamentos
+                  </span>
+
+                  <span
+                    id="cash-payment-pix-refunds"
+                  >
+                    Estornos: R$ 0,00
+                  </span>
+
+                </div>
+
+              </article>
+
+              <article class="cash-payment-card">
+
+                <div class="cash-payment-card-head">
+
+                  <span class="cash-payment-icon">
+                    D
+                  </span>
+
+                  <div>
+
+                    <span>
+                      DÉBITO
+                    </span>
+
+                    <small>
+                      cartão de débito
+                    </small>
+
+                  </div>
+
+                </div>
+
+                <strong
+                  id="cash-payment-debit-total"
+                >
+                  R$ 0,00
+                </strong>
+
+                <div class="cash-payment-meta">
+
+                  <span
+                    id="cash-payment-debit-count"
+                  >
+                    0 pagamentos
+                  </span>
+
+                  <span
+                    id="cash-payment-debit-refunds"
+                  >
+                    Estornos: R$ 0,00
+                  </span>
+
+                </div>
+
+              </article>
+
+              <article class="cash-payment-card">
+
+                <div class="cash-payment-card-head">
+
+                  <span class="cash-payment-icon">
+                    C
+                  </span>
+
+                  <div>
+
+                    <span>
+                      CRÉDITO
+                    </span>
+
+                    <small>
+                      cartão de crédito
+                    </small>
+
+                  </div>
+
+                </div>
+
+                <strong
+                  id="cash-payment-credit-total"
+                >
+                  R$ 0,00
+                </strong>
+
+                <div class="cash-payment-meta">
+
+                  <span
+                    id="cash-payment-credit-count"
+                  >
+                    0 pagamentos
+                  </span>
+
+                  <span
+                    id="cash-payment-credit-refunds"
+                  >
+                    Estornos: R$ 0,00
+                  </span>
+
+                </div>
+
+              </article>
+
+            </div>
+
+          </section>
+
           <div class="cash-history-grid">
 
             <section class="cash-history-panel">
@@ -463,18 +678,53 @@
                     id="cash-history-month"
                     aria-label="Mês do histórico"
                   >
-                    <option value="1">Janeiro</option>
-                    <option value="2">Fevereiro</option>
-                    <option value="3">Março</option>
-                    <option value="4">Abril</option>
-                    <option value="5">Maio</option>
-                    <option value="6">Junho</option>
-                    <option value="7">Julho</option>
-                    <option value="8">Agosto</option>
-                    <option value="9">Setembro</option>
-                    <option value="10">Outubro</option>
-                    <option value="11">Novembro</option>
-                    <option value="12">Dezembro</option>
+                    <option value="1">
+                      Janeiro
+                    </option>
+
+                    <option value="2">
+                      Fevereiro
+                    </option>
+
+                    <option value="3">
+                      Março
+                    </option>
+
+                    <option value="4">
+                      Abril
+                    </option>
+
+                    <option value="5">
+                      Maio
+                    </option>
+
+                    <option value="6">
+                      Junho
+                    </option>
+
+                    <option value="7">
+                      Julho
+                    </option>
+
+                    <option value="8">
+                      Agosto
+                    </option>
+
+                    <option value="9">
+                      Setembro
+                    </option>
+
+                    <option value="10">
+                      Outubro
+                    </option>
+
+                    <option value="11">
+                      Novembro
+                    </option>
+
+                    <option value="12">
+                      Dezembro
+                    </option>
                   </select>
 
                   <select
@@ -578,7 +828,9 @@
               PENDENTES
             </span>
 
-            <strong id="stat-pending">
+            <strong
+              id="stat-pending"
+            >
               0
             </strong>
 
@@ -594,7 +846,9 @@
               CONFIRMADOS
             </span>
 
-            <strong id="stat-confirmed">
+            <strong
+              id="stat-confirmed"
+            >
               0
             </strong>
 
@@ -610,7 +864,9 @@
               HOJE
             </span>
 
-            <strong id="stat-today">
+            <strong
+              id="stat-today"
+            >
               0
             </strong>
 
@@ -626,7 +882,9 @@
               TOTAL VISÍVEL
             </span>
 
-            <strong id="stat-visible">
+            <strong
+              id="stat-visible"
+            >
               0
             </strong>
 
@@ -923,32 +1181,57 @@
         <div class="booking-card-info">
 
           <div>
-            <span>CLIENTE</span>
-            <strong data-booking-name></strong>
+            <span>
+              CLIENTE
+            </span>
+
+            <strong
+              data-booking-name
+            ></strong>
           </div>
 
           <div>
-            <span>SERVIÇO</span>
-            <strong data-booking-service></strong>
+            <span>
+              SERVIÇO
+            </span>
+
+            <strong
+              data-booking-service
+            ></strong>
           </div>
 
           <div>
-            <span>VALOR</span>
-            <strong data-booking-amount>
+            <span>
+              VALOR
+            </span>
+
+            <strong
+              data-booking-amount
+            >
               R$ 0,00
             </strong>
           </div>
 
           <div>
-            <span>PAGAMENTO</span>
-            <strong data-booking-payment>
+            <span>
+              PAGAMENTO
+            </span>
+
+            <strong
+              data-booking-payment
+            >
               NÃO RECEBIDO
             </strong>
           </div>
 
           <div>
-            <span>SOLICITADO EM</span>
-            <strong data-booking-created></strong>
+            <span>
+              SOLICITADO EM
+            </span>
+
+            <strong
+              data-booking-created
+            ></strong>
           </div>
 
         </div>
@@ -1010,28 +1293,61 @@
     <article class="cash-day-row">
 
       <div>
-        <span data-cash-day-date></span>
-        <small data-cash-day-status></small>
+        <span
+          data-cash-day-date
+        ></span>
+
+        <small
+          data-cash-day-status
+        ></small>
       </div>
 
       <div>
-        <span>ATENDIMENTOS</span>
-        <strong data-cash-day-count>0</strong>
+        <span>
+          ATENDIMENTOS
+        </span>
+
+        <strong
+          data-cash-day-count
+        >
+          0
+        </strong>
       </div>
 
       <div>
-        <span>BRUTO</span>
-        <strong data-cash-day-gross>R$ 0,00</strong>
+        <span>
+          BRUTO
+        </span>
+
+        <strong
+          data-cash-day-gross
+        >
+          R$ 0,00
+        </strong>
       </div>
 
       <div>
-        <span>ESTORNOS</span>
-        <strong data-cash-day-refunds>R$ 0,00</strong>
+        <span>
+          ESTORNOS
+        </span>
+
+        <strong
+          data-cash-day-refunds
+        >
+          R$ 0,00
+        </strong>
       </div>
 
       <div>
-        <span>LÍQUIDO</span>
-        <strong data-cash-day-net>R$ 0,00</strong>
+        <span>
+          LÍQUIDO
+        </span>
+
+        <strong
+          data-cash-day-net
+        >
+          R$ 0,00
+        </strong>
       </div>
 
     </article>
@@ -1044,15 +1360,21 @@
 
       <div>
 
-        <span data-cash-month-name></span>
+        <span
+          data-cash-month-name
+        ></span>
 
-        <small data-cash-month-count>
+        <small
+          data-cash-month-count
+        >
           0 atendimentos
         </small>
 
       </div>
 
-      <strong data-cash-month-total>
+      <strong
+        data-cash-month-total
+      >
         R$ 0,00
       </strong>
 
@@ -1087,6 +1409,130 @@
       </h2>
 
       <p id="admin-confirm-text"></p>
+
+      <div
+        class="payment-method-section"
+        id="payment-method-section"
+        hidden
+      >
+
+        <div class="payment-method-head">
+
+          <span>
+            FORMA DE PAGAMENTO
+          </span>
+
+          <small>
+            Selecione como o cliente pagou
+          </small>
+
+        </div>
+
+        <div
+          class="payment-method-options"
+          role="radiogroup"
+          aria-label="Forma de pagamento"
+        >
+
+          <label class="payment-method-option">
+
+            <input
+              type="radio"
+              name="payment-method"
+              value="cash"
+            >
+
+            <span class="payment-method-option-content">
+
+              <strong>
+                DINHEIRO
+              </strong>
+
+              <small>
+                Pagamento em espécie
+              </small>
+
+            </span>
+
+          </label>
+
+          <label class="payment-method-option">
+
+            <input
+              type="radio"
+              name="payment-method"
+              value="pix"
+            >
+
+            <span class="payment-method-option-content">
+
+              <strong>
+                PIX
+              </strong>
+
+              <small>
+                Transferência via Pix
+              </small>
+
+            </span>
+
+          </label>
+
+          <label class="payment-method-option">
+
+            <input
+              type="radio"
+              name="payment-method"
+              value="debit"
+            >
+
+            <span class="payment-method-option-content">
+
+              <strong>
+                DÉBITO
+              </strong>
+
+              <small>
+                Cartão de débito
+              </small>
+
+            </span>
+
+          </label>
+
+          <label class="payment-method-option">
+
+            <input
+              type="radio"
+              name="payment-method"
+              value="credit"
+            >
+
+            <span class="payment-method-option-content">
+
+              <strong>
+                CRÉDITO
+              </strong>
+
+              <small>
+                Cartão de crédito
+              </small>
+
+            </span>
+
+          </label>
+
+        </div>
+
+        <p
+          class="payment-method-error"
+          id="payment-method-error"
+          hidden
+        >
+          Selecione uma forma de pagamento.
+        </p>
+
+      </div>
 
       <div class="admin-confirm-actions">
 
@@ -1123,9 +1569,9 @@
   ></script>
 
   <script
-  src="admin.js?v=3.1"
-  defer
-></script>
+    src="admin.js?v=4.0"
+    defer
+  ></script>
 
 </body>
 </html>
