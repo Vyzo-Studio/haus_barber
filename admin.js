@@ -11,7 +11,6 @@ const adminUserEmail = document.querySelector('#admin-user-email');
 const adminLogoutButton = document.querySelector('#admin-logout-button');
 const adminRefreshButton = document.querySelector('#admin-refresh-button');
 
-const adminStatusFilter = document.querySelector('#admin-status-filter');
 const adminDateFilter = document.querySelector('#admin-date-filter');
 const adminSearch = document.querySelector('#admin-search');
 const clearFiltersButton = document.querySelector('#clear-filters-button');
@@ -24,7 +23,39 @@ const adminDatePrevWeek = document.querySelector('#admin-date-prev-week');
 const adminDateNextWeek = document.querySelector('#admin-date-next-week');
 const adminDateWeekLabel = document.querySelector('#admin-date-week-label');
 const adminDateDays = document.querySelector('#admin-date-days');
-const adminDateClear = document.querySelector('#admin-date-clear');
+const adminDateToday = document.querySelector('#admin-date-today');
+
+const adminSelectedDayLabel = document.querySelector(
+  '#admin-selected-day-label'
+);
+
+const bookingTabs = Array.from(
+  document.querySelectorAll('[data-booking-view]')
+);
+
+const bookingTabPendingCount = document.querySelector(
+  '#booking-tab-pending-count'
+);
+
+const bookingTabScheduledCount = document.querySelector(
+  '#booking-tab-scheduled-count'
+);
+
+const bookingTabFinalizedCount = document.querySelector(
+  '#booking-tab-finalized-count'
+);
+
+const adminBookingsKicker = document.querySelector(
+  '#admin-bookings-kicker'
+);
+
+const adminEmptyTitle = document.querySelector(
+  '#admin-empty-title'
+);
+
+const adminEmptyText = document.querySelector(
+  '#admin-empty-text'
+);
 
 const adminGlobalMessage = document.querySelector('#admin-global-message');
 const adminLoading = document.querySelector('#admin-loading');
@@ -46,8 +77,13 @@ const adminConfirmCancel = document.querySelector('#admin-confirm-cancel');
 const adminConfirmSubmit = document.querySelector('#admin-confirm-submit');
 const modalBackdrop = document.querySelector('[data-modal-close]');
 
-const paymentMethodSection = document.querySelector('#payment-method-section');
-const paymentMethodError = document.querySelector('#payment-method-error');
+const paymentMethodSection = document.querySelector(
+  '#payment-method-section'
+);
+
+const paymentMethodError = document.querySelector(
+  '#payment-method-error'
+);
 
 const paymentMethodInputs = Array.from(
   document.querySelectorAll(
@@ -80,15 +116,19 @@ const cashMessage = document.querySelector('#cash-message');
 
 const cashHistoryMonth = document.querySelector('#cash-history-month');
 const cashHistoryYear = document.querySelector('#cash-history-year');
-const cashYearSummaryYear = document.querySelector('#cash-year-summary-year');
+const cashYearSummaryYear = document.querySelector(
+  '#cash-year-summary-year'
+);
 
 const cashDailyHistory = document.querySelector('#cash-daily-history');
 const cashDailyEmpty = document.querySelector('#cash-daily-empty');
+
 const cashHistoryMonthTotal = document.querySelector(
   '#cash-history-month-total'
 );
 
 const cashYearHistory = document.querySelector('#cash-year-history');
+
 const cashHistoryYearTotal = document.querySelector(
   '#cash-history-year-total'
 );
@@ -223,6 +263,8 @@ let currentCashDashboard = null;
 
 let calendarWeekStart = null;
 
+let currentBookingView = 'pending';
+
 function showLoginMessage(message, type = 'info') {
   if (!loginMessage) {
     return;
@@ -332,9 +374,10 @@ function setLoginLoading(isLoading) {
 
   adminLoginButton.disabled = isLoading;
 
-  adminLoginButton.textContent = isLoading
-    ? 'ENTRANDO...'
-    : 'ENTRAR NO PAINEL';
+  adminLoginButton.textContent =
+    isLoading
+      ? 'ENTRANDO...'
+      : 'ENTRAR NO PAINEL';
 }
 
 function setRefreshLoading(isLoading) {
@@ -344,9 +387,10 @@ function setRefreshLoading(isLoading) {
 
   adminRefreshButton.disabled = isLoading;
 
-  adminRefreshButton.textContent = isLoading
-    ? 'ATUALIZANDO...'
-    : 'ATUALIZAR PAINEL';
+  adminRefreshButton.textContent =
+    isLoading
+      ? 'ATUALIZANDO...'
+      : 'ATUALIZAR PAINEL';
 }
 
 function setCashButtonsLoading(isLoading) {
@@ -398,10 +442,7 @@ function forceHideButton(button) {
   }
 
   button.hidden = true;
-  button.setAttribute(
-    'hidden',
-    ''
-  );
+  button.setAttribute('hidden', '');
 
   button.style.setProperty(
     'display',
@@ -443,15 +484,16 @@ function showDashboardScreen() {
 }
 
 function getBrazilDateValue(date = new Date()) {
-  const parts = new Intl.DateTimeFormat(
-    'pt-BR',
-    {
-      timeZone: 'America/Sao_Paulo',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }
-  ).formatToParts(date);
+  const parts =
+    new Intl.DateTimeFormat(
+      'pt-BR',
+      {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    ).formatToParts(date);
 
   const values = {};
 
@@ -474,14 +516,10 @@ function getBrazilCurrentYear() {
     new Intl.DateTimeFormat(
       'en',
       {
-        timeZone:
-          'America/Sao_Paulo',
-        year:
-          'numeric'
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric'
       }
-    ).format(
-      new Date()
-    )
+    ).format(new Date())
   );
 }
 
@@ -490,14 +528,10 @@ function getBrazilCurrentMonth() {
     new Intl.DateTimeFormat(
       'en',
       {
-        timeZone:
-          'America/Sao_Paulo',
-        month:
-          'numeric'
+        timeZone: 'America/Sao_Paulo',
+        month: 'numeric'
       }
-    ).format(
-      new Date()
-    )
+    ).format(new Date())
   );
 }
 
@@ -508,18 +542,12 @@ function formatDateValue(date) {
   const month =
     String(
       date.getMonth() + 1
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const day =
     String(
       date.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
 }
@@ -534,10 +562,7 @@ function parseBookingDate(value) {
     month,
     day
   ] = String(value)
-    .slice(
-      0,
-      10
-    )
+    .slice(0, 10)
     .split('-')
     .map(Number);
 
@@ -613,9 +638,7 @@ function isSameCalendarDay(
 
 function formatBookingDate(value) {
   const date =
-    parseBookingDate(
-      value
-    );
+    parseBookingDate(value);
 
   if (!date) {
     return value || '';
@@ -624,27 +647,19 @@ function formatBookingDate(value) {
   const day =
     String(
       date.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const month =
     String(
       date.getMonth() + 1
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   return `${day}/${month}`;
 }
 
 function formatFullDate(value) {
   const date =
-    parseBookingDate(
-      value
-    );
+    parseBookingDate(value);
 
   if (!date) {
     return value || '';
@@ -653,18 +668,12 @@ function formatFullDate(value) {
   const day =
     String(
       date.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const month =
     String(
       date.getMonth() + 1
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const year =
     date.getFullYear();
@@ -672,13 +681,32 @@ function formatFullDate(value) {
   return `${day}/${month}/${year}`;
 }
 
+function formatSelectedDay(value) {
+  const date =
+    parseBookingDate(value);
+
+  if (!date) {
+    return '';
+  }
+
+  const weekday =
+    new Intl.DateTimeFormat(
+      'pt-BR',
+      {
+        weekday: 'long'
+      }
+    )
+      .format(date)
+      .replace('-feira', '')
+      .toUpperCase();
+
+  return `${weekday} • ${formatFullDate(value)}`;
+}
+
 function formatBookingTime(value) {
   return String(
     value || ''
-  ).slice(
-    0,
-    5
-  );
+  ).slice(0, 5);
 }
 
 function formatCreatedAt(value) {
@@ -700,27 +728,19 @@ function formatCreatedAt(value) {
   return new Intl.DateTimeFormat(
     'pt-BR',
     {
-      timeZone:
-        'America/Sao_Paulo',
-      day:
-        '2-digit',
-      month:
-        '2-digit',
-      year:
-        'numeric',
-      hour:
-        '2-digit',
-      minute:
-        '2-digit'
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     }
   ).format(date);
 }
 
 function getWeekdayLabel(value) {
   const date =
-    parseBookingDate(
-      value
-    );
+    parseBookingDate(value);
 
   if (!date) {
     return '';
@@ -781,19 +801,16 @@ function getPaymentMethodLabel(method) {
   return (
     PAYMENT_METHOD_LABELS[
       method
-    ] ||
-    ''
+    ] || ''
   );
 }
 
 function formatAdminDateTrigger(value) {
   const date =
-    parseBookingDate(
-      value
-    );
+    parseBookingDate(value);
 
   if (!date) {
-    return 'TODAS AS DATAS';
+    return 'SELECIONE UMA DATA';
   }
 
   const weekday =
@@ -804,18 +821,12 @@ function formatAdminDateTrigger(value) {
   const day =
     String(
       date.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const month =
     String(
       date.getMonth() + 1
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const year =
     date.getFullYear();
@@ -823,17 +834,13 @@ function formatAdminDateTrigger(value) {
   return `${weekday} • ${day}/${month}/${year}`;
 }
 
-function formatCalendarWeekLabel(
-  startDate
-) {
+function formatCalendarWeekLabel(startDate) {
   if (!startDate) {
     return '';
   }
 
   const endDate =
-    cloneDate(
-      startDate
-    );
+    cloneDate(startDate);
 
   endDate.setDate(
     endDate.getDate() + 5
@@ -842,18 +849,12 @@ function formatCalendarWeekLabel(
   const startDay =
     String(
       startDate.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const endDay =
     String(
       endDate.getDate()
-    ).padStart(
-      2,
-      '0'
-    );
+    ).padStart(2, '0');
 
   const startMonth =
     MONTH_SHORT[
@@ -888,18 +889,20 @@ function formatCalendarWeekLabel(
   return `${startDay} — ${endDay} ${endMonth} ${endYear}`;
 }
 
-function setAdminDateTriggerLabel() {
-  if (
-    !adminDateTriggerLabel
-  ) {
-    return;
+function updateSelectedDayLabels() {
+  const value =
+    adminDateFilter?.value ||
+    getTodayValue();
+
+  if (adminDateTriggerLabel) {
+    adminDateTriggerLabel.textContent =
+      formatAdminDateTrigger(value);
   }
 
-  adminDateTriggerLabel.textContent =
-    formatAdminDateTrigger(
-      adminDateFilter?.value ||
-      ''
-    );
+  if (adminSelectedDayLabel) {
+    adminSelectedDayLabel.textContent =
+      formatSelectedDay(value);
+  }
 }
 
 function renderAdminDateCalendar() {
@@ -910,12 +913,11 @@ function renderAdminDateCalendar() {
     return;
   }
 
-  adminDateDays.innerHTML =
-    '';
+  adminDateDays.innerHTML = '';
 
   const selectedValue =
     adminDateFilter?.value ||
-    '';
+    getTodayValue();
 
   const selectedDate =
     parseBookingDate(
@@ -946,9 +948,7 @@ function renderAdminDateCalendar() {
       );
 
     const dateValue =
-      formatDateValue(
-        date
-      );
+      formatDateValue(date);
 
     const weekday =
       WEEKDAY_LABELS[
@@ -958,18 +958,14 @@ function renderAdminDateCalendar() {
     const day =
       String(
         date.getDate()
-      ).padStart(
-        2,
-        '0'
-      );
+      ).padStart(2, '0');
 
     const month =
       MONTH_SHORT[
         date.getMonth()
       ];
 
-    button.type =
-      'button';
+    button.type = 'button';
 
     button.className =
       'admin-calendar-day';
@@ -1048,20 +1044,13 @@ function openAdminDatePopover() {
   const selectedDate =
     parseBookingDate(
       adminDateFilter?.value ||
-      ''
+      getTodayValue()
     );
 
   if (selectedDate) {
     calendarWeekStart =
       getMondayOfWeek(
         selectedDate
-      );
-  } else if (
-    !calendarWeekStart
-  ) {
-    calendarWeekStart =
-      getMondayOfWeek(
-        getBrazilTodayDate()
       );
   }
 
@@ -1107,9 +1096,7 @@ function toggleAdminDatePopover() {
   }
 }
 
-function selectAdminCalendarDate(
-  dateValue
-) {
+function selectAdminCalendarDate(dateValue) {
   if (!adminDateFilter) {
     return;
   }
@@ -1117,42 +1104,48 @@ function selectAdminCalendarDate(
   adminDateFilter.value =
     dateValue;
 
-  setAdminDateTriggerLabel();
+  const selectedDate =
+    parseBookingDate(
+      dateValue
+    );
+
+  if (selectedDate) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        selectedDate
+      );
+  }
+
+  updateSelectedDayLabels();
   renderAdminDateCalendar();
   renderBookings();
   closeAdminDatePopover();
 }
 
-function clearAdminDateSelection(
-  {
-    close = true,
-    resetWeek = false
-  } = {}
-) {
+function goToToday() {
+  const today =
+    getTodayValue();
+
   if (adminDateFilter) {
     adminDateFilter.value =
-      '';
+      today;
   }
 
-  if (resetWeek) {
-    calendarWeekStart =
-      getMondayOfWeek(
-        getBrazilTodayDate()
-      );
-  }
+  const todayDate =
+    parseBookingDate(today);
 
-  setAdminDateTriggerLabel();
+  calendarWeekStart =
+    getMondayOfWeek(
+      todayDate
+    );
+
+  updateSelectedDayLabels();
   renderAdminDateCalendar();
   renderBookings();
-
-  if (close) {
-    closeAdminDatePopover();
-  }
+  closeAdminDatePopover();
 }
 
-function moveAdminCalendarWeek(
-  amount
-) {
+function moveAdminCalendarWeek(amount) {
   if (!calendarWeekStart) {
     calendarWeekStart =
       getMondayOfWeek(
@@ -1174,19 +1167,26 @@ function moveAdminCalendarWeek(
 }
 
 function initializeAdminCalendar() {
+  const today =
+    getTodayValue();
+
+  if (adminDateFilter) {
+    adminDateFilter.value =
+      today;
+  }
+
   calendarWeekStart =
     getMondayOfWeek(
       getBrazilTodayDate()
     );
 
-  setAdminDateTriggerLabel();
+  updateSelectedDayLabels();
   renderAdminDateCalendar();
 }
 
 function isPendingExpired(booking) {
   if (
-    booking.status !==
-      'pending' ||
+    booking.status !== 'pending' ||
     !booking.expires_at
   ) {
     return false;
@@ -1223,43 +1223,247 @@ function getEffectiveStatus(booking) {
   return booking.status;
 }
 
-function statusMatchesFilter(
-  booking,
-  filter
-) {
+function isPendingBooking(booking) {
+  return (
+    getEffectiveStatus(
+      booking
+    ) === 'pending'
+  );
+}
+
+function isScheduledBooking(booking) {
   const status =
     getEffectiveStatus(
       booking
     );
 
-  if (
-    filter === 'all'
-  ) {
-    return true;
-  }
-
-  if (
-    filter === 'active'
-  ) {
-    return (
-      status === 'pending' ||
-      status === 'confirmed'
-    );
-  }
+  const paymentStatus =
+    booking.payment_status ||
+    'unpaid';
 
   return (
-    status === filter
+    status === 'confirmed' &&
+    (
+      paymentStatus === 'unpaid' ||
+      paymentStatus === 'refunded'
+    )
   );
 }
 
-function getFilteredBookings() {
-  const statusFilter =
-    adminStatusFilter?.value ||
-    'active';
+function isFinalizedBooking(booking) {
+  const status =
+    getEffectiveStatus(
+      booking
+    );
 
-  const dateFilter =
+  const paymentStatus =
+    booking.payment_status ||
+    'unpaid';
+
+  return (
+    status === 'confirmed' &&
+    paymentStatus === 'paid'
+  );
+}
+
+function matchesCurrentBookingView(booking) {
+  if (
+    currentBookingView ===
+    'pending'
+  ) {
+    return isPendingBooking(
+      booking
+    );
+  }
+
+  if (
+    currentBookingView ===
+    'scheduled'
+  ) {
+    return isScheduledBooking(
+      booking
+    );
+  }
+
+  if (
+    currentBookingView ===
+    'finalized'
+  ) {
+    return isFinalizedBooking(
+      booking
+    );
+  }
+
+  return false;
+}
+
+function getSelectedDayBookings() {
+  const selectedDate =
     adminDateFilter?.value ||
-    '';
+    getTodayValue();
+
+  return allBookings.filter(
+    (booking) =>
+      booking.booking_date ===
+      selectedDate
+  );
+}
+
+function getBookingCountsForSelectedDay() {
+  const bookings =
+    getSelectedDayBookings();
+
+  return {
+    pending:
+      bookings.filter(
+        isPendingBooking
+      ).length,
+
+    scheduled:
+      bookings.filter(
+        isScheduledBooking
+      ).length,
+
+    finalized:
+      bookings.filter(
+        isFinalizedBooking
+      ).length
+  };
+}
+
+function updateBookingTabCounts() {
+  const counts =
+    getBookingCountsForSelectedDay();
+
+  if (bookingTabPendingCount) {
+    bookingTabPendingCount.textContent =
+      String(
+        counts.pending
+      );
+  }
+
+  if (bookingTabScheduledCount) {
+    bookingTabScheduledCount.textContent =
+      String(
+        counts.scheduled
+      );
+  }
+
+  if (bookingTabFinalizedCount) {
+    bookingTabFinalizedCount.textContent =
+      String(
+        counts.finalized
+      );
+  }
+}
+
+function updateBookingTabVisuals() {
+  bookingTabs.forEach(
+    (tab) => {
+      const view =
+        tab.dataset.bookingView;
+
+      const isActive =
+        view ===
+        currentBookingView;
+
+      tab.classList.toggle(
+        'is-active',
+        isActive
+      );
+
+      tab.setAttribute(
+        'aria-selected',
+        String(isActive)
+      );
+    }
+  );
+}
+
+function updateBookingViewTexts() {
+  if (
+    currentBookingView ===
+    'pending'
+  ) {
+    if (adminBookingsKicker) {
+      adminBookingsKicker.textContent =
+        'PENDENTES';
+    }
+
+    if (adminEmptyTitle) {
+      adminEmptyTitle.textContent =
+        'NENHUM PENDENTE';
+    }
+
+    if (adminEmptyText) {
+      adminEmptyText.textContent =
+        'Não há solicitações aguardando confirmação neste dia.';
+    }
+
+    return;
+  }
+
+  if (
+    currentBookingView ===
+    'scheduled'
+  ) {
+    if (adminBookingsKicker) {
+      adminBookingsKicker.textContent =
+        'AGENDADOS';
+    }
+
+    if (adminEmptyTitle) {
+      adminEmptyTitle.textContent =
+        'NENHUM AGENDADO';
+    }
+
+    if (adminEmptyText) {
+      adminEmptyText.textContent =
+        'Não há atendimentos confirmados e em aberto neste dia.';
+    }
+
+    return;
+  }
+
+  if (adminBookingsKicker) {
+    adminBookingsKicker.textContent =
+      'FINALIZADOS';
+  }
+
+  if (adminEmptyTitle) {
+    adminEmptyTitle.textContent =
+      'NENHUM FINALIZADO';
+  }
+
+  if (adminEmptyText) {
+    adminEmptyText.textContent =
+      'Ainda não há atendimentos finalizados neste dia.';
+  }
+}
+
+function setBookingView(view) {
+  if (
+    ![
+      'pending',
+      'scheduled',
+      'finalized'
+    ].includes(view)
+  ) {
+    return;
+  }
+
+  currentBookingView =
+    view;
+
+  updateBookingTabVisuals();
+  updateBookingViewTexts();
+  renderBookings();
+}
+
+function getFilteredBookings() {
+  const selectedDate =
+    adminDateFilter?.value ||
+    getTodayValue();
 
   const searchTerm =
     normalizeText(
@@ -1270,18 +1474,16 @@ function getFilteredBookings() {
   return allBookings.filter(
     (booking) => {
       if (
-        !statusMatchesFilter(
-          booking,
-          statusFilter
-        )
+        booking.booking_date !==
+        selectedDate
       ) {
         return false;
       }
 
       if (
-        dateFilter &&
-        booking.booking_date !==
-          dateFilter
+        !matchesCurrentBookingView(
+          booking
+        )
       ) {
         return false;
       }
@@ -1294,6 +1496,9 @@ function getFilteredBookings() {
               booking.service,
               getPaymentMethodLabel(
                 booking.payment_method
+              ),
+              formatBookingTime(
+                booking.booking_time
               )
             ].join(' ')
           );
@@ -1312,49 +1517,42 @@ function getFilteredBookings() {
   );
 }
 
-function updateStats(
-  visibleBookings
-) {
+function updateStats(visibleBookings) {
+  const counts =
+    getBookingCountsForSelectedDay();
+
   const today =
     getTodayValue();
-
-  const pendingCount =
-    allBookings.filter(
-      (booking) =>
-        getEffectiveStatus(
-          booking
-        ) === 'pending'
-    ).length;
-
-  const confirmedCount =
-    allBookings.filter(
-      (booking) =>
-        getEffectiveStatus(
-          booking
-        ) === 'confirmed'
-    ).length;
 
   const todayCount =
     allBookings.filter(
       (booking) =>
-        getEffectiveStatus(
-          booking
-        ) === 'confirmed' &&
         booking.booking_date ===
-          today
+          today &&
+        (
+          isPendingBooking(
+            booking
+          ) ||
+          isScheduledBooking(
+            booking
+          ) ||
+          isFinalizedBooking(
+            booking
+          )
+        )
     ).length;
 
   if (statPending) {
     statPending.textContent =
       String(
-        pendingCount
+        counts.pending
       );
   }
 
   if (statConfirmed) {
     statConfirmed.textContent =
       String(
-        confirmedCount
+        counts.scheduled
       );
   }
 
@@ -1497,8 +1695,7 @@ function configureActionButtons(
 
   if (confirmButton) {
     confirmButton.hidden =
-      status !==
-      'pending';
+      status !== 'pending';
 
     confirmButton.addEventListener(
       'click',
@@ -1513,8 +1710,7 @@ function configureActionButtons(
 
   if (rejectButton) {
     rejectButton.hidden =
-      status !==
-      'pending';
+      status !== 'pending';
 
     rejectButton.addEventListener(
       'click',
@@ -1529,47 +1725,36 @@ function configureActionButtons(
 
   if (paidButton) {
     const canShowPaid =
-      status ===
-        'confirmed' &&
+      status === 'confirmed' &&
       (
-        paymentStatus ===
-          'unpaid' ||
-        paymentStatus ===
-          'refunded'
+        paymentStatus === 'unpaid' ||
+        paymentStatus === 'refunded'
       );
 
     paidButton.hidden =
       !canShowPaid;
 
     if (canShowPaid) {
-      if (
+      paidButton.textContent =
         paymentStatus ===
-        'refunded'
-      ) {
-        paidButton.textContent =
-          'REGISTRAR NOVO PAGAMENTO';
-      } else {
-        paidButton.textContent =
-          'FINALIZAR / RECEBIDO';
-      }
+          'refunded'
+          ? 'REGISTRAR NOVO PAGAMENTO'
+          : 'FINALIZAR / RECEBIDO';
 
       paidButton.disabled =
         currentCashStatus !==
         'open';
 
-      if (
+      paidButton.title =
         currentCashStatus ===
-        'open'
-      ) {
-        paidButton.title =
-          paymentStatus ===
-            'refunded'
-            ? 'Registrar novamente o pagamento usando a forma correta.'
-            : 'Finalizar atendimento e registrar pagamento.';
-      } else {
-        paidButton.title =
-          'Abra ou reabra o caixa antes de registrar o pagamento.';
-      }
+          'open'
+          ? (
+              paymentStatus ===
+                'refunded'
+                ? 'Registrar uma nova forma de pagamento.'
+                : 'Finalizar atendimento e registrar pagamento.'
+            )
+          : 'Abra ou reabra o caixa antes de registrar o pagamento.';
 
       paidButton.addEventListener(
         'click',
@@ -1640,8 +1825,7 @@ function configureActionButtons(
 
   if (cancelButton) {
     const canCancel =
-      status ===
-        'confirmed' &&
+      status === 'confirmed' &&
       paymentStatus !==
         'paid';
 
@@ -1662,9 +1846,7 @@ function configureActionButtons(
   }
 }
 
-function createBookingCard(
-  booking
-) {
+function createBookingCard(booking) {
   if (!bookingCardTemplate) {
     return null;
   }
@@ -1672,9 +1854,7 @@ function createBookingCard(
   const fragment =
     bookingCardTemplate
       .content
-      .cloneNode(
-        true
-      );
+      .cloneNode(true);
 
   const card =
     fragment.querySelector(
@@ -1806,6 +1986,11 @@ function renderBookings() {
     return;
   }
 
+  updateSelectedDayLabels();
+  updateBookingTabCounts();
+  updateBookingTabVisuals();
+  updateBookingViewTexts();
+
   const visibleBookings =
     getFilteredBookings();
 
@@ -1859,9 +2044,7 @@ async function verifyAdminUser() {
       throw error;
     }
 
-    return (
-      data === true
-    );
+    return data === true;
   } catch (error) {
     console.error(
       'Erro ao verificar administrador:',
@@ -1896,14 +2079,10 @@ async function expireOldPendingBookings() {
       'get_public_booked_slots',
       {
         p_start_date:
-          formatDateValue(
-            start
-          ),
+          formatDateValue(start),
 
         p_end_date:
-          formatDateValue(
-            end
-          )
+          formatDateValue(end)
       }
     );
   } catch (error) {
@@ -1926,8 +2105,7 @@ async function loadBookings(
     return;
   }
 
-  loadingBookings =
-    true;
+  loadingBookings = true;
 
   if (!silent) {
     hideGlobalMessage();
@@ -1946,9 +2124,7 @@ async function loadBookings(
       error
     } =
       await window.supabaseClient
-        .from(
-          'bookings'
-        )
+        .from('bookings')
         .select(`
           id,
           customer_name,
@@ -1968,22 +2144,19 @@ async function loadBookings(
         .order(
           'booking_date',
           {
-            ascending:
-              true
+            ascending: true
           }
         )
         .order(
           'booking_time',
           {
-            ascending:
-              true
+            ascending: true
           }
         )
         .order(
           'created_at',
           {
-            ascending:
-              true
+            ascending: true
           }
         );
 
@@ -1992,9 +2165,7 @@ async function loadBookings(
     }
 
     allBookings =
-      Array.isArray(
-        data
-      )
+      Array.isArray(data)
         ? data
         : [];
 
@@ -2006,14 +2177,10 @@ async function loadBookings(
           new Intl.DateTimeFormat(
             'pt-BR',
             {
-              timeZone:
-                'America/Sao_Paulo',
-              hour:
-                '2-digit',
-              minute:
-                '2-digit',
-              second:
-                '2-digit'
+              timeZone: 'America/Sao_Paulo',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
             }
           ).format(
             new Date()
@@ -2031,8 +2198,7 @@ async function loadBookings(
       'error'
     );
   } finally {
-    loadingBookings =
-      false;
+    loadingBookings = false;
 
     if (adminLoading) {
       adminLoading.hidden =
@@ -2041,9 +2207,7 @@ async function loadBookings(
   }
 }
 
-function updateCashStatusBadge(
-  status
-) {
+function updateCashStatusBadge(status) {
   if (!cashStatusBadge) {
     return;
   }
@@ -2088,9 +2252,7 @@ function updateCashStatusBadge(
   );
 }
 
-function updateCashButtons(
-  status
-) {
+function updateCashButtons(status) {
   if (cashMainActions) {
     cashMainActions.style.setProperty(
       'display',
@@ -2136,8 +2298,7 @@ function updateCashButtons(
 
   if (cashOpenButton) {
     cashOpenButton.textContent =
-      status ===
-        'closed'
+      status === 'closed'
         ? 'REABRIR CAIXA'
         : 'ABRIR CAIXA';
   }
@@ -2147,13 +2308,9 @@ function updateCashButtons(
   );
 }
 
-function renderCashDashboard(
-  data
-) {
+function renderCashDashboard(data) {
   const row =
-    Array.isArray(
-      data
-    )
+    Array.isArray(data)
       ? data[0]
       : data;
 
@@ -2289,8 +2446,7 @@ async function loadCashDashboard(
     return;
   }
 
-  loadingCash =
-    true;
+  loadingCash = true;
 
   if (!silent) {
     hideCashMessage();
@@ -2325,8 +2481,7 @@ async function loadCashDashboard(
       );
     }
   } finally {
-    loadingCash =
-      false;
+    loadingCash = false;
   }
 }
 
@@ -2349,14 +2504,9 @@ function setPaymentBreakdownCard(
       row?.refund_cents
     );
 
-  let totalElement =
-    null;
-
-  let countElement =
-    null;
-
-  let refundElement =
-    null;
+  let totalElement = null;
+  let countElement = null;
+  let refundElement = null;
 
   if (
     method === 'cash'
@@ -2412,9 +2562,7 @@ function setPaymentBreakdownCard(
 
   if (totalElement) {
     totalElement.textContent =
-      formatCurrency(
-        net
-      );
+      formatCurrency(net);
   }
 
   if (countElement) {
@@ -2434,13 +2582,9 @@ function setPaymentBreakdownCard(
   }
 }
 
-function renderCashPaymentBreakdown(
-  data
-) {
+function renderCashPaymentBreakdown(data) {
   const rows =
-    Array.isArray(
-      data
-    )
+    Array.isArray(data)
       ? data
       : [];
 
@@ -2459,18 +2603,12 @@ function renderCashPaymentBreakdown(
             item.payment_method ===
             method
         ) || {
-          payment_method:
-            method,
-          gross_cents:
-            0,
-          sales_count:
-            0,
-          refund_cents:
-            0,
-          refund_count:
-            0,
-          net_cents:
-            0
+          payment_method: method,
+          gross_cents: 0,
+          sales_count: 0,
+          refund_cents: 0,
+          refund_count: 0,
+          net_cents: 0
         };
 
       setPaymentBreakdownCard(
@@ -2493,8 +2631,7 @@ async function loadCashPaymentBreakdown(
     return;
   }
 
-  loadingPaymentBreakdown =
-    true;
+  loadingPaymentBreakdown = true;
 
   try {
     const today =
@@ -2507,11 +2644,8 @@ async function loadCashPaymentBreakdown(
       await window.supabaseClient.rpc(
         'get_cash_payment_breakdown',
         {
-          p_start_date:
-            today,
-
-          p_end_date:
-            today
+          p_start_date: today,
+          p_end_date: today
         }
       );
 
@@ -2550,12 +2684,10 @@ function populateCashYears() {
       currentYear
     );
 
-  const options =
-    [];
+  const options = [];
 
   for (
-    let year =
-      currentYear;
+    let year = currentYear;
     year >= firstYear;
     year -= 1
   ) {
@@ -2569,9 +2701,7 @@ function populateCashYears() {
       options.join('');
 
     cashHistoryYear.value =
-      String(
-        currentYear
-      );
+      String(currentYear);
   }
 
   if (cashYearSummaryYear) {
@@ -2579,9 +2709,7 @@ function populateCashYears() {
       options.join('');
 
     cashYearSummaryYear.value =
-      String(
-        currentYear
-      );
+      String(currentYear);
   }
 
   if (cashHistoryMonth) {
@@ -2592,17 +2720,13 @@ function populateCashYears() {
   }
 }
 
-function renderDailyHistory(
-  data
-) {
+function renderDailyHistory(data) {
   if (!cashDailyHistory) {
     return;
   }
 
   const rows =
-    Array.isArray(
-      data
-    )
+    Array.isArray(data)
       ? data
       : [];
 
@@ -2611,12 +2735,10 @@ function renderDailyHistory(
 
   if (cashDailyEmpty) {
     cashDailyEmpty.hidden =
-      rows.length >
-      0;
+      rows.length > 0;
   }
 
-  let totalNet =
-    0;
+  let totalNet = 0;
 
   rows.forEach(
     (row) => {
@@ -2632,9 +2754,7 @@ function renderDailyHistory(
       const fragment =
         cashDayTemplate
           .content
-          .cloneNode(
-            true
-          );
+          .cloneNode(true);
 
       const dateElement =
         fragment.querySelector(
@@ -2756,11 +2876,8 @@ async function loadMonthlyHistory(
       await window.supabaseClient.rpc(
         'get_cash_month_daily',
         {
-          p_year:
-            year,
-
-          p_month:
-            month
+          p_year: year,
+          p_month: month
         }
       );
 
@@ -2786,25 +2903,20 @@ async function loadMonthlyHistory(
   }
 }
 
-function renderYearHistory(
-  data
-) {
+function renderYearHistory(data) {
   if (!cashYearHistory) {
     return;
   }
 
   const rows =
-    Array.isArray(
-      data
-    )
+    Array.isArray(data)
       ? data
       : [];
 
   cashYearHistory.innerHTML =
     '';
 
-  let totalYear =
-    0;
+  let totalYear = 0;
 
   rows.forEach(
     (row) => {
@@ -2820,9 +2932,7 @@ function renderYearHistory(
       const fragment =
         cashMonthTemplate
           .content
-          .cloneNode(
-            true
-          );
+          .cloneNode(true);
 
       const monthElement =
         fragment.querySelector(
@@ -2912,8 +3022,7 @@ async function loadYearHistory(
       await window.supabaseClient.rpc(
         'get_cash_year_monthly',
         {
-          p_year:
-            year
+          p_year: year
         }
       );
 
@@ -2945,9 +3054,7 @@ async function refreshAllData(
   } = {}
 ) {
   if (!silent) {
-    setRefreshLoading(
-      true
-    );
+    setRefreshLoading(true);
   }
 
   try {
@@ -2972,9 +3079,7 @@ async function refreshAllData(
     });
   } finally {
     if (!silent) {
-      setRefreshLoading(
-        false
-      );
+      setRefreshLoading(false);
     }
   }
 }
@@ -2982,8 +3087,7 @@ async function refreshAllData(
 function resetPaymentMethodSelection() {
   paymentMethodInputs.forEach(
     (input) => {
-      input.checked =
-        false;
+      input.checked = false;
     }
   );
 
@@ -3197,7 +3301,7 @@ function getActionContent(
           method
             ? ` pago por ${method}`
             : ''
-        }? O valor será descontado do caixa e você poderá registrar uma nova forma de pagamento depois.`,
+        }? Depois do estorno, o atendimento voltará para a aba Agendados.`,
 
       button:
         'CONFIRMAR ESTORNO'
@@ -3293,8 +3397,7 @@ function closeActionModal() {
     'modal-open'
   );
 
-  currentAction =
-    null;
+  currentAction = null;
 
   hidePaymentMethodSelection();
 
@@ -3386,11 +3489,8 @@ async function executeBookingAction(
   }
 }
 
-async function executeCashAction(
-  action
-) {
-  let functionName =
-    '';
+async function executeCashAction(action) {
+  let functionName = '';
 
   if (
     action ===
@@ -3426,9 +3526,7 @@ async function executeCashAction(
   }
 }
 
-function getFriendlyActionError(
-  error
-) {
+function getFriendlyActionError(error) {
   const message =
     String(
       error?.message ||
@@ -3458,6 +3556,12 @@ function getFriendlyActionError(
   }
 
   if (
+    message.includes(
+      'já possui um pagamento ativo'
+    ) ||
+    message.includes(
+      'ja possui um pagamento ativo'
+    ) ||
     message.includes(
       'já foi recebido'
     ) ||
@@ -3547,8 +3651,7 @@ async function executeCurrentAction() {
     booking?.payment_status ===
       'refunded';
 
-  let paymentMethod =
-    '';
+  let paymentMethod = '';
 
   if (
     action === 'paid'
@@ -3602,16 +3705,16 @@ async function executeCurrentAction() {
 
     const successMessages = {
       confirm:
-        'Agendamento confirmado. Agora ele pode ser finalizado e recebido quando o cliente pagar.',
+        'Agendamento confirmado. Ele foi movido para a aba Agendados.',
 
       reject:
-        'Solicitação recusada. O horário foi liberado.',
+        'Solicitação recusada e removida da agenda principal.',
 
       cancel:
-        'Agendamento cancelado. O horário foi liberado.',
+        'Agendamento cancelado e removido da agenda principal.',
 
       refund:
-        'Pagamento estornado. O valor foi retirado da forma de pagamento anterior e agora você pode registrar um novo pagamento.',
+        'Pagamento estornado. O atendimento voltou para a aba Agendados.',
 
       'close-cash':
         'Caixa fechado com sucesso.'
@@ -3647,12 +3750,12 @@ async function executeCurrentAction() {
         successMessage =
           `Novo pagamento de ${formatCurrency(
             booking.service_amount_cents
-          )} registrado via ${methodLabel}.`;
+          )} registrado via ${methodLabel}. O atendimento voltou para Finalizados.`;
       } else {
         successMessage =
           `${formatCurrency(
             booking.service_amount_cents
-          )} recebido via ${methodLabel} e adicionado ao caixa.`;
+          )} recebido via ${methodLabel}. O atendimento foi movido para Finalizados.`;
       }
     }
 
@@ -3681,8 +3784,7 @@ async function executeCurrentAction() {
     }
 
     await refreshAllData({
-      silent:
-        true
+      silent: true
     });
   } catch (error) {
     console.error(
@@ -3736,10 +3838,7 @@ async function loginAdmin(
     return;
   }
 
-  setLoginLoading(
-    true
-  );
-
+  setLoginLoading(true);
   hideLoginMessage();
 
   try {
@@ -3770,11 +3869,8 @@ async function loginAdmin(
     if (!isAdmin) {
       await window.supabaseClient.auth.signOut();
 
-      currentSession =
-        null;
-
-      currentUser =
-        null;
+      currentSession = null;
+      currentUser = null;
 
       showLoginMessage(
         'Este usuário existe, mas não está autorizado como administrador da Haus Barber.',
@@ -3788,6 +3884,12 @@ async function loginAdmin(
 
     populateCashYears();
     initializeAdminCalendar();
+
+    currentBookingView =
+      'pending';
+
+    updateBookingTabVisuals();
+    updateBookingViewTexts();
 
     await refreshAllData();
   } catch (error) {
@@ -3827,9 +3929,7 @@ async function loginAdmin(
       );
     }
   } finally {
-    setLoginLoading(
-      false
-    );
+    setLoginLoading(false);
   }
 }
 
@@ -3847,20 +3947,16 @@ async function logoutAdmin() {
     );
   }
 
-  currentSession =
-    null;
+  currentSession = null;
+  currentUser = null;
+  allBookings = [];
 
-  currentUser =
-    null;
-
-  allBookings =
-    [];
-
-  currentCashDashboard =
-    null;
-
+  currentCashDashboard = null;
   currentCashStatus =
     'not_opened';
+
+  currentBookingView =
+    'pending';
 
   if (adminBookingsList) {
     adminBookingsList.innerHTML =
@@ -3871,16 +3967,16 @@ async function logoutAdmin() {
     adminLoginForm.reset();
   }
 
-  if (adminDateFilter) {
-    adminDateFilter.value =
-      '';
+  if (adminSearch) {
+    adminSearch.value = '';
   }
 
-  renderCashPaymentBreakdown(
-    []
-  );
+  renderCashPaymentBreakdown([]);
 
   initializeAdminCalendar();
+
+  updateBookingTabVisuals();
+  updateBookingViewTexts();
 
   hideGlobalMessage();
   hideCashMessage();
@@ -3935,11 +4031,8 @@ async function restoreSession() {
     if (!isAdmin) {
       await window.supabaseClient.auth.signOut();
 
-      currentSession =
-        null;
-
-      currentUser =
-        null;
+      currentSession = null;
+      currentUser = null;
 
       showLoginScreen();
 
@@ -3955,6 +4048,12 @@ async function restoreSession() {
 
     populateCashYears();
     initializeAdminCalendar();
+
+    currentBookingView =
+      'pending';
+
+    updateBookingTabVisuals();
+    updateBookingViewTexts();
 
     await refreshAllData();
   } catch (error) {
@@ -3983,8 +4082,7 @@ function startAutoRefresh() {
           !document.hidden
         ) {
           refreshAllData({
-            silent:
-              true
+            silent: true
           });
         }
       },
@@ -4121,9 +4219,17 @@ cashYearSummaryYear?.addEventListener(
   }
 );
 
-adminStatusFilter?.addEventListener(
-  'change',
-  renderBookings
+bookingTabs.forEach(
+  (tab) => {
+    tab.addEventListener(
+      'click',
+      () => {
+        setBookingView(
+          tab.dataset.bookingView
+        );
+      }
+    );
+  }
 );
 
 adminSearch?.addEventListener(
@@ -4165,37 +4271,17 @@ adminDateNextWeek?.addEventListener(
   }
 );
 
-adminDateClear?.addEventListener(
+adminDateToday?.addEventListener(
   'click',
-  () => {
-    clearAdminDateSelection({
-      close:
-        true,
-      resetWeek:
-        true
-    });
-  }
+  goToToday
 );
 
 clearFiltersButton?.addEventListener(
   'click',
   () => {
-    if (adminStatusFilter) {
-      adminStatusFilter.value =
-        'active';
-    }
-
     if (adminSearch) {
-      adminSearch.value =
-        '';
+      adminSearch.value = '';
     }
-
-    clearAdminDateSelection({
-      close:
-        true,
-      resetWeek:
-        true
-    });
 
     renderBookings();
   }
@@ -4282,8 +4368,7 @@ document.addEventListener(
       currentUser
     ) {
       refreshAllData({
-        silent:
-          true
+        silent: true
       });
     }
   }
@@ -4294,17 +4379,18 @@ window.addEventListener(
   () => {
     if (currentUser) {
       refreshAllData({
-        silent:
-          true
+        silent: true
       });
     }
   }
 );
 
-renderCashPaymentBreakdown(
-  []
-);
+renderCashPaymentBreakdown([]);
 
 initializeAdminCalendar();
+
+updateBookingTabVisuals();
+
+updateBookingViewTexts();
 
 restoreSession();
