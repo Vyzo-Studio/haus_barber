@@ -257,6 +257,410 @@
         </section>
 
         <section
+          class="admin-stats"
+          aria-label="Resumo dos agendamentos"
+        >
+
+          <article class="admin-stat-card">
+
+            <span>
+              PENDENTES
+            </span>
+
+            <strong
+              id="stat-pending"
+            >
+              0
+            </strong>
+
+            <small>
+              aguardando confirmação
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              AGENDADOS
+            </span>
+
+            <strong
+              id="stat-confirmed"
+            >
+              0
+            </strong>
+
+            <small>
+              confirmados e em aberto
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              HOJE
+            </span>
+
+            <strong
+              id="stat-today"
+            >
+              0
+            </strong>
+
+            <small>
+              atendimentos de hoje
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              TOTAL VISÍVEL
+            </span>
+
+            <strong
+              id="stat-visible"
+            >
+              0
+            </strong>
+
+            <small>
+              conforme a aba selecionada
+            </small>
+
+          </article>
+
+        </section>
+
+        <section
+          class="admin-booking-workspace"
+          aria-labelledby="booking-workspace-title"
+        >
+
+          <div class="admin-booking-workspace-head">
+
+            <div>
+
+              <span>
+                AGENDA DO DIA
+              </span>
+
+              <h2 id="booking-workspace-title">
+                ATENDIMENTOS
+              </h2>
+
+            </div>
+
+            <div class="admin-selected-day">
+
+              <small>
+                DATA SELECIONADA
+              </small>
+
+              <strong
+                id="admin-selected-day-label"
+              >
+                CARREGANDO...
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div
+            class="admin-booking-tabs"
+            role="tablist"
+            aria-label="Situação dos agendamentos"
+          >
+
+            <button
+              class="admin-booking-tab is-active"
+              id="booking-tab-pending"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-booking-view="pending"
+            >
+
+              <span class="admin-booking-tab-label">
+                PENDENTES
+              </span>
+
+              <small>
+                aguardando confirmação
+              </small>
+
+              <strong
+                id="booking-tab-pending-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+            <button
+              class="admin-booking-tab"
+              id="booking-tab-scheduled"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-booking-view="scheduled"
+            >
+
+              <span class="admin-booking-tab-label">
+                AGENDADOS
+              </span>
+
+              <small>
+                confirmados e em aberto
+              </small>
+
+              <strong
+                id="booking-tab-scheduled-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+            <button
+              class="admin-booking-tab"
+              id="booking-tab-finalized"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-booking-view="finalized"
+            >
+
+              <span class="admin-booking-tab-label">
+                FINALIZADOS
+              </span>
+
+              <small>
+                atendimentos recebidos
+              </small>
+
+              <strong
+                id="booking-tab-finalized-count"
+              >
+                0
+              </strong>
+
+            </button>
+
+          </div>
+
+        </section>
+
+        <section class="admin-controls admin-controls-daily">
+
+          <div class="admin-control admin-control-date">
+
+            <label>
+              Dia da agenda
+            </label>
+
+            <div
+              class="admin-date-picker"
+              id="admin-date-picker"
+            >
+
+              <button
+                class="admin-date-trigger"
+                id="admin-date-trigger"
+                type="button"
+                aria-expanded="false"
+                aria-controls="admin-date-popover"
+              >
+
+                <span
+                  id="admin-date-trigger-label"
+                >
+                  CARREGANDO DATA...
+                </span>
+
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 2v3M17 2v3M3.5 9h17M5.5 4h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+
+              </button>
+
+              <div
+                class="admin-date-popover"
+                id="admin-date-popover"
+                hidden
+              >
+
+                <div class="admin-date-calendar-head">
+
+                  <button
+                    class="admin-date-nav"
+                    id="admin-date-prev-week"
+                    type="button"
+                    aria-label="Semana anterior"
+                  >
+                    ←
+                  </button>
+
+                  <div class="admin-date-week-title">
+
+                    <small>
+                      SEMANA
+                    </small>
+
+                    <strong
+                      id="admin-date-week-label"
+                    ></strong>
+
+                  </div>
+
+                  <button
+                    class="admin-date-nav"
+                    id="admin-date-next-week"
+                    type="button"
+                    aria-label="Próxima semana"
+                  >
+                    →
+                  </button>
+
+                </div>
+
+                <div
+                  class="admin-date-days"
+                  id="admin-date-days"
+                  role="group"
+                  aria-label="Selecionar dia da agenda"
+                ></div>
+
+                <button
+                  class="admin-date-today"
+                  id="admin-date-today"
+                  type="button"
+                >
+                  VOLTAR PARA HOJE
+                </button>
+
+              </div>
+
+              <input
+                id="admin-date-filter"
+                type="hidden"
+                value=""
+              >
+
+            </div>
+
+          </div>
+
+          <div class="admin-control admin-control-search">
+
+            <label for="admin-search">
+              Buscar neste dia
+            </label>
+
+            <input
+              id="admin-search"
+              type="search"
+              placeholder="Nome ou serviço"
+              autocomplete="off"
+            >
+
+          </div>
+
+          <button
+            class="clear-filters-button"
+            id="clear-filters-button"
+            type="button"
+          >
+            LIMPAR BUSCA
+          </button>
+
+        </section>
+
+        <div
+          class="admin-global-message"
+          id="admin-global-message"
+          hidden
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <section
+          class="admin-bookings-section"
+          aria-labelledby="admin-bookings-title"
+        >
+
+          <div class="admin-section-head">
+
+            <div>
+
+              <span
+                id="admin-bookings-kicker"
+              >
+                PENDENTES
+              </span>
+
+              <h2 id="admin-bookings-title">
+                AGENDAMENTOS DO DIA
+              </h2>
+
+            </div>
+
+            <p id="admin-last-update">
+              Carregando...
+            </p>
+
+          </div>
+
+          <div
+            class="admin-loading"
+            id="admin-loading"
+            hidden
+          >
+            CARREGANDO PAINEL...
+          </div>
+
+          <div
+            class="admin-empty"
+            id="admin-empty"
+            hidden
+          >
+
+            <strong
+              id="admin-empty-title"
+            >
+              NENHUM AGENDAMENTO
+            </strong>
+
+            <p
+              id="admin-empty-text"
+            >
+              Não há agendamentos nesta categoria para o dia selecionado.
+            </p>
+
+          </div>
+
+          <div
+            class="admin-bookings-list"
+            id="admin-bookings-list"
+          ></div>
+
+        </section>
+
+        <section
           class="cash-section"
           id="cash-section"
           aria-labelledby="cash-title"
@@ -769,410 +1173,6 @@
             </section>
 
           </div>
-
-        </section>
-
-        <section
-          class="admin-stats"
-          aria-label="Resumo dos agendamentos"
-        >
-
-          <article class="admin-stat-card">
-
-            <span>
-              PENDENTES
-            </span>
-
-            <strong
-              id="stat-pending"
-            >
-              0
-            </strong>
-
-            <small>
-              aguardando confirmação
-            </small>
-
-          </article>
-
-          <article class="admin-stat-card">
-
-            <span>
-              AGENDADOS
-            </span>
-
-            <strong
-              id="stat-confirmed"
-            >
-              0
-            </strong>
-
-            <small>
-              confirmados e em aberto
-            </small>
-
-          </article>
-
-          <article class="admin-stat-card">
-
-            <span>
-              HOJE
-            </span>
-
-            <strong
-              id="stat-today"
-            >
-              0
-            </strong>
-
-            <small>
-              atendimentos de hoje
-            </small>
-
-          </article>
-
-          <article class="admin-stat-card">
-
-            <span>
-              TOTAL VISÍVEL
-            </span>
-
-            <strong
-              id="stat-visible"
-            >
-              0
-            </strong>
-
-            <small>
-              conforme a aba selecionada
-            </small>
-
-          </article>
-
-        </section>
-
-        <section
-          class="admin-booking-workspace"
-          aria-labelledby="booking-workspace-title"
-        >
-
-          <div class="admin-booking-workspace-head">
-
-            <div>
-
-              <span>
-                AGENDA DO DIA
-              </span>
-
-              <h2 id="booking-workspace-title">
-                ATENDIMENTOS
-              </h2>
-
-            </div>
-
-            <div class="admin-selected-day">
-
-              <small>
-                DATA SELECIONADA
-              </small>
-
-              <strong
-                id="admin-selected-day-label"
-              >
-                CARREGANDO...
-              </strong>
-
-            </div>
-
-          </div>
-
-          <div
-            class="admin-booking-tabs"
-            role="tablist"
-            aria-label="Situação dos agendamentos"
-          >
-
-            <button
-              class="admin-booking-tab is-active"
-              id="booking-tab-pending"
-              type="button"
-              role="tab"
-              aria-selected="true"
-              data-booking-view="pending"
-            >
-
-              <span class="admin-booking-tab-label">
-                PENDENTES
-              </span>
-
-              <small>
-                aguardando confirmação
-              </small>
-
-              <strong
-                id="booking-tab-pending-count"
-              >
-                0
-              </strong>
-
-            </button>
-
-            <button
-              class="admin-booking-tab"
-              id="booking-tab-scheduled"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              data-booking-view="scheduled"
-            >
-
-              <span class="admin-booking-tab-label">
-                AGENDADOS
-              </span>
-
-              <small>
-                confirmados e em aberto
-              </small>
-
-              <strong
-                id="booking-tab-scheduled-count"
-              >
-                0
-              </strong>
-
-            </button>
-
-            <button
-              class="admin-booking-tab"
-              id="booking-tab-finalized"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              data-booking-view="finalized"
-            >
-
-              <span class="admin-booking-tab-label">
-                FINALIZADOS
-              </span>
-
-              <small>
-                atendimentos recebidos
-              </small>
-
-              <strong
-                id="booking-tab-finalized-count"
-              >
-                0
-              </strong>
-
-            </button>
-
-          </div>
-
-        </section>
-
-        <section class="admin-controls admin-controls-daily">
-
-          <div class="admin-control admin-control-date">
-
-            <label>
-              Dia da agenda
-            </label>
-
-            <div
-              class="admin-date-picker"
-              id="admin-date-picker"
-            >
-
-              <button
-                class="admin-date-trigger"
-                id="admin-date-trigger"
-                type="button"
-                aria-expanded="false"
-                aria-controls="admin-date-popover"
-              >
-
-                <span
-                  id="admin-date-trigger-label"
-                >
-                  CARREGANDO DATA...
-                </span>
-
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 2v3M17 2v3M3.5 9h17M5.5 4h13a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.7"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-
-              </button>
-
-              <div
-                class="admin-date-popover"
-                id="admin-date-popover"
-                hidden
-              >
-
-                <div class="admin-date-calendar-head">
-
-                  <button
-                    class="admin-date-nav"
-                    id="admin-date-prev-week"
-                    type="button"
-                    aria-label="Semana anterior"
-                  >
-                    ←
-                  </button>
-
-                  <div class="admin-date-week-title">
-
-                    <small>
-                      SEMANA
-                    </small>
-
-                    <strong
-                      id="admin-date-week-label"
-                    ></strong>
-
-                  </div>
-
-                  <button
-                    class="admin-date-nav"
-                    id="admin-date-next-week"
-                    type="button"
-                    aria-label="Próxima semana"
-                  >
-                    →
-                  </button>
-
-                </div>
-
-                <div
-                  class="admin-date-days"
-                  id="admin-date-days"
-                  role="group"
-                  aria-label="Selecionar dia da agenda"
-                ></div>
-
-                <button
-                  class="admin-date-today"
-                  id="admin-date-today"
-                  type="button"
-                >
-                  VOLTAR PARA HOJE
-                </button>
-
-              </div>
-
-              <input
-                id="admin-date-filter"
-                type="hidden"
-                value=""
-              >
-
-            </div>
-
-          </div>
-
-          <div class="admin-control admin-control-search">
-
-            <label for="admin-search">
-              Buscar neste dia
-            </label>
-
-            <input
-              id="admin-search"
-              type="search"
-              placeholder="Nome ou serviço"
-              autocomplete="off"
-            >
-
-          </div>
-
-          <button
-            class="clear-filters-button"
-            id="clear-filters-button"
-            type="button"
-          >
-            LIMPAR BUSCA
-          </button>
-
-        </section>
-
-        <div
-          class="admin-global-message"
-          id="admin-global-message"
-          hidden
-          role="status"
-          aria-live="polite"
-        ></div>
-
-        <section
-          class="admin-bookings-section"
-          aria-labelledby="admin-bookings-title"
-        >
-
-          <div class="admin-section-head">
-
-            <div>
-
-              <span
-                id="admin-bookings-kicker"
-              >
-                PENDENTES
-              </span>
-
-              <h2 id="admin-bookings-title">
-                AGENDAMENTOS DO DIA
-              </h2>
-
-            </div>
-
-            <p id="admin-last-update">
-              Carregando...
-            </p>
-
-          </div>
-
-          <div
-            class="admin-loading"
-            id="admin-loading"
-            hidden
-          >
-            CARREGANDO PAINEL...
-          </div>
-
-          <div
-            class="admin-empty"
-            id="admin-empty"
-            hidden
-          >
-
-            <strong
-              id="admin-empty-title"
-            >
-              NENHUM AGENDAMENTO
-            </strong>
-
-            <p
-              id="admin-empty-text"
-            >
-              Não há agendamentos nesta categoria para o dia selecionado.
-            </p>
-
-          </div>
-
-          <div
-            class="admin-bookings-list"
-            id="admin-bookings-list"
-          ></div>
 
         </section>
 
