@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+
+  <meta
+    name="theme-color"
+    content="#101936"
+  >
+
+  <title>
+    Painel Administrativo | Haus Barber
+  </title>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="logo-haus-barber.png"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="admin.css?v=1.0"
+  >
+</head>
+
+<body>
+
+  <div class="admin-page">
+
+    <section
+      class="admin-login"
+      id="admin-login"
+    >
+
+      <div class="login-card">
+
+        <div class="login-brand">
+
+          <img
+            src="logo-haus-barber.png"
+            alt="Haus Barber"
+            width="120"
+            height="120"
+          >
+
+          <span>
+            ÁREA RESTRITA
+          </span>
+
+          <h1>
+            PAINEL
+            <b>
+              HAUS BARBER
+            </b>
+          </h1>
+
+          <p>
+            Entre com um dos usuários administradores autorizados
+            para gerenciar os agendamentos.
+          </p>
+
+        </div>
+
+        <form
+          class="login-form"
+          id="admin-login-form"
+        >
+
+          <div class="admin-field">
+
+            <label for="admin-email">
+              E-mail
+            </label>
+
+            <input
+              id="admin-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="seuemail@exemplo.com"
+              required
+            >
+
+          </div>
+
+          <div class="admin-field">
+
+            <label for="admin-password">
+              Senha
+            </label>
+
+            <div class="password-field">
+
+              <input
+                id="admin-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Sua senha"
+                required
+              >
+
+              <button
+                class="password-toggle"
+                id="password-toggle"
+                type="button"
+                aria-label="Mostrar senha"
+              >
+                MOSTRAR
+              </button>
+
+            </div>
+
+          </div>
+
+          <div
+            class="admin-message"
+            id="login-message"
+            hidden
+            role="status"
+            aria-live="polite"
+          ></div>
+
+          <button
+            class="admin-primary-button"
+            id="admin-login-button"
+            type="submit"
+          >
+            ENTRAR NO PAINEL
+          </button>
+
+        </form>
+
+        <a
+          class="back-site-link"
+          href="index.html"
+        >
+          ← VOLTAR PARA O SITE
+        </a>
+
+      </div>
+
+    </section>
+
+    <section
+      class="admin-dashboard"
+      id="admin-dashboard"
+      hidden
+    >
+
+      <header class="admin-header">
+
+        <div class="admin-header-inner">
+
+          <div class="admin-header-brand">
+
+            <img
+              src="logo-haus-barber.png"
+              alt="Haus Barber"
+              width="72"
+              height="72"
+            >
+
+            <div>
+
+              <span>
+                HAUS BARBER
+              </span>
+
+              <strong>
+                Agenda Administrativa
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="admin-header-actions">
+
+            <span
+              class="admin-user-email"
+              id="admin-user-email"
+            ></span>
+
+            <a
+              class="admin-secondary-button"
+              href="index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              VER SITE
+            </a>
+
+            <button
+              class="admin-secondary-button"
+              id="admin-logout-button"
+              type="button"
+            >
+              SAIR
+            </button>
+
+          </div>
+
+        </div>
+
+      </header>
+
+      <main class="admin-main">
+
+        <section class="admin-welcome">
+
+          <div>
+
+            <span>
+              CONTROLE DE AGENDA
+            </span>
+
+            <h1>
+              AGENDAMENTOS
+              <b>
+                HAUS BARBER
+              </b>
+            </h1>
+
+            <p>
+              Confirme, recuse e acompanhe os horários
+              enviados pelo site.
+            </p>
+
+          </div>
+
+          <button
+            class="admin-refresh-button"
+            id="admin-refresh-button"
+            type="button"
+          >
+            ATUALIZAR AGENDA
+          </button>
+
+        </section>
+
+        <section
+          class="admin-stats"
+          aria-label="Resumo dos agendamentos"
+        >
+
+          <article class="admin-stat-card">
+
+            <span>
+              PENDENTES
+            </span>
+
+            <strong
+              id="stat-pending"
+            >
+              0
+            </strong>
+
+            <small>
+              aguardando confirmação
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              CONFIRMADOS
+            </span>
+
+            <strong
+              id="stat-confirmed"
+            >
+              0
+            </strong>
+
+            <small>
+              próximos agendamentos
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              HOJE
+            </span>
+
+            <strong
+              id="stat-today"
+            >
+              0
+            </strong>
+
+            <small>
+              confirmados para hoje
+            </small>
+
+          </article>
+
+          <article class="admin-stat-card">
+
+            <span>
+              TOTAL VISÍVEL
+            </span>
+
+            <strong
+              id="stat-visible"
+            >
+              0
+            </strong>
+
+            <small>
+              conforme os filtros
+            </small>
+
+          </article>
+
+        </section>
+
+        <section class="admin-controls">
+
+          <div class="admin-control">
+
+            <label for="admin-status-filter">
+              Status
+            </label>
+
+            <select
+              id="admin-status-filter"
+            >
+
+              <option value="active">
+                Pendentes + Confirmados
+              </option>
+
+              <option value="pending">
+                Somente Pendentes
+              </option>
+
+              <option value="confirmed">
+                Somente Confirmados
+              </option>
+
+              <option value="rejected">
+                Recusados
+              </option>
+
+              <option value="cancelled">
+                Cancelados
+              </option>
+
+              <option value="expired">
+                Expirados
+              </option>
+
+              <option value="all">
+                Todos
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="admin-control">
+
+            <label for="admin-date-filter">
+              Data
+            </label>
+
+            <input
+              id="admin-date-filter"
+              type="date"
+            >
+
+          </div>
+
+          <div class="admin-control admin-control-search">
+
+            <label for="admin-search">
+              Buscar
+            </label>
+
+            <input
+              id="admin-search"
+              type="search"
+              placeholder="Nome ou serviço"
+              autocomplete="off"
+            >
+
+          </div>
+
+          <button
+            class="clear-filters-button"
+            id="clear-filters-button"
+            type="button"
+          >
+            LIMPAR FILTROS
+          </button>
+
+        </section>
+
+        <div
+          class="admin-global-message"
+          id="admin-global-message"
+          hidden
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <section
+          class="admin-bookings-section"
+          aria-labelledby="admin-bookings-title"
+        >
+
+          <div class="admin-section-head">
+
+            <div>
+
+              <span>
+                AGENDA
+              </span>
+
+              <h2
+                id="admin-bookings-title"
+              >
+                SOLICITAÇÕES
+              </h2>
+
+            </div>
+
+            <p
+              id="admin-last-update"
+            >
+              Carregando...
+            </p>
+
+          </div>
+
+          <div
+            class="admin-loading"
+            id="admin-loading"
+            hidden
+          >
+            CARREGANDO AGENDA...
+          </div>
+
+          <div
+            class="admin-empty"
+            id="admin-empty"
+            hidden
+          >
+
+            <strong>
+              NENHUM AGENDAMENTO
+            </strong>
+
+            <p>
+              Não há solicitações correspondentes aos filtros selecionados.
+            </p>
+
+          </div>
+
+          <div
+            class="admin-bookings-list"
+            id="admin-bookings-list"
+          ></div>
+
+        </section>
+
+      </main>
+
+      <footer class="admin-footer">
+
+        <span>
+          © 2026 HAUS BARBER
+        </span>
+
+        <span>
+          Painel administrativo
+        </span>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+  <template id="booking-card-template">
+
+    <article class="admin-booking-card">
+
+      <div class="booking-card-main">
+
+        <div class="booking-card-status">
+
+          <span
+            class="booking-status-badge"
+            data-booking-status
+          ></span>
+
+        </div>
+
+        <div class="booking-card-date">
+
+          <span
+            data-booking-weekday
+          ></span>
+
+          <strong
+            data-booking-date
+          ></strong>
+
+          <b
+            data-booking-time
+          ></b>
+
+        </div>
+
+        <div class="booking-card-info">
+
+          <div>
+
+            <span>
+              CLIENTE
+            </span>
+
+            <strong
+              data-booking-name
+            ></strong>
+
+          </div>
+
+          <div>
+
+            <span>
+              SERVIÇO
+            </span>
+
+            <strong
+              data-booking-service
+            ></strong>
+
+          </div>
+
+          <div>
+
+            <span>
+              SOLICITADO EM
+            </span>
+
+            <strong
+              data-booking-created
+            ></strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="booking-card-actions">
+
+        <button
+          class="booking-action booking-confirm"
+          data-action="confirm"
+          type="button"
+        >
+          CONFIRMAR
+        </button>
+
+        <button
+          class="booking-action booking-reject"
+          data-action="reject"
+          type="button"
+        >
+          RECUSAR
+        </button>
+
+        <button
+          class="booking-action booking-cancel"
+          data-action="cancel"
+          type="button"
+        >
+          CANCELAR
+        </button>
+
+      </div>
+
+    </article>
+
+  </template>
+
+  <div
+    class="admin-confirm-modal"
+    id="admin-confirm-modal"
+    hidden
+  >
+
+    <div
+      class="admin-confirm-backdrop"
+      data-modal-close
+    ></div>
+
+    <div
+      class="admin-confirm-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-confirm-title"
+    >
+
+      <span class="admin-confirm-kicker">
+        CONFIRMAÇÃO
+      </span>
+
+      <h2
+        id="admin-confirm-title"
+      >
+        CONFIRMAR AÇÃO?
+      </h2>
+
+      <p
+        id="admin-confirm-text"
+      ></p>
+
+      <div class="admin-confirm-actions">
+
+        <button
+          class="admin-secondary-button"
+          id="admin-confirm-cancel"
+          type="button"
+        >
+          VOLTAR
+        </button>
+
+        <button
+          class="admin-primary-button"
+          id="admin-confirm-submit"
+          type="button"
+        >
+          CONFIRMAR
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer
+  ></script>
+
+  <script
+    src="config.js?v=1.0"
+    defer
+  ></script>
+
+  <script
+    src="admin.js?v=1.0"
+    defer
+  ></script>
+
+</body>
+</html>
