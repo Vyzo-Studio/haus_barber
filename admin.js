@@ -38,18 +38,25 @@ const modalBackdrop = document.querySelector('[data-modal-close]');
 
 const cashStatusBadge = document.querySelector('#cash-status-badge');
 const cashDateLabel = document.querySelector('#cash-date-label');
+
 const cashTodayTotal = document.querySelector('#cash-today-total');
 const cashTodayCount = document.querySelector('#cash-today-count');
+
 const cashExpectedToday = document.querySelector('#cash-expected-today');
 const cashExpectedCount = document.querySelector('#cash-expected-count');
+
 const cashReceivedToday = document.querySelector('#cash-received-today');
+
 const cashMonthTotal = document.querySelector('#cash-month-total');
 const cashMonthCount = document.querySelector('#cash-month-count');
+
 const cashYearTotal = document.querySelector('#cash-year-total');
 const cashYearCount = document.querySelector('#cash-year-count');
 
 const cashOpenButton = document.querySelector('#cash-open-button');
 const cashCloseButton = document.querySelector('#cash-close-button');
+const cashMainActions = document.querySelector('.cash-main-actions');
+
 const cashMessage = document.querySelector('#cash-message');
 
 const cashHistoryMonth = document.querySelector('#cash-history-month');
@@ -59,6 +66,7 @@ const cashYearSummaryYear = document.querySelector('#cash-year-summary-year');
 const cashDailyHistory = document.querySelector('#cash-daily-history');
 const cashDailyEmpty = document.querySelector('#cash-daily-empty');
 const cashHistoryMonthTotal = document.querySelector('#cash-history-month-total');
+
 const cashYearHistory = document.querySelector('#cash-year-history');
 const cashHistoryYearTotal = document.querySelector('#cash-history-year-total');
 
@@ -110,9 +118,12 @@ let allBookings = [];
 let currentSession = null;
 let currentUser = null;
 let currentAction = null;
+
 let autoRefreshTimer = null;
+
 let loadingBookings = false;
 let loadingCash = false;
+
 let currentCashStatus = 'not_opened';
 let currentCashDashboard = null;
 
@@ -246,6 +257,54 @@ function setCashButtonsLoading(isLoading) {
   }
 }
 
+function forceShowButton(button) {
+  if (!button) {
+    return;
+  }
+
+  button.hidden = false;
+  button.removeAttribute('hidden');
+
+  button.style.setProperty(
+    'display',
+    'inline-flex',
+    'important'
+  );
+
+  button.style.setProperty(
+    'visibility',
+    'visible',
+    'important'
+  );
+
+  button.style.setProperty(
+    'opacity',
+    '1',
+    'important'
+  );
+
+  button.style.setProperty(
+    'pointer-events',
+    'auto',
+    'important'
+  );
+}
+
+function forceHideButton(button) {
+  if (!button) {
+    return;
+  }
+
+  button.hidden = true;
+  button.setAttribute('hidden', '');
+
+  button.style.setProperty(
+    'display',
+    'none',
+    'important'
+  );
+}
+
 function showLoginScreen() {
   if (adminLoginSection) {
     adminLoginSection.hidden = false;
@@ -278,15 +337,30 @@ function showDashboardScreen() {
 }
 
 function getBrazilDateValue(date = new Date()) {
-  return new Intl.DateTimeFormat(
-    'en-CA',
-    {
-      timeZone: 'America/Sao_Paulo',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+  const parts =
+    new Intl.DateTimeFormat(
+      'pt-BR',
+      {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    ).formatToParts(date);
+
+  const values = {};
+
+  parts.forEach((part) => {
+    if (
+      part.type !==
+      'literal'
+    ) {
+      values[part.type] =
+        part.value;
     }
-  ).format(date);
+  });
+
+  return `${values.year}-${values.month}-${values.day}`;
 }
 
 function getBrazilCurrentYear() {
@@ -357,45 +431,54 @@ function parseBookingDate(value) {
 }
 
 function formatBookingDate(value) {
-  const date = parseBookingDate(value);
+  const date =
+    parseBookingDate(value);
 
   if (!date) {
     return value || '';
   }
 
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, '0');
 
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
 
   return `${day}/${month}`;
 }
 
 function formatFullDate(value) {
-  const date = parseBookingDate(value);
+  const date =
+    parseBookingDate(value);
 
   if (!date) {
     return value || '';
   }
 
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, '0');
 
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
 
-  const year = date.getFullYear();
+  const year =
+    date.getFullYear();
 
   return `${day}/${month}/${year}`;
 }
 
 function formatBookingTime(value) {
-  return String(value || '').slice(0, 5);
+  return String(
+    value || ''
+  ).slice(0, 5);
 }
 
 function formatCreatedAt(value) {
@@ -403,7 +486,8 @@ function formatCreatedAt(value) {
     return '';
   }
 
-  const date = new Date(value);
+  const date =
+    new Date(value);
 
   if (
     Number.isNaN(
@@ -427,15 +511,18 @@ function formatCreatedAt(value) {
 }
 
 function getWeekdayLabel(value) {
-  const date = parseBookingDate(value);
+  const date =
+    parseBookingDate(value);
 
   if (!date) {
     return '';
   }
 
-  return WEEKDAY_LABELS[
-    date.getDay()
-  ] || '';
+  return (
+    WEEKDAY_LABELS[
+      date.getDay()
+    ] || ''
+  );
 }
 
 function getTodayValue() {
@@ -443,7 +530,9 @@ function getTodayValue() {
 }
 
 function normalizeText(value) {
-  return String(value || '')
+  return String(
+    value || ''
+  )
     .normalize('NFD')
     .replace(
       /[\u0300-\u036f]/g,
@@ -454,7 +543,8 @@ function normalizeText(value) {
 }
 
 function centsToNumber(value) {
-  const number = Number(value);
+  const number =
+    Number(value);
 
   if (
     Number.isNaN(number)
@@ -1106,13 +1196,15 @@ async function expireOldPendingBookings() {
     return;
   }
 
-  const start = new Date();
+  const start =
+    new Date();
 
   start.setDate(
     start.getDate() - 30
   );
 
-  const end = new Date();
+  const end =
+    new Date();
 
   end.setDate(
     end.getDate() + 60
@@ -1123,14 +1215,10 @@ async function expireOldPendingBookings() {
       'get_public_booked_slots',
       {
         p_start_date:
-          formatDateValue(
-            start
-          ),
+          formatDateValue(start),
 
         p_end_date:
-          formatDateValue(
-            end
-          )
+          formatDateValue(end)
       }
     );
   } catch (error) {
@@ -1173,22 +1261,20 @@ async function loadBookings(
     } =
       await window.supabaseClient
         .from('bookings')
-        .select(
-          `
-            id,
-            customer_name,
-            service,
-            service_amount_cents,
-            booking_date,
-            booking_time,
-            status,
-            payment_status,
-            expires_at,
-            completed_at,
-            created_at,
-            updated_at
-          `
-        )
+        .select(`
+          id,
+          customer_name,
+          service,
+          service_amount_cents,
+          booking_date,
+          booking_time,
+          status,
+          payment_status,
+          expires_at,
+          completed_at,
+          created_at,
+          updated_at
+        `)
         .order(
           'booking_date',
           {
@@ -1227,19 +1313,11 @@ async function loadBookings(
             {
               timeZone:
                 'America/Sao_Paulo',
-
-              hour:
-                '2-digit',
-
-              minute:
-                '2-digit',
-
-              second:
-                '2-digit'
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
             }
-          ).format(
-            new Date()
-          )
+          ).format(new Date())
         }`;
     }
   } catch (error) {
@@ -1253,7 +1331,8 @@ async function loadBookings(
       'error'
     );
   } finally {
-    loadingBookings = false;
+    loadingBookings =
+      false;
 
     if (adminLoading) {
       adminLoading.hidden =
@@ -1304,25 +1383,57 @@ function updateCashStatusBadge(status) {
 }
 
 function updateCashButtons(status) {
-  if (cashOpenButton) {
-    if (status === 'open') {
-      cashOpenButton.hidden =
-        true;
-    } else {
-      cashOpenButton.hidden =
-        false;
+  if (cashMainActions) {
+    cashMainActions.style.setProperty(
+      'display',
+      'flex',
+      'important'
+    );
 
-      cashOpenButton.textContent =
-        status === 'closed'
-          ? 'REABRIR CAIXA'
-          : 'ABRIR CAIXA';
+    cashMainActions.style.setProperty(
+      'visibility',
+      'visible',
+      'important'
+    );
+
+    cashMainActions.style.setProperty(
+      'opacity',
+      '1',
+      'important'
+    );
+  }
+
+  if (status === 'open') {
+    forceHideButton(
+      cashOpenButton
+    );
+
+    if (cashCloseButton) {
+      cashCloseButton.textContent =
+        'FECHAR CAIXA';
     }
+
+    forceShowButton(
+      cashCloseButton
+    );
+
+    return;
   }
 
-  if (cashCloseButton) {
-    cashCloseButton.hidden =
-      status !== 'open';
+  forceHideButton(
+    cashCloseButton
+  );
+
+  if (cashOpenButton) {
+    cashOpenButton.textContent =
+      status === 'closed'
+        ? 'REABRIR CAIXA'
+        : 'ABRIR CAIXA';
   }
+
+  forceShowButton(
+    cashOpenButton
+  );
 }
 
 function renderCashDashboard(data) {
@@ -1515,8 +1626,7 @@ function populateCashYears() {
   const options = [];
 
   for (
-    let year =
-      currentYear;
+    let year = currentYear;
     year >= firstYear;
     year -= 1
   ) {
@@ -1887,29 +1997,21 @@ async function refreshAllData(
   }
 
   try {
-    await loadCashDashboard(
-      {
-        silent
-      }
-    );
+    await loadCashDashboard({
+      silent
+    });
 
-    await loadBookings(
-      {
-        silent
-      }
-    );
+    await loadBookings({
+      silent
+    });
 
-    await loadMonthlyHistory(
-      {
-        silent
-      }
-    );
+    await loadMonthlyHistory({
+      silent
+    });
 
-    await loadYearHistory(
-      {
-        silent
-      }
-    );
+    await loadYearHistory({
+      silent
+    });
   } finally {
     if (!silent) {
       setRefreshLoading(false);
@@ -1921,9 +2023,7 @@ function getActionContent(
   booking,
   action
 ) {
-  if (
-    action === 'open-cash'
-  ) {
+  if (action === 'open-cash') {
     if (
       currentCashStatus ===
       'closed'
@@ -1933,7 +2033,7 @@ function getActionContent(
           'REABRIR CAIXA?',
 
         text:
-          `O caixa de hoje será reaberto mantendo o faturamento atual de ${formatCurrency(
+          `O caixa será reaberto mantendo o faturamento atual de ${formatCurrency(
             currentCashDashboard?.today_received_cents
           )}.`,
 
@@ -1954,9 +2054,7 @@ function getActionContent(
     };
   }
 
-  if (
-    action === 'close-cash'
-  ) {
+  if (action === 'close-cash') {
     return {
       title:
         'FECHAR CAIXA?',
@@ -2234,17 +2332,6 @@ function getFriendlyActionError(error) {
 
   if (
     message.includes(
-      'caixa de hoje já está fechado'
-    ) ||
-    message.includes(
-      'caixa de hoje ja esta fechado'
-    )
-  ) {
-    return 'O caixa já está fechado.';
-  }
-
-  if (
-    message.includes(
       'abra o caixa'
     )
   ) {
@@ -2347,6 +2434,10 @@ async function executeCurrentAction() {
   setCashButtonsLoading(true);
 
   try {
+    const wasClosed =
+      currentCashStatus ===
+      'closed';
+
     if (
       action === 'open-cash' ||
       action === 'close-cash'
@@ -2360,11 +2451,6 @@ async function executeCurrentAction() {
         action
       );
     }
-
-    const reopened =
-      action === 'open-cash' &&
-      currentCashStatus ===
-        'closed';
 
     const successMessages = {
       confirm:
@@ -2394,7 +2480,7 @@ async function executeCurrentAction() {
       action === 'open-cash'
     ) {
       successMessage =
-        reopened
+        wasClosed
           ? 'Caixa reaberto com sucesso. O faturamento anterior foi mantido.'
           : 'Caixa aberto com sucesso. O caixa de hoje começou em R$ 0,00.';
     }
@@ -2421,11 +2507,9 @@ async function executeCurrentAction() {
       );
     }
 
-    await refreshAllData(
-      {
-        silent: true
-      }
-    );
+    await refreshAllData({
+      silent: true
+    });
   } catch (error) {
     console.error(
       'Erro ao executar ação:',
@@ -2450,7 +2534,9 @@ async function executeCurrentAction() {
         'TENTAR NOVAMENTE';
     }
   } finally {
-    setCashButtonsLoading(false);
+    setCashButtonsLoading(
+      false
+    );
   }
 }
 
@@ -2475,12 +2561,10 @@ async function loginAdmin(
       data,
       error
     } =
-      await window.supabaseClient.auth.signInWithPassword(
-        {
-          email,
-          password
-        }
-      );
+      await window.supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
     if (error) {
       throw error;
@@ -2551,7 +2635,9 @@ async function loginAdmin(
       );
     }
   } finally {
-    setLoginLoading(false);
+    setLoginLoading(
+      false
+    );
   }
 }
 
@@ -2572,8 +2658,12 @@ async function logoutAdmin() {
   currentSession = null;
   currentUser = null;
   allBookings = [];
-  currentCashDashboard = null;
-  currentCashStatus = 'not_opened';
+
+  currentCashDashboard =
+    null;
+
+  currentCashStatus =
+    'not_opened';
 
   if (adminBookingsList) {
     adminBookingsList.innerHTML =
@@ -2674,11 +2764,9 @@ function startAutoRefresh() {
           currentUser &&
           !document.hidden
         ) {
-          refreshAllData(
-            {
-              silent: true
-            }
-          );
+          refreshAllData({
+            silent: true
+          });
         }
       },
       AUTO_REFRESH_MS
@@ -2691,7 +2779,8 @@ function stopAutoRefresh() {
       autoRefreshTimer
     );
 
-    autoRefreshTimer = null;
+    autoRefreshTimer =
+      null;
   }
 }
 
@@ -2867,8 +2956,7 @@ document.addEventListener(
   'keydown',
   (event) => {
     if (
-      event.key ===
-        'Escape' &&
+      event.key === 'Escape' &&
       adminConfirmModal &&
       !adminConfirmModal.hidden
     ) {
@@ -2884,11 +2972,9 @@ document.addEventListener(
       !document.hidden &&
       currentUser
     ) {
-      refreshAllData(
-        {
-          silent: true
-        }
-      );
+      refreshAllData({
+        silent: true
+      });
     }
   }
 );
@@ -2897,11 +2983,9 @@ window.addEventListener(
   'focus',
   () => {
     if (currentUser) {
-      refreshAllData(
-        {
-          silent: true
-        }
-      );
+      refreshAllData({
+        silent: true
+      });
     }
   }
 );
