@@ -1,135 +1,84 @@
-const adminLoginSection = document.querySelector(
-  '#admin-login'
+const adminLoginSection = document.querySelector('#admin-login');
+const adminDashboard = document.querySelector('#admin-dashboard');
+const adminLoginForm = document.querySelector('#admin-login-form');
+const adminEmailInput = document.querySelector('#admin-email');
+const adminPasswordInput = document.querySelector('#admin-password');
+const adminLoginButton = document.querySelector('#admin-login-button');
+const passwordToggle = document.querySelector('#password-toggle');
+const loginMessage = document.querySelector('#login-message');
+
+const adminUserEmail = document.querySelector('#admin-user-email');
+const adminLogoutButton = document.querySelector('#admin-logout-button');
+const adminRefreshButton = document.querySelector('#admin-refresh-button');
+
+const adminStatusFilter = document.querySelector('#admin-status-filter');
+const adminDateFilter = document.querySelector('#admin-date-filter');
+const adminSearch = document.querySelector('#admin-search');
+const clearFiltersButton = document.querySelector('#clear-filters-button');
+
+const adminGlobalMessage = document.querySelector('#admin-global-message');
+const adminLoading = document.querySelector('#admin-loading');
+const adminEmpty = document.querySelector('#admin-empty');
+const adminBookingsList = document.querySelector('#admin-bookings-list');
+const adminLastUpdate = document.querySelector('#admin-last-update');
+
+const statPending = document.querySelector('#stat-pending');
+const statConfirmed = document.querySelector('#stat-confirmed');
+const statToday = document.querySelector('#stat-today');
+const statVisible = document.querySelector('#stat-visible');
+
+const bookingCardTemplate = document.querySelector('#booking-card-template');
+
+const adminConfirmModal = document.querySelector('#admin-confirm-modal');
+const adminConfirmTitle = document.querySelector('#admin-confirm-title');
+const adminConfirmText = document.querySelector('#admin-confirm-text');
+const adminConfirmCancel = document.querySelector('#admin-confirm-cancel');
+const adminConfirmSubmit = document.querySelector('#admin-confirm-submit');
+const modalBackdrop = document.querySelector('[data-modal-close]');
+
+const cashStatusBadge = document.querySelector('#cash-status-badge');
+const cashDateLabel = document.querySelector('#cash-date-label');
+
+const cashTodayTotal = document.querySelector('#cash-today-total');
+const cashTodayCount = document.querySelector('#cash-today-count');
+
+const cashExpectedToday = document.querySelector('#cash-expected-today');
+const cashExpectedCount = document.querySelector('#cash-expected-count');
+
+const cashReceivedToday = document.querySelector('#cash-received-today');
+
+const cashMonthTotal = document.querySelector('#cash-month-total');
+const cashMonthCount = document.querySelector('#cash-month-count');
+
+const cashYearTotal = document.querySelector('#cash-year-total');
+const cashYearCount = document.querySelector('#cash-year-count');
+
+const cashOpenButton = document.querySelector('#cash-open-button');
+const cashCloseButton = document.querySelector('#cash-close-button');
+
+const cashMessage = document.querySelector('#cash-message');
+
+const cashHistoryMonth = document.querySelector('#cash-history-month');
+const cashHistoryYear = document.querySelector('#cash-history-year');
+const cashYearSummaryYear = document.querySelector('#cash-year-summary-year');
+
+const cashDailyHistory = document.querySelector('#cash-daily-history');
+const cashDailyEmpty = document.querySelector('#cash-daily-empty');
+
+const cashHistoryMonthTotal = document.querySelector(
+  '#cash-history-month-total'
 );
 
-const adminDashboard = document.querySelector(
-  '#admin-dashboard'
+const cashYearHistory = document.querySelector('#cash-year-history');
+
+const cashHistoryYearTotal = document.querySelector(
+  '#cash-history-year-total'
 );
 
-const adminLoginForm = document.querySelector(
-  '#admin-login-form'
-);
-
-const adminEmailInput = document.querySelector(
-  '#admin-email'
-);
-
-const adminPasswordInput = document.querySelector(
-  '#admin-password'
-);
-
-const adminLoginButton = document.querySelector(
-  '#admin-login-button'
-);
-
-const passwordToggle = document.querySelector(
-  '#password-toggle'
-);
-
-const loginMessage = document.querySelector(
-  '#login-message'
-);
-
-const adminUserEmail = document.querySelector(
-  '#admin-user-email'
-);
-
-const adminLogoutButton = document.querySelector(
-  '#admin-logout-button'
-);
-
-const adminRefreshButton = document.querySelector(
-  '#admin-refresh-button'
-);
-
-const adminStatusFilter = document.querySelector(
-  '#admin-status-filter'
-);
-
-const adminDateFilter = document.querySelector(
-  '#admin-date-filter'
-);
-
-const adminSearch = document.querySelector(
-  '#admin-search'
-);
-
-const clearFiltersButton = document.querySelector(
-  '#clear-filters-button'
-);
-
-const adminGlobalMessage = document.querySelector(
-  '#admin-global-message'
-);
-
-const adminLoading = document.querySelector(
-  '#admin-loading'
-);
-
-const adminEmpty = document.querySelector(
-  '#admin-empty'
-);
-
-const adminBookingsList = document.querySelector(
-  '#admin-bookings-list'
-);
-
-const adminLastUpdate = document.querySelector(
-  '#admin-last-update'
-);
-
-const statPending = document.querySelector(
-  '#stat-pending'
-);
-
-const statConfirmed = document.querySelector(
-  '#stat-confirmed'
-);
-
-const statToday = document.querySelector(
-  '#stat-today'
-);
-
-const statVisible = document.querySelector(
-  '#stat-visible'
-);
-
-const bookingCardTemplate = document.querySelector(
-  '#booking-card-template'
-);
-
-const adminConfirmModal = document.querySelector(
-  '#admin-confirm-modal'
-);
-
-const adminConfirmTitle = document.querySelector(
-  '#admin-confirm-title'
-);
-
-const adminConfirmText = document.querySelector(
-  '#admin-confirm-text'
-);
-
-const adminConfirmCancel = document.querySelector(
-  '#admin-confirm-cancel'
-);
-
-const adminConfirmSubmit = document.querySelector(
-  '#admin-confirm-submit'
-);
-
-const modalBackdrop = document.querySelector(
-  '[data-modal-close]'
-);
+const cashDayTemplate = document.querySelector('#cash-day-template');
+const cashMonthTemplate = document.querySelector('#cash-month-template');
 
 const AUTO_REFRESH_MS = 30000;
-
-let allBookings = [];
-let currentSession = null;
-let currentUser = null;
-let currentAction = null;
-let autoRefreshTimer = null;
-let loadingBookings = false;
 
 const STATUS_LABELS = {
   pending: 'Pendente',
@@ -137,6 +86,12 @@ const STATUS_LABELS = {
   rejected: 'Recusado',
   cancelled: 'Cancelado',
   expired: 'Expirado'
+};
+
+const PAYMENT_LABELS = {
+  unpaid: 'Não recebido',
+  paid: 'Recebido',
+  refunded: 'Estornado'
 };
 
 const WEEKDAY_LABELS = [
@@ -148,6 +103,35 @@ const WEEKDAY_LABELS = [
   'SEX',
   'SÁB'
 ];
+
+const MONTH_NAMES = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro'
+];
+
+let allBookings = [];
+
+let currentSession = null;
+let currentUser = null;
+let currentAction = null;
+
+let autoRefreshTimer = null;
+
+let loadingBookings = false;
+let loadingCash = false;
+
+let currentCashStatus = 'not_opened';
+let currentCashDashboard = null;
 
 function showLoginMessage(
   message,
@@ -223,6 +207,43 @@ function hideGlobalMessage() {
   );
 }
 
+function showCashMessage(
+  message,
+  type = 'info'
+) {
+  if (!cashMessage) {
+    return;
+  }
+
+  cashMessage.hidden = false;
+  cashMessage.textContent = message;
+
+  cashMessage.classList.remove(
+    'is-error',
+    'is-success',
+    'is-info'
+  );
+
+  cashMessage.classList.add(
+    `is-${type}`
+  );
+}
+
+function hideCashMessage() {
+  if (!cashMessage) {
+    return;
+  }
+
+  cashMessage.hidden = true;
+  cashMessage.textContent = '';
+
+  cashMessage.classList.remove(
+    'is-error',
+    'is-success',
+    'is-info'
+  );
+}
+
 function setLoginLoading(isLoading) {
   if (!adminLoginButton) {
     return;
@@ -244,7 +265,17 @@ function setRefreshLoading(isLoading) {
 
   adminRefreshButton.textContent = isLoading
     ? 'ATUALIZANDO...'
-    : 'ATUALIZAR AGENDA';
+    : 'ATUALIZAR PAINEL';
+}
+
+function setCashButtonsLoading(isLoading) {
+  if (cashOpenButton) {
+    cashOpenButton.disabled = isLoading;
+  }
+
+  if (cashCloseButton) {
+    cashCloseButton.disabled = isLoading;
+  }
 }
 
 function showLoginScreen() {
@@ -279,16 +310,74 @@ function showDashboardScreen() {
   startAutoRefresh();
 }
 
+function getBrazilDateValue(
+  date = new Date()
+) {
+  const formatter =
+    new Intl.DateTimeFormat(
+      'en-CA',
+      {
+        timeZone:
+          'America/Sao_Paulo',
+
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }
+    );
+
+  return formatter.format(date);
+}
+
+function getBrazilCurrentYear() {
+  return Number(
+    new Intl.DateTimeFormat(
+      'en',
+      {
+        timeZone:
+          'America/Sao_Paulo',
+
+        year:
+          'numeric'
+      }
+    ).format(new Date())
+  );
+}
+
+function getBrazilCurrentMonth() {
+  return Number(
+    new Intl.DateTimeFormat(
+      'en',
+      {
+        timeZone:
+          'America/Sao_Paulo',
+
+        month:
+          'numeric'
+      }
+    ).format(new Date())
+  );
+}
+
 function formatDateValue(date) {
-  const year = date.getFullYear();
+  const year =
+    date.getFullYear();
 
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(
+      2,
+      '0'
+    );
 
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
+  const day =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      '0'
+    );
 
   return `${year}-${month}-${day}`;
 }
@@ -323,27 +412,69 @@ function parseBookingDate(value) {
 }
 
 function formatBookingDate(value) {
-  const date = parseBookingDate(value);
+  const date =
+    parseBookingDate(value);
 
   if (!date) {
     return value || '';
   }
 
-  const day = String(
-    date.getDate()
-  ).padStart(2, '0');
+  const day =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      '0'
+    );
 
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, '0');
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(
+      2,
+      '0'
+    );
 
   return `${day}/${month}`;
+}
+
+function formatFullDate(value) {
+  const date =
+    parseBookingDate(value);
+
+  if (!date) {
+    return value || '';
+  }
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      '0'
+    );
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(
+      2,
+      '0'
+    );
+
+  const year =
+    date.getFullYear();
+
+  return `${day}/${month}/${year}`;
 }
 
 function formatBookingTime(value) {
   return String(
     value || ''
-  ).slice(0, 5);
+  ).slice(
+    0,
+    5
+  );
 }
 
 function formatCreatedAt(value) {
@@ -351,7 +482,8 @@ function formatCreatedAt(value) {
     return '';
   }
 
-  const date = new Date(value);
+  const date =
+    new Date(value);
 
   if (
     Number.isNaN(
@@ -366,17 +498,28 @@ function formatCreatedAt(value) {
     {
       timeZone:
         'America/Sao_Paulo',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+
+      day:
+        '2-digit',
+
+      month:
+        '2-digit',
+
+      year:
+        'numeric',
+
+      hour:
+        '2-digit',
+
+      minute:
+        '2-digit'
     }
   ).format(date);
 }
 
 function getWeekdayLabel(value) {
-  const date = parseBookingDate(value);
+  const date =
+    parseBookingDate(value);
 
   if (!date) {
     return '';
@@ -390,9 +533,7 @@ function getWeekdayLabel(value) {
 }
 
 function getTodayValue() {
-  return formatDateValue(
-    new Date()
-  );
+  return getBrazilDateValue();
 }
 
 function normalizeText(value) {
@@ -408,9 +549,37 @@ function normalizeText(value) {
     .trim();
 }
 
-function isPendingExpired(
-  booking
-) {
+function centsToNumber(value) {
+  const number =
+    Number(value);
+
+  if (
+    Number.isNaN(number)
+  ) {
+    return 0;
+  }
+
+  return number;
+}
+
+function formatCurrency(cents) {
+  const value =
+    centsToNumber(cents) /
+    100;
+
+  return new Intl.NumberFormat(
+    'pt-BR',
+    {
+      style:
+        'currency',
+
+      currency:
+        'BRL'
+    }
+  ).format(value);
+}
+
+function isPendingExpired(booking) {
   if (
     booking.status !==
       'pending' ||
@@ -438,9 +607,7 @@ function isPendingExpired(
   );
 }
 
-function getEffectiveStatus(
-  booking
-) {
+function getEffectiveStatus(booking) {
   if (
     isPendingExpired(
       booking
@@ -594,12 +761,17 @@ function updateStats(
   }
 }
 
-function getStatusLabel(
-  status
-) {
+function getStatusLabel(status) {
   return (
     STATUS_LABELS[status] ||
     status
+  );
+}
+
+function getPaymentLabel(status) {
+  return (
+    PAYMENT_LABELS[status] ||
+    'Não recebido'
   );
 }
 
@@ -624,6 +796,34 @@ function applyStatusBadge(
   );
 }
 
+function applyPaymentStatus(
+  element,
+  status
+) {
+  if (!element) {
+    return;
+  }
+
+  const paymentStatus =
+    status ||
+    'unpaid';
+
+  element.textContent =
+    getPaymentLabel(
+      paymentStatus
+    ).toUpperCase();
+
+  element.classList.remove(
+    'payment-unpaid',
+    'payment-paid',
+    'payment-refunded'
+  );
+
+  element.classList.add(
+    `payment-${paymentStatus}`
+  );
+}
+
 function configureActionButtons(
   card,
   booking
@@ -632,6 +832,13 @@ function configureActionButtons(
     getEffectiveStatus(
       booking
     );
+
+  const paymentStatus =
+    booking.payment_status ||
+    'unpaid';
+
+  const today =
+    getTodayValue();
 
   const confirmButton =
     card.querySelector(
@@ -643,6 +850,16 @@ function configureActionButtons(
       '[data-action="reject"]'
     );
 
+  const paidButton =
+    card.querySelector(
+      '[data-action="paid"]'
+    );
+
+  const refundButton =
+    card.querySelector(
+      '[data-action="refund"]'
+    );
+
   const cancelButton =
     card.querySelector(
       '[data-action="cancel"]'
@@ -650,7 +867,8 @@ function configureActionButtons(
 
   if (confirmButton) {
     confirmButton.hidden =
-      status !== 'pending';
+      status !==
+      'pending';
 
     confirmButton.addEventListener(
       'click',
@@ -665,7 +883,8 @@ function configureActionButtons(
 
   if (rejectButton) {
     rejectButton.hidden =
-      status !== 'pending';
+      status !==
+      'pending';
 
     rejectButton.addEventListener(
       'click',
@@ -678,26 +897,125 @@ function configureActionButtons(
     );
   }
 
-  if (cancelButton) {
-    cancelButton.hidden =
-      status !==
-      'confirmed';
+  if (paidButton) {
+    const canShowPaid =
+      status ===
+        'confirmed' &&
+      paymentStatus ===
+        'unpaid' &&
+      booking.booking_date ===
+        today;
 
-    cancelButton.addEventListener(
-      'click',
-      () => {
-        openActionModal(
-          booking,
-          'cancel'
-        );
+    paidButton.hidden =
+      !canShowPaid;
+
+    if (canShowPaid) {
+      paidButton.disabled =
+        currentCashStatus !==
+        'open';
+
+      if (
+        currentCashStatus !==
+        'open'
+      ) {
+        paidButton.title =
+          'Abra o caixa antes de registrar o pagamento.';
       }
-    );
+
+      paidButton.addEventListener(
+        'click',
+        () => {
+          if (
+            currentCashStatus !==
+            'open'
+          ) {
+            showCashMessage(
+              'Abra o caixa antes de finalizar um atendimento.',
+              'error'
+            );
+
+            return;
+          }
+
+          openActionModal(
+            booking,
+            'paid'
+          );
+        }
+      );
+    }
+  }
+
+  if (refundButton) {
+    const canShowRefund =
+      paymentStatus ===
+      'paid';
+
+    refundButton.hidden =
+      !canShowRefund;
+
+    if (canShowRefund) {
+      refundButton.disabled =
+        currentCashStatus !==
+        'open';
+
+      if (
+        currentCashStatus !==
+        'open'
+      ) {
+        refundButton.title =
+          'Abra o caixa antes de registrar um estorno.';
+      }
+
+      refundButton.addEventListener(
+        'click',
+        () => {
+          if (
+            currentCashStatus !==
+            'open'
+          ) {
+            showCashMessage(
+              'Abra o caixa antes de registrar um estorno.',
+              'error'
+            );
+
+            return;
+          }
+
+          openActionModal(
+            booking,
+            'refund'
+          );
+        }
+      );
+    }
+  }
+
+  if (cancelButton) {
+    const canCancel =
+      status ===
+        'confirmed' &&
+      paymentStatus !==
+        'paid';
+
+    cancelButton.hidden =
+      !canCancel;
+
+    if (canCancel) {
+      cancelButton.addEventListener(
+        'click',
+        () => {
+          openActionModal(
+            booking,
+            'cancel'
+          );
+        }
+      );
+    }
   }
 }
 
-function createBookingCard(
-  booking
-) {
+function createBookingCard(booking) {
   if (!bookingCardTemplate) {
     return null;
   }
@@ -751,6 +1069,16 @@ function createBookingCard(
       '[data-booking-service]'
     );
 
+  const amountElement =
+    card.querySelector(
+      '[data-booking-amount]'
+    );
+
+  const paymentElement =
+    card.querySelector(
+      '[data-booking-payment]'
+    );
+
   const createdElement =
     card.querySelector(
       '[data-booking-created]'
@@ -793,6 +1121,18 @@ function createBookingCard(
       booking.service ||
       '—';
   }
+
+  if (amountElement) {
+    amountElement.textContent =
+      formatCurrency(
+        booking.service_amount_cents
+      );
+  }
+
+  applyPaymentStatus(
+    paymentElement,
+    booking.payment_status
+  );
 
   if (createdElement) {
     createdElement.textContent =
@@ -879,9 +1219,7 @@ async function verifyAdminUser() {
 }
 
 async function expireOldPendingBookings() {
-  if (
-    !window.supabaseClient
-  ) {
+  if (!window.supabaseClient) {
     return;
   }
 
@@ -907,6 +1245,7 @@ async function expireOldPendingBookings() {
           formatDateValue(
             start
           ),
+
         p_end_date:
           formatDateValue(
             end
@@ -942,8 +1281,6 @@ async function loadBookings(
       adminLoading.hidden =
         false;
     }
-
-    setRefreshLoading(true);
   }
 
   try {
@@ -960,10 +1297,13 @@ async function loadBookings(
             id,
             customer_name,
             service,
+            service_amount_cents,
             booking_date,
             booking_time,
             status,
+            payment_status,
             expires_at,
+            completed_at,
             created_at,
             updated_at
           `
@@ -971,19 +1311,22 @@ async function loadBookings(
         .order(
           'booking_date',
           {
-            ascending: true
+            ascending:
+              true
           }
         )
         .order(
           'booking_time',
           {
-            ascending: true
+            ascending:
+              true
           }
         )
         .order(
           'created_at',
           {
-            ascending: true
+            ascending:
+              true
           }
         );
 
@@ -1006,9 +1349,15 @@ async function loadBookings(
             {
               timeZone:
                 'America/Sao_Paulo',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
+
+              hour:
+                '2-digit',
+
+              minute:
+                '2-digit',
+
+              second:
+                '2-digit'
             }
           ).format(
             new Date()
@@ -1022,18 +1371,681 @@ async function loadBookings(
     );
 
     showGlobalMessage(
-      'Não foi possível carregar a agenda. Tente atualizar novamente.',
+      'Não foi possível carregar os agendamentos.',
       'error'
     );
   } finally {
-    loadingBookings = false;
+    loadingBookings =
+      false;
 
     if (adminLoading) {
       adminLoading.hidden =
         true;
     }
+  }
+}
 
-    setRefreshLoading(false);
+function updateCashStatusBadge(status) {
+  if (!cashStatusBadge) {
+    return;
+  }
+
+  cashStatusBadge.classList.remove(
+    'is-open',
+    'is-closed',
+    'is-not-opened'
+  );
+
+  if (status === 'open') {
+    cashStatusBadge.textContent =
+      'CAIXA ABERTO';
+
+    cashStatusBadge.classList.add(
+      'is-open'
+    );
+
+    return;
+  }
+
+  if (status === 'closed') {
+    cashStatusBadge.textContent =
+      'CAIXA FECHADO';
+
+    cashStatusBadge.classList.add(
+      'is-closed'
+    );
+
+    return;
+  }
+
+  cashStatusBadge.textContent =
+    'CAIXA NÃO ABERTO';
+
+  cashStatusBadge.classList.add(
+    'is-not-opened'
+  );
+}
+
+function updateCashButtons(status) {
+  if (cashOpenButton) {
+    cashOpenButton.hidden =
+      status !==
+      'not_opened';
+  }
+
+  if (cashCloseButton) {
+    cashCloseButton.hidden =
+      status !==
+      'open';
+  }
+}
+
+function renderCashDashboard(data) {
+  const row =
+    Array.isArray(data)
+      ? data[0]
+      : data;
+
+  if (!row) {
+    return;
+  }
+
+  currentCashDashboard =
+    row;
+
+  currentCashStatus =
+    row.cash_status ||
+    'not_opened';
+
+  updateCashStatusBadge(
+    currentCashStatus
+  );
+
+  updateCashButtons(
+    currentCashStatus
+  );
+
+  if (cashDateLabel) {
+    cashDateLabel.textContent =
+      formatFullDate(
+        row.business_date
+      );
+  }
+
+  if (cashTodayTotal) {
+    cashTodayTotal.textContent =
+      formatCurrency(
+        row.today_received_cents
+      );
+  }
+
+  if (cashReceivedToday) {
+    cashReceivedToday.textContent =
+      formatCurrency(
+        row.today_received_cents
+      );
+  }
+
+  if (cashTodayCount) {
+    const count =
+      centsToNumber(
+        row.today_received_count
+      );
+
+    cashTodayCount.textContent =
+      `${count} ${
+        count === 1
+          ? 'atendimento recebido'
+          : 'atendimentos recebidos'
+      }`;
+  }
+
+  if (cashExpectedToday) {
+    cashExpectedToday.textContent =
+      formatCurrency(
+        row.today_expected_cents
+      );
+  }
+
+  if (cashExpectedCount) {
+    const count =
+      centsToNumber(
+        row.today_expected_count
+      );
+
+    cashExpectedCount.textContent =
+      `${count} ${
+        count === 1
+          ? 'atendimento confirmado'
+          : 'atendimentos confirmados'
+      }`;
+  }
+
+  if (cashMonthTotal) {
+    cashMonthTotal.textContent =
+      formatCurrency(
+        row.month_total_cents
+      );
+  }
+
+  if (cashMonthCount) {
+    const count =
+      centsToNumber(
+        row.month_received_count
+      );
+
+    cashMonthCount.textContent =
+      `${count} ${
+        count === 1
+          ? 'atendimento recebido'
+          : 'atendimentos recebidos'
+      }`;
+  }
+
+  if (cashYearTotal) {
+    cashYearTotal.textContent =
+      formatCurrency(
+        row.year_total_cents
+      );
+  }
+
+  if (cashYearCount) {
+    const count =
+      centsToNumber(
+        row.year_received_count
+      );
+
+    cashYearCount.textContent =
+      `${count} ${
+        count === 1
+          ? 'atendimento recebido'
+          : 'atendimentos recebidos'
+      }`;
+  }
+
+  renderBookings();
+}
+
+async function loadCashDashboard(
+  {
+    silent = false
+  } = {}
+) {
+  if (
+    !window.supabaseClient ||
+    loadingCash
+  ) {
+    return;
+  }
+
+  loadingCash = true;
+
+  if (!silent) {
+    hideCashMessage();
+  }
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await window.supabaseClient.rpc(
+        'get_cash_dashboard'
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    renderCashDashboard(
+      data
+    );
+  } catch (error) {
+    console.error(
+      'Erro ao carregar caixa:',
+      error
+    );
+
+    if (!silent) {
+      showCashMessage(
+        'Não foi possível carregar os dados do caixa.',
+        'error'
+      );
+    }
+  } finally {
+    loadingCash =
+      false;
+  }
+}
+
+function populateCashYears() {
+  const currentYear =
+    getBrazilCurrentYear();
+
+  const firstYear =
+    Math.min(
+      2026,
+      currentYear
+    );
+
+  const options = [];
+
+  for (
+    let year =
+      currentYear;
+    year >= firstYear;
+    year -= 1
+  ) {
+    options.push(
+      `<option value="${year}">${year}</option>`
+    );
+  }
+
+  if (cashHistoryYear) {
+    cashHistoryYear.innerHTML =
+      options.join('');
+
+    cashHistoryYear.value =
+      String(
+        currentYear
+      );
+  }
+
+  if (cashYearSummaryYear) {
+    cashYearSummaryYear.innerHTML =
+      options.join('');
+
+    cashYearSummaryYear.value =
+      String(
+        currentYear
+      );
+  }
+
+  if (cashHistoryMonth) {
+    cashHistoryMonth.value =
+      String(
+        getBrazilCurrentMonth()
+      );
+  }
+}
+
+function renderDailyHistory(data) {
+  if (!cashDailyHistory) {
+    return;
+  }
+
+  const rows =
+    Array.isArray(data)
+      ? data
+      : [];
+
+  cashDailyHistory.innerHTML =
+    '';
+
+  if (cashDailyEmpty) {
+    cashDailyEmpty.hidden =
+      rows.length > 0;
+  }
+
+  let totalNet =
+    0;
+
+  rows.forEach(
+    (row) => {
+      totalNet +=
+        centsToNumber(
+          row.net_cents
+        );
+
+      if (!cashDayTemplate) {
+        return;
+      }
+
+      const fragment =
+        cashDayTemplate
+          .content
+          .cloneNode(true);
+
+      const dateElement =
+        fragment.querySelector(
+          '[data-cash-day-date]'
+        );
+
+      const statusElement =
+        fragment.querySelector(
+          '[data-cash-day-status]'
+        );
+
+      const countElement =
+        fragment.querySelector(
+          '[data-cash-day-count]'
+        );
+
+      const grossElement =
+        fragment.querySelector(
+          '[data-cash-day-gross]'
+        );
+
+      const refundsElement =
+        fragment.querySelector(
+          '[data-cash-day-refunds]'
+        );
+
+      const netElement =
+        fragment.querySelector(
+          '[data-cash-day-net]'
+        );
+
+      if (dateElement) {
+        dateElement.textContent =
+          formatFullDate(
+            row.business_date
+          );
+      }
+
+      if (statusElement) {
+        statusElement.textContent =
+          row.cash_status ===
+            'open'
+            ? 'Caixa aberto'
+            : 'Caixa fechado';
+      }
+
+      if (countElement) {
+        countElement.textContent =
+          String(
+            centsToNumber(
+              row.sales_count
+            )
+          );
+      }
+
+      if (grossElement) {
+        grossElement.textContent =
+          formatCurrency(
+            row.gross_cents
+          );
+      }
+
+      if (refundsElement) {
+        refundsElement.textContent =
+          formatCurrency(
+            row.refunds_cents
+          );
+      }
+
+      if (netElement) {
+        netElement.textContent =
+          formatCurrency(
+            row.net_cents
+          );
+      }
+
+      cashDailyHistory.appendChild(
+        fragment
+      );
+    }
+  );
+
+  if (cashHistoryMonthTotal) {
+    cashHistoryMonthTotal.textContent =
+      formatCurrency(
+        totalNet
+      );
+  }
+}
+
+async function loadMonthlyHistory(
+  {
+    silent = false
+  } = {}
+) {
+  if (
+    !window.supabaseClient ||
+    !cashHistoryMonth ||
+    !cashHistoryYear
+  ) {
+    return;
+  }
+
+  const month =
+    Number(
+      cashHistoryMonth.value
+    );
+
+  const year =
+    Number(
+      cashHistoryYear.value
+    );
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await window.supabaseClient.rpc(
+        'get_cash_month_daily',
+        {
+          p_year:
+            year,
+
+          p_month:
+            month
+        }
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    renderDailyHistory(
+      data
+    );
+  } catch (error) {
+    console.error(
+      'Erro ao carregar histórico mensal:',
+      error
+    );
+
+    if (!silent) {
+      showCashMessage(
+        'Não foi possível carregar o histórico mensal.',
+        'error'
+      );
+    }
+  }
+}
+
+function renderYearHistory(data) {
+  if (!cashYearHistory) {
+    return;
+  }
+
+  const rows =
+    Array.isArray(data)
+      ? data
+      : [];
+
+  cashYearHistory.innerHTML =
+    '';
+
+  let totalYear =
+    0;
+
+  rows.forEach(
+    (row) => {
+      totalYear +=
+        centsToNumber(
+          row.net_cents
+        );
+
+      if (!cashMonthTemplate) {
+        return;
+      }
+
+      const fragment =
+        cashMonthTemplate
+          .content
+          .cloneNode(true);
+
+      const monthElement =
+        fragment.querySelector(
+          '[data-cash-month-name]'
+        );
+
+      const countElement =
+        fragment.querySelector(
+          '[data-cash-month-count]'
+        );
+
+      const totalElement =
+        fragment.querySelector(
+          '[data-cash-month-total]'
+        );
+
+      const monthIndex =
+        Number(
+          row.month_number
+        ) - 1;
+
+      if (monthElement) {
+        monthElement.textContent =
+          MONTH_NAMES[
+            monthIndex
+          ] ||
+          `Mês ${
+            row.month_number
+          }`;
+      }
+
+      if (countElement) {
+        const count =
+          centsToNumber(
+            row.sales_count
+          );
+
+        countElement.textContent =
+          `${count} ${
+            count === 1
+              ? 'atendimento'
+              : 'atendimentos'
+          }`;
+      }
+
+      if (totalElement) {
+        totalElement.textContent =
+          formatCurrency(
+            row.net_cents
+          );
+      }
+
+      cashYearHistory.appendChild(
+        fragment
+      );
+    }
+  );
+
+  if (cashHistoryYearTotal) {
+    cashHistoryYearTotal.textContent =
+      formatCurrency(
+        totalYear
+      );
+  }
+}
+
+async function loadYearHistory(
+  {
+    silent = false
+  } = {}
+) {
+  if (
+    !window.supabaseClient ||
+    !cashYearSummaryYear
+  ) {
+    return;
+  }
+
+  const year =
+    Number(
+      cashYearSummaryYear.value
+    );
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await window.supabaseClient.rpc(
+        'get_cash_year_monthly',
+        {
+          p_year:
+            year
+        }
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    renderYearHistory(
+      data
+    );
+  } catch (error) {
+    console.error(
+      'Erro ao carregar histórico anual:',
+      error
+    );
+
+    if (!silent) {
+      showCashMessage(
+        'Não foi possível carregar o histórico anual.',
+        'error'
+      );
+    }
+  }
+}
+
+async function refreshAllData(
+  {
+    silent = false
+  } = {}
+) {
+  if (!silent) {
+    setRefreshLoading(
+      true
+    );
+  }
+
+  try {
+    await loadCashDashboard(
+      {
+        silent
+      }
+    );
+
+    await loadBookings(
+      {
+        silent
+      }
+    );
+
+    await loadMonthlyHistory(
+      {
+        silent
+      }
+    );
+
+    await loadYearHistory(
+      {
+        silent
+      }
+    );
+  } finally {
+    if (!silent) {
+      setRefreshLoading(
+        false
+      );
+    }
   }
 }
 
@@ -1041,26 +2053,67 @@ function getActionContent(
   booking,
   action
 ) {
+  if (
+    action ===
+    'open-cash'
+  ) {
+    return {
+      title:
+        'ABRIR CAIXA?',
+
+      text:
+        'O caixa de hoje será aberto zerado. A partir disso, os atendimentos recebidos começarão a ser somados.',
+
+      button:
+        'ABRIR CAIXA'
+    };
+  }
+
+  if (
+    action ===
+    'close-cash'
+  ) {
+    return {
+      title:
+        'FECHAR CAIXA?',
+
+      text:
+        `O caixa de hoje será fechado com ${formatCurrency(
+          currentCashDashboard?.today_received_cents
+        )} de faturamento real.`,
+
+      button:
+        'FECHAR CAIXA'
+    };
+  }
+
   const customer =
-    booking.customer_name ||
+    booking?.customer_name ||
     'Cliente';
 
   const date =
     formatBookingDate(
-      booking.booking_date
+      booking?.booking_date
     );
 
   const time =
     formatBookingTime(
-      booking.booking_time
+      booking?.booking_time
+    );
+
+  const amount =
+    formatCurrency(
+      booking?.service_amount_cents
     );
 
   if (action === 'confirm') {
     return {
       title:
         'CONFIRMAR AGENDAMENTO?',
+
       text:
-        `Confirmar o horário de ${customer} para ${date} às ${time}?`,
+        `Confirmar o horário de ${customer} para ${date} às ${time}? O valor previsto será ${amount}.`,
+
       button:
         'CONFIRMAR AGENDAMENTO'
     };
@@ -1070,8 +2123,10 @@ function getActionContent(
     return {
       title:
         'RECUSAR SOLICITAÇÃO?',
+
       text:
         `Recusar a solicitação de ${customer} para ${date} às ${time}? O horário será liberado novamente.`,
+
       button:
         'RECUSAR SOLICITAÇÃO'
     };
@@ -1081,18 +2136,48 @@ function getActionContent(
     return {
       title:
         'CANCELAR AGENDAMENTO?',
+
       text:
-        `Cancelar o agendamento confirmado de ${customer} para ${date} às ${time}? O horário ficará disponível novamente.`,
+        `Cancelar o agendamento de ${customer} para ${date} às ${time}? O horário será liberado novamente.`,
+
       button:
         'CANCELAR AGENDAMENTO'
+    };
+  }
+
+  if (action === 'paid') {
+    return {
+      title:
+        'FINALIZAR ATENDIMENTO?',
+
+      text:
+        `Registrar ${amount} como recebido pelo atendimento de ${customer}? Esse valor entrará no caixa de hoje.`,
+
+      button:
+        'FINALIZAR / RECEBIDO'
+    };
+  }
+
+  if (action === 'refund') {
+    return {
+      title:
+        'ESTORNAR PAGAMENTO?',
+
+      text:
+        `Registrar um estorno de ${amount} referente ao atendimento de ${customer}? O valor será descontado do faturamento.`,
+
+      button:
+        'CONFIRMAR ESTORNO'
     };
   }
 
   return {
     title:
       'CONFIRMAR AÇÃO?',
+
     text:
       'Deseja continuar?',
+
     button:
       'CONFIRMAR'
   };
@@ -1130,6 +2215,9 @@ function openActionModal(
   if (adminConfirmSubmit) {
     adminConfirmSubmit.textContent =
       content.button;
+
+    adminConfirmSubmit.disabled =
+      false;
   }
 
   adminConfirmModal.hidden =
@@ -1165,7 +2253,198 @@ function closeActionModal() {
   }
 }
 
-async function executeBookingAction() {
+function getActionRpc(action) {
+  const functions = {
+    confirm:
+      'admin_confirm_booking',
+
+    reject:
+      'admin_reject_booking',
+
+    cancel:
+      'admin_cancel_booking',
+
+    paid:
+      'mark_booking_paid',
+
+    refund:
+      'refund_booking_payment'
+  };
+
+  return (
+    functions[action] ||
+    ''
+  );
+}
+
+async function executeBookingAction(
+  booking,
+  action
+) {
+  const functionName =
+    getActionRpc(
+      action
+    );
+
+  if (!functionName) {
+    throw new Error(
+      'Ação inválida.'
+    );
+  }
+
+  const {
+    error
+  } =
+    await window.supabaseClient.rpc(
+      functionName,
+      {
+        p_booking_id:
+          booking.id
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+}
+
+async function executeCashAction(action) {
+  let functionName = '';
+
+  if (
+    action ===
+    'open-cash'
+  ) {
+    functionName =
+      'open_cash_session';
+  }
+
+  if (
+    action ===
+    'close-cash'
+  ) {
+    functionName =
+      'close_cash_session';
+  }
+
+  if (!functionName) {
+    throw new Error(
+      'Ação de caixa inválida.'
+    );
+  }
+
+  const {
+    error
+  } =
+    await window.supabaseClient.rpc(
+      functionName
+    );
+
+  if (error) {
+    throw error;
+  }
+}
+
+function getFriendlyActionError(
+  error
+) {
+  const message =
+    String(
+      error?.message ||
+      ''
+    ).toLowerCase();
+
+  if (
+    message.includes(
+      'caixa de hoje já foi fechado'
+    ) ||
+    message.includes(
+      'caixa de hoje ja foi fechado'
+    )
+  ) {
+    return 'O caixa de hoje já foi fechado e não pode ser reaberto.';
+  }
+
+  if (
+    message.includes(
+      'abra o caixa'
+    )
+  ) {
+    return 'Abra o caixa antes de registrar esse pagamento.';
+  }
+
+  if (
+    message.includes(
+      'já foi recebido'
+    ) ||
+    message.includes(
+      'ja foi recebido'
+    )
+  ) {
+    return 'Esse atendimento já foi registrado como recebido.';
+  }
+
+  if (
+    message.includes(
+      'já foi estornado'
+    ) ||
+    message.includes(
+      'ja foi estornado'
+    )
+  ) {
+    return 'Esse pagamento já foi estornado.';
+  }
+
+  if (
+    message.includes(
+      'só é possível finalizar'
+    ) ||
+    message.includes(
+      'so e possivel finalizar'
+    )
+  ) {
+    return 'Somente atendimentos marcados para hoje podem ser finalizados.';
+  }
+
+  if (
+    message.includes(
+      'precisa estar confirmado'
+    )
+  ) {
+    return 'O atendimento precisa estar confirmado antes de ser recebido.';
+  }
+
+  if (
+    message.includes(
+      'estorno antes de cancelar'
+    )
+  ) {
+    return 'Esse atendimento já foi recebido. Faça o estorno antes de cancelar.';
+  }
+
+  if (
+    message.includes(
+      'expirou'
+    )
+  ) {
+    return 'Essa solicitação já expirou.';
+  }
+
+  if (
+    message.includes(
+      'não autorizado'
+    ) ||
+    message.includes(
+      'nao autorizado'
+    )
+  ) {
+    return 'Sua conta não possui permissão para realizar essa ação.';
+  }
+
+  return 'Não foi possível concluir essa ação. Atualize o painel e tente novamente.';
+}
+
+async function executeCurrentAction() {
   if (
     !currentAction ||
     !window.supabaseClient
@@ -1173,10 +2452,11 @@ async function executeBookingAction() {
     return;
   }
 
-  const {
-    booking,
-    action
-  } = currentAction;
+  const action =
+    currentAction.action;
+
+  const booking =
+    currentAction.booking;
 
   if (adminConfirmSubmit) {
     adminConfirmSubmit.disabled =
@@ -1186,118 +2466,92 @@ async function executeBookingAction() {
       'PROCESSANDO...';
   }
 
+  setCashButtonsLoading(
+    true
+  );
+
   try {
-    let functionName = '';
-
-    if (action === 'confirm') {
-      functionName =
-        'admin_confirm_booking';
-    }
-
-    if (action === 'reject') {
-      functionName =
-        'admin_reject_booking';
-    }
-
-    if (action === 'cancel') {
-      functionName =
-        'admin_cancel_booking';
-    }
-
-    if (!functionName) {
-      throw new Error(
-        'Ação inválida.'
+    if (
+      action ===
+        'open-cash' ||
+      action ===
+        'close-cash'
+    ) {
+      await executeCashAction(
+        action
+      );
+    } else {
+      await executeBookingAction(
+        booking,
+        action
       );
     }
-
-    const {
-      error
-    } =
-      await window.supabaseClient.rpc(
-        functionName,
-        {
-          p_booking_id:
-            booking.id
-        }
-      );
-
-    if (error) {
-      throw error;
-    }
-
-    closeActionModal();
 
     const successMessages = {
       confirm:
-        'Agendamento confirmado com sucesso. O horário agora aparece como ocupado no site.',
+        'Agendamento confirmado. O valor entrou no faturamento previsto.',
+
       reject:
-        'Solicitação recusada. O horário foi liberado novamente.',
+        'Solicitação recusada. O horário foi liberado.',
+
       cancel:
-        'Agendamento cancelado. O horário foi liberado novamente.'
+        'Agendamento cancelado. O horário foi liberado.',
+
+      paid:
+        'Atendimento finalizado. O valor foi adicionado ao caixa.',
+
+      refund:
+        'Estorno registrado. O valor foi descontado do faturamento.',
+
+      'open-cash':
+        'Caixa aberto com sucesso. O caixa de hoje começou em R$ 0,00.',
+
+      'close-cash':
+        'Caixa fechado com sucesso.'
     };
 
-    showGlobalMessage(
+    const successMessage =
       successMessages[action] ||
-        'Agenda atualizada com sucesso.',
-      'success'
-    );
+      'Operação realizada com sucesso.';
 
-    await loadBookings(
+    const cashAction =
+      [
+        'paid',
+        'refund',
+        'open-cash',
+        'close-cash'
+      ].includes(action);
+
+    closeActionModal();
+
+    if (cashAction) {
+      showCashMessage(
+        successMessage,
+        'success'
+      );
+    } else {
+      showGlobalMessage(
+        successMessage,
+        'success'
+      );
+    }
+
+    await refreshAllData(
       {
-        silent: true
+        silent:
+          true
       }
     );
   } catch (error) {
     console.error(
-      'Erro ao atualizar agendamento:',
+      'Erro ao executar ação:',
       error
     );
 
-    if (adminConfirmSubmit) {
-      adminConfirmSubmit.disabled =
-        false;
-    }
-
-    const message =
-      String(
-        error?.message || ''
-      ).toLowerCase();
-
-    let friendlyMessage =
-      'Não foi possível concluir essa ação. Atualize a agenda e tente novamente.';
-
-    if (
-      message.includes(
-        'expirou'
-      )
-    ) {
-      friendlyMessage =
-        'Essa solicitação já expirou e o horário foi liberado.';
-    }
-
-    if (
-      message.includes(
-        'já possui outro'
-      ) ||
-      message.includes(
-        'ja possui outro'
-      )
-    ) {
-      friendlyMessage =
-        'Esse horário já possui outro agendamento confirmado.';
-    }
-
-    if (
-      message.includes(
-        'não autorizado'
-      ) ||
-      message.includes(
-        'nao autorizado'
-      )
-    ) {
-      friendlyMessage =
-        'Sua conta não possui permissão para realizar essa ação.';
-    }
+    const friendlyMessage =
+      getFriendlyActionError(
+        error
+      );
 
     if (adminConfirmText) {
       adminConfirmText.textContent =
@@ -1305,9 +2559,16 @@ async function executeBookingAction() {
     }
 
     if (adminConfirmSubmit) {
+      adminConfirmSubmit.disabled =
+        false;
+
       adminConfirmSubmit.textContent =
         'TENTAR NOVAMENTE';
     }
+  } finally {
+    setCashButtonsLoading(
+      false
+    );
   }
 }
 
@@ -1324,7 +2585,10 @@ async function loginAdmin(
     return;
   }
 
-  setLoginLoading(true);
+  setLoginLoading(
+    true
+  );
+
   hideLoginMessage();
 
   try {
@@ -1355,8 +2619,11 @@ async function loginAdmin(
     if (!isAdmin) {
       await window.supabaseClient.auth.signOut();
 
-      currentSession = null;
-      currentUser = null;
+      currentSession =
+        null;
+
+      currentUser =
+        null;
 
       showLoginMessage(
         'Este usuário existe, mas não está autorizado como administrador da Haus Barber.',
@@ -1368,7 +2635,9 @@ async function loginAdmin(
 
     showDashboardScreen();
 
-    await loadBookings();
+    populateCashYears();
+
+    await refreshAllData();
   } catch (error) {
     console.error(
       'Erro no login:',
@@ -1377,7 +2646,8 @@ async function loginAdmin(
 
     const message =
       String(
-        error?.message || ''
+        error?.message ||
+        ''
       ).toLowerCase();
 
     if (
@@ -1405,7 +2675,9 @@ async function loginAdmin(
       );
     }
   } finally {
-    setLoginLoading(false);
+    setLoginLoading(
+      false
+    );
   }
 }
 
@@ -1423,9 +2695,20 @@ async function logoutAdmin() {
     );
   }
 
-  currentSession = null;
-  currentUser = null;
-  allBookings = [];
+  currentSession =
+    null;
+
+  currentUser =
+    null;
+
+  allBookings =
+    [];
+
+  currentCashDashboard =
+    null;
+
+  currentCashStatus =
+    'not_opened';
 
   if (adminBookingsList) {
     adminBookingsList.innerHTML =
@@ -1437,6 +2720,7 @@ async function logoutAdmin() {
   }
 
   hideGlobalMessage();
+  hideCashMessage();
   hideLoginMessage();
 
   showLoginScreen();
@@ -1482,8 +2766,11 @@ async function restoreSession() {
     if (!isAdmin) {
       await window.supabaseClient.auth.signOut();
 
-      currentSession = null;
-      currentUser = null;
+      currentSession =
+        null;
+
+      currentUser =
+        null;
 
       showLoginScreen();
 
@@ -1497,7 +2784,9 @@ async function restoreSession() {
 
     showDashboardScreen();
 
-    await loadBookings();
+    populateCashYears();
+
+    await refreshAllData();
   } catch (error) {
     console.error(
       'Erro ao restaurar sessão:',
@@ -1523,9 +2812,10 @@ function startAutoRefresh() {
           currentUser &&
           !document.hidden
         ) {
-          loadBookings(
+          refreshAllData(
             {
-              silent: true
+              silent:
+                true
             }
           );
         }
@@ -1540,7 +2830,8 @@ function stopAutoRefresh() {
       autoRefreshTimer
     );
 
-    autoRefreshTimer = null;
+    autoRefreshTimer =
+      null;
   }
 }
 
@@ -1615,7 +2906,48 @@ adminLogoutButton?.addEventListener(
 adminRefreshButton?.addEventListener(
   'click',
   () => {
-    loadBookings();
+    refreshAllData();
+  }
+);
+
+cashOpenButton?.addEventListener(
+  'click',
+  () => {
+    openActionModal(
+      null,
+      'open-cash'
+    );
+  }
+);
+
+cashCloseButton?.addEventListener(
+  'click',
+  () => {
+    openActionModal(
+      null,
+      'close-cash'
+    );
+  }
+);
+
+cashHistoryMonth?.addEventListener(
+  'change',
+  () => {
+    loadMonthlyHistory();
+  }
+);
+
+cashHistoryYear?.addEventListener(
+  'change',
+  () => {
+    loadMonthlyHistory();
+  }
+);
+
+cashYearSummaryYear?.addEventListener(
+  'change',
+  () => {
+    loadYearHistory();
   }
 );
 
@@ -1668,14 +3000,15 @@ modalBackdrop?.addEventListener(
 
 adminConfirmSubmit?.addEventListener(
   'click',
-  executeBookingAction
+  executeCurrentAction
 );
 
 document.addEventListener(
   'keydown',
   (event) => {
     if (
-      event.key === 'Escape' &&
+      event.key ===
+        'Escape' &&
       adminConfirmModal &&
       !adminConfirmModal.hidden
     ) {
@@ -1691,9 +3024,10 @@ document.addEventListener(
       !document.hidden &&
       currentUser
     ) {
-      loadBookings(
+      refreshAllData(
         {
-          silent: true
+          silent:
+            true
         }
       );
     }
@@ -1704,9 +3038,10 @@ window.addEventListener(
   'focus',
   () => {
     if (currentUser) {
-      loadBookings(
+      refreshAllData(
         {
-          silent: true
+          silent:
+            true
         }
       );
     }
