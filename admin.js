@@ -451,38 +451,6 @@ function forceHideButton(button) {
   );
 }
 
-function showLoginScreen() {
-  if (adminLoginSection) {
-    adminLoginSection.hidden = false;
-  }
-
-  if (adminDashboard) {
-    adminDashboard.hidden = true;
-  }
-
-  stopAutoRefresh();
-}
-
-function showDashboardScreen() {
-  if (adminLoginSection) {
-    adminLoginSection.hidden = true;
-  }
-
-  if (adminDashboard) {
-    adminDashboard.hidden = false;
-  }
-
-  if (
-    adminUserEmail &&
-    currentUser?.email
-  ) {
-    adminUserEmail.textContent =
-      currentUser.email;
-  }
-
-  startAutoRefresh();
-}
-
 function getBrazilDateValue(date = new Date()) {
   const parts =
     new Intl.DateTimeFormat(
@@ -499,9 +467,7 @@ function getBrazilDateValue(date = new Date()) {
 
   parts.forEach(
     (part) => {
-      if (
-        part.type !== 'literal'
-      ) {
+      if (part.type !== 'literal') {
         values[part.type] =
           part.value;
       }
@@ -591,7 +557,9 @@ function cloneDate(date) {
 
 function getBrazilTodayDate() {
   return parseBookingDate(
-    getBrazilDateValue()
+    getBrazilDateValue(
+      new Date()
+    )
   );
 }
 
@@ -754,7 +722,9 @@ function getWeekdayLabel(value) {
 }
 
 function getTodayValue() {
-  return getBrazilDateValue();
+  return getBrazilDateValue(
+    new Date()
+  );
 }
 
 function normalizeText(value) {
@@ -1033,6 +1003,47 @@ function renderAdminDateCalendar() {
   }
 }
 
+function resetAgendaToToday({
+  render = true,
+  closePopover = true
+} = {}) {
+  const today =
+    getBrazilDateValue(
+      new Date()
+    );
+
+  const todayDate =
+    parseBookingDate(
+      today
+    );
+
+  if (adminDateFilter) {
+    adminDateFilter.value =
+      today;
+
+    adminDateFilter.defaultValue =
+      today;
+  }
+
+  if (todayDate) {
+    calendarWeekStart =
+      getMondayOfWeek(
+        todayDate
+      );
+  }
+
+  updateSelectedDayLabels();
+  renderAdminDateCalendar();
+
+  if (closePopover) {
+    closeAdminDatePopover();
+  }
+
+  if (render) {
+    renderBookings();
+  }
+}
+
 function openAdminDatePopover() {
   if (
     !adminDatePopover ||
@@ -1123,26 +1134,10 @@ function selectAdminCalendarDate(dateValue) {
 }
 
 function goToToday() {
-  const today =
-    getTodayValue();
-
-  if (adminDateFilter) {
-    adminDateFilter.value =
-      today;
-  }
-
-  const todayDate =
-    parseBookingDate(today);
-
-  calendarWeekStart =
-    getMondayOfWeek(
-      todayDate
-    );
-
-  updateSelectedDayLabels();
-  renderAdminDateCalendar();
-  renderBookings();
-  closeAdminDatePopover();
+  resetAgendaToToday({
+    render: true,
+    closePopover: true
+  });
 }
 
 function moveAdminCalendarWeek(amount) {
@@ -1167,21 +1162,47 @@ function moveAdminCalendarWeek(amount) {
 }
 
 function initializeAdminCalendar() {
-  const today =
-    getTodayValue();
+  resetAgendaToToday({
+    render: false,
+    closePopover: true
+  });
+}
 
-  if (adminDateFilter) {
-    adminDateFilter.value =
-      today;
+function showLoginScreen() {
+  if (adminLoginSection) {
+    adminLoginSection.hidden = false;
   }
 
-  calendarWeekStart =
-    getMondayOfWeek(
-      getBrazilTodayDate()
-    );
+  if (adminDashboard) {
+    adminDashboard.hidden = true;
+  }
 
-  updateSelectedDayLabels();
-  renderAdminDateCalendar();
+  stopAutoRefresh();
+}
+
+function showDashboardScreen() {
+  if (adminLoginSection) {
+    adminLoginSection.hidden = true;
+  }
+
+  if (adminDashboard) {
+    adminDashboard.hidden = false;
+  }
+
+  if (
+    adminUserEmail &&
+    currentUser?.email
+  ) {
+    adminUserEmail.textContent =
+      currentUser.email;
+  }
+
+  resetAgendaToToday({
+    render: false,
+    closePopover: true
+  });
+
+  startAutoRefresh();
 }
 
 function isPendingExpired(booking) {
@@ -3880,13 +3901,17 @@ async function loginAdmin(
       return;
     }
 
+    currentBookingView =
+      'pending';
+
     showDashboardScreen();
 
     populateCashYears();
-    initializeAdminCalendar();
 
-    currentBookingView =
-      'pending';
+    resetAgendaToToday({
+      render: false,
+      closePopover: true
+    });
 
     updateBookingTabVisuals();
     updateBookingViewTexts();
@@ -3973,7 +3998,10 @@ async function logoutAdmin() {
 
   renderCashPaymentBreakdown([]);
 
-  initializeAdminCalendar();
+  resetAgendaToToday({
+    render: false,
+    closePopover: true
+  });
 
   updateBookingTabVisuals();
   updateBookingViewTexts();
@@ -4044,13 +4072,17 @@ async function restoreSession() {
       return;
     }
 
+    currentBookingView =
+      'pending';
+
     showDashboardScreen();
 
     populateCashYears();
-    initializeAdminCalendar();
 
-    currentBookingView =
-      'pending';
+    resetAgendaToToday({
+      render: false,
+      closePopover: true
+    });
 
     updateBookingTabVisuals();
     updateBookingViewTexts();
@@ -4385,9 +4417,37 @@ window.addEventListener(
   }
 );
 
-renderCashPaymentBreakdown([]);
+window.addEventListener(
+  'pageshow',
+  (event) => {
+    if (
+      currentUser &&
+      event.persisted
+    ) {
+      currentBookingView =
+        'pending';
 
-initializeAdminCalendar();
+      resetAgendaToToday({
+        render: true,
+        closePopover: true
+      });
+
+      updateBookingTabVisuals();
+      updateBookingViewTexts();
+
+      refreshAllData({
+        silent: true
+      });
+    }
+  }
+);
+
+resetAgendaToToday({
+  render: false,
+  closePopover: true
+});
+
+renderCashPaymentBreakdown([]);
 
 updateBookingTabVisuals();
 
