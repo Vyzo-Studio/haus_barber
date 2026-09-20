@@ -4,6 +4,7 @@
   --admin-surface: #101936;
   --admin-surface-2: #131e3d;
   --admin-surface-3: #172348;
+
   --admin-border: rgba(241, 237, 231, 0.12);
   --admin-border-strong: rgba(241, 237, 231, 0.2);
 
@@ -26,6 +27,7 @@
 
   --admin-blue: #5f8bd8;
   --admin-blue-soft: rgba(95, 139, 216, 0.12);
+  --admin-blue-border: rgba(95, 139, 216, 0.38);
 
   --admin-radius-sm: 8px;
   --admin-radius: 12px;
@@ -108,6 +110,8 @@ body.modal-open {
   min-height: 100vh;
 }
 
+/* LOGIN */
+
 .admin-login {
   min-height: 100vh;
   display: grid;
@@ -148,6 +152,7 @@ body.modal-open {
 .admin-section-head > div > span,
 .cash-history-head > div > span,
 .cash-payment-section-head > div > span,
+.admin-booking-workspace-head > div > span,
 .admin-confirm-kicker {
   display: inline-block;
   margin-bottom: 7px;
@@ -162,6 +167,7 @@ body.modal-open {
 .admin-section-head h2,
 .cash-history-head h3,
 .cash-payment-section-head h3,
+.admin-booking-workspace-head h2,
 .admin-confirm-dialog h2 {
   margin: 0;
   font-family: var(--admin-font-display);
@@ -210,7 +216,6 @@ body.modal-open {
 
 .admin-field input,
 .admin-control input,
-.admin-control select,
 .cash-history-filters select {
   width: 100%;
   min-height: 48px;
@@ -228,7 +233,6 @@ body.modal-open {
 
 .admin-field input:focus,
 .admin-control input:focus,
-.admin-control select:focus,
 .cash-history-filters select:focus {
   border-color: var(--admin-red);
   background: rgba(255, 255, 255, 0.05);
@@ -273,6 +277,8 @@ select option {
   background: rgba(255, 255, 255, 0.09);
   color: var(--admin-text);
 }
+
+/* BOTÕES */
 
 .admin-primary-button,
 .admin-secondary-button,
@@ -337,12 +343,13 @@ button:disabled {
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  transition: color 0.2s ease;
 }
 
 .back-site-link:hover {
   color: var(--admin-text);
 }
+
+/* MENSAGENS */
 
 .admin-message,
 .admin-global-message,
@@ -378,6 +385,8 @@ button:disabled {
   background: var(--admin-blue-soft);
   color: #a7c2ef;
 }
+
+/* HEADER */
 
 .admin-dashboard {
   min-height: 100vh;
@@ -425,14 +434,11 @@ button:disabled {
   color: var(--admin-red-hover);
   font-family: var(--admin-font-display);
   font-size: 1.45rem;
-  letter-spacing: 0.04em;
 }
 
 .admin-header-brand strong {
   color: var(--admin-text-muted);
   font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.055em;
 }
 
 .admin-header-actions {
@@ -451,6 +457,8 @@ button:disabled {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* MAIN */
 
 .admin-main {
   width: min(100% - 40px, 1380px);
@@ -489,10 +497,7 @@ button:disabled {
   font-size: 0.7rem;
 }
 
-.admin-refresh-button:hover:not(:disabled) {
-  border-color: var(--admin-red-border);
-  background: var(--admin-red-soft);
-}
+/* CAIXA */
 
 .cash-section {
   margin-bottom: 32px;
@@ -506,8 +511,6 @@ button:disabled {
       rgba(255, 255, 255, 0.008)
     ),
     var(--admin-bg-soft);
-  box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.13);
 }
 
 .admin-section-head,
@@ -546,7 +549,6 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.07em;
 }
 
 .cash-status-badge.is-open {
@@ -605,15 +607,12 @@ button:disabled {
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.075em;
-  text-transform: uppercase;
 }
 
 .cash-main-info > strong {
   font-family: var(--admin-font-display);
   font-size: clamp(2.5rem, 5vw, 4.2rem);
-  line-height: 0.95;
   font-weight: 400;
-  color: var(--admin-text);
 }
 
 .cash-main-info > small,
@@ -624,7 +623,6 @@ button:disabled {
 
 .cash-main-actions {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
@@ -641,20 +639,10 @@ button:disabled {
   color: #95dfb2;
 }
 
-.cash-open-button:hover:not(:disabled) {
-  border-color: var(--admin-green);
-  background: rgba(58, 167, 109, 0.2);
-}
-
 .cash-close-button {
   border: 1px solid var(--admin-red-border);
   background: var(--admin-red-soft);
   color: #efaaa4;
-}
-
-.cash-close-button:hover:not(:disabled) {
-  border-color: var(--admin-red);
-  background: rgba(184, 58, 48, 0.2);
 }
 
 .cash-message {
@@ -681,12 +669,12 @@ button:disabled {
 
 .cash-summary-card > strong {
   margin: 9px 0 6px;
-  color: var(--admin-text);
   font-family: var(--admin-font-display);
   font-size: 2rem;
-  line-height: 1;
   font-weight: 400;
 }
+
+/* FORMAS DE PAGAMENTO */
 
 .cash-payment-section {
   margin-top: 18px;
@@ -706,14 +694,11 @@ button:disabled {
 
 .cash-payment-section-head h3 {
   font-size: 1.9rem;
-  line-height: 0.95;
 }
 
 .cash-payment-section-head > small {
   color: var(--admin-text-muted);
   font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
 }
 
 .cash-payment-grid {
@@ -723,30 +708,11 @@ button:disabled {
 }
 
 .cash-payment-card {
-  position: relative;
-  overflow: hidden;
   min-height: 150px;
   padding: 17px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
-  background:
-    linear-gradient(
-      150deg,
-      rgba(255, 255, 255, 0.026),
-      rgba(255, 255, 255, 0.01)
-    );
-}
-
-.cash-payment-card::after {
-  content: "";
-  position: absolute;
-  right: -40px;
-  bottom: -55px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(184, 58, 48, 0.07);
-  pointer-events: none;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .cash-payment-card-head {
@@ -758,7 +724,6 @@ button:disabled {
 .cash-payment-icon {
   width: 37px;
   height: 37px;
-  flex: 0 0 37px;
   display: grid;
   place-items: center;
   border: 1px solid var(--admin-red-border);
@@ -784,7 +749,6 @@ button:disabled {
   margin-top: 17px;
   font-family: var(--admin-font-display);
   font-size: 2rem;
-  line-height: 1;
   font-weight: 400;
 }
 
@@ -799,6 +763,8 @@ button:disabled {
   font-size: 0.62rem;
 }
 
+/* HISTÓRICO */
+
 .cash-history-grid {
   margin-top: 18px;
   display: grid;
@@ -809,7 +775,6 @@ button:disabled {
 }
 
 .cash-history-panel {
-  min-width: 0;
   padding: 20px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
@@ -826,7 +791,6 @@ button:disabled {
 
 .cash-history-head h3 {
   font-size: 1.8rem;
-  line-height: 0.95;
 }
 
 .cash-history-filters {
@@ -862,7 +826,6 @@ button:disabled {
 }
 
 .cash-day-row > div {
-  min-width: 0;
   display: grid;
   gap: 4px;
 }
@@ -878,7 +841,6 @@ button:disabled {
 }
 
 .cash-day-row strong {
-  color: var(--admin-text);
   font-size: 0.75rem;
 }
 
@@ -888,7 +850,6 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-sm);
   background: rgba(255, 255, 255, 0.018);
@@ -897,11 +858,6 @@ button:disabled {
 .cash-month-row > div {
   display: grid;
   gap: 4px;
-}
-
-.cash-month-row > div > span {
-  font-size: 0.74rem;
-  font-weight: 700;
 }
 
 .cash-month-row > div > small {
@@ -926,9 +882,7 @@ button:disabled {
   margin-top: 12px;
   padding-top: 14px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 20px;
   border-top: 1px solid var(--admin-border);
 }
 
@@ -938,8 +892,10 @@ button:disabled {
   font-weight: 400;
 }
 
+/* ESTATÍSTICAS */
+
 .admin-stats {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
@@ -960,14 +916,12 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.075em;
 }
 
 .admin-stat-card > strong {
   margin: 7px 0 3px;
   font-family: var(--admin-font-display);
   font-size: 2.6rem;
-  line-height: 1;
   font-weight: 400;
 }
 
@@ -976,15 +930,220 @@ button:disabled {
   font-size: 0.62rem;
 }
 
+/* WORKSPACE AGENDA */
+
+.admin-booking-workspace {
+  margin-bottom: 14px;
+  padding: 21px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.008)
+    ),
+    var(--admin-bg-soft);
+}
+
+.admin-booking-workspace-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.admin-booking-workspace-head h2 {
+  font-size: 2.7rem;
+  line-height: 0.9;
+}
+
+.admin-selected-day {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.admin-selected-day small {
+  color: var(--admin-text-muted);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.admin-selected-day strong {
+  color: var(--admin-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ABAS */
+
+.admin-booking-tabs {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-booking-tab {
+  position: relative;
+  min-height: 104px;
+  padding: 17px 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 15px;
+  row-gap: 5px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  outline: none;
+  background: rgba(255, 255, 255, 0.018);
+  color: var(--admin-text);
+  text-align: left;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.admin-booking-tab:hover {
+  transform: translateY(-1px);
+  border-color: var(--admin-border-strong);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-booking-tab-label {
+  align-self: end;
+  font-family: var(--admin-font-display);
+  font-size: 1.65rem;
+  line-height: 1;
+  letter-spacing: 0.025em;
+}
+
+.admin-booking-tab small {
+  grid-column: 1;
+  color: var(--admin-text-muted);
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.admin-booking-tab strong {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  min-width: 47px;
+  height: 47px;
+  padding: 0 10px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  font-family: var(--admin-font-display);
+  font-size: 1.7rem;
+  font-weight: 400;
+}
+
+.admin-booking-tab[data-booking-view="pending"]::after,
+.admin-booking-tab[data-booking-view="scheduled"]::after,
+.admin-booking-tab[data-booking-view="finalized"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.admin-booking-tab[data-booking-view="pending"]::after {
+  background: var(--admin-yellow);
+}
+
+.admin-booking-tab[data-booking-view="scheduled"]::after {
+  background: var(--admin-blue);
+}
+
+.admin-booking-tab[data-booking-view="finalized"]::after {
+  background: var(--admin-green);
+}
+
+/* PENDENTES ATIVA */
+
+.admin-booking-tab.is-active[data-booking-view="pending"] {
+  border-color: var(--admin-yellow-border);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(218, 167, 79, 0.14),
+      rgba(218, 167, 79, 0.045)
+    );
+}
+
+.admin-booking-tab.is-active[data-booking-view="pending"] strong {
+  border-color: var(--admin-yellow-border);
+  background: var(--admin-yellow-soft);
+  color: #e9c476;
+}
+
+.admin-booking-tab.is-active[data-booking-view="pending"]::after {
+  opacity: 1;
+}
+
+/* AGENDADOS ATIVA */
+
+.admin-booking-tab.is-active[data-booking-view="scheduled"] {
+  border-color: var(--admin-blue-border);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(95, 139, 216, 0.15),
+      rgba(95, 139, 216, 0.045)
+    );
+}
+
+.admin-booking-tab.is-active[data-booking-view="scheduled"] strong {
+  border-color: var(--admin-blue-border);
+  background: var(--admin-blue-soft);
+  color: #a8c5f3;
+}
+
+.admin-booking-tab.is-active[data-booking-view="scheduled"]::after {
+  opacity: 1;
+}
+
+/* FINALIZADOS ATIVA */
+
+.admin-booking-tab.is-active[data-booking-view="finalized"] {
+  border-color: var(--admin-green-border);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(58, 167, 109, 0.15),
+      rgba(58, 167, 109, 0.045)
+    );
+}
+
+.admin-booking-tab.is-active[data-booking-view="finalized"] strong {
+  border-color: var(--admin-green-border);
+  background: var(--admin-green-soft);
+  color: #8edfaf;
+}
+
+.admin-booking-tab.is-active[data-booking-view="finalized"]::after {
+  opacity: 1;
+}
+
+/* FILTROS */
+
 .admin-controls {
   position: relative;
   z-index: 40;
   display: grid;
-  grid-template-columns:
-    minmax(190px, 0.8fr)
-    minmax(220px, 0.9fr)
-    minmax(250px, 1.3fr)
-    auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 20px;
@@ -992,6 +1151,13 @@ button:disabled {
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
   background: var(--admin-bg-soft);
+}
+
+.admin-controls-daily {
+  grid-template-columns:
+    minmax(260px, 0.9fr)
+    minmax(280px, 1.4fr)
+    auto;
 }
 
 .admin-control {
@@ -1012,8 +1178,9 @@ button:disabled {
 .clear-filters-button:hover {
   border-color: var(--admin-red-border);
   background: var(--admin-red-soft);
-  color: var(--admin-text);
 }
+
+/* CALENDÁRIO */
 
 .admin-control-date {
   position: relative;
@@ -1035,16 +1202,7 @@ button:disabled {
   border-radius: var(--admin-radius-sm);
   background: rgba(255, 255, 255, 0.035);
   color: var(--admin-text);
-  outline: 0;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.admin-date-trigger:hover {
-  border-color: var(--admin-border-strong);
-  background: rgba(255, 255, 255, 0.05);
+  outline: none;
 }
 
 .admin-date-trigger[aria-expanded="true"] {
@@ -1098,11 +1256,6 @@ button:disabled {
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-sm);
   background: rgba(255, 255, 255, 0.025);
-  color: var(--admin-text);
-  font-size: 1rem;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
 }
 
 .admin-date-nav:hover {
@@ -1111,7 +1264,6 @@ button:disabled {
 }
 
 .admin-date-week-title {
-  min-width: 0;
   text-align: center;
 }
 
@@ -1120,18 +1272,12 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.58rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
 }
 
 .admin-date-week-title strong {
   display: block;
   margin-top: 3px;
-  overflow: hidden;
-  color: var(--admin-text);
   font-size: 0.75rem;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .admin-date-days {
@@ -1141,7 +1287,6 @@ button:disabled {
 }
 
 .admin-calendar-day {
-  min-width: 0;
   min-height: 92px;
   padding: 10px 4px;
   display: flex;
@@ -1152,14 +1297,9 @@ button:disabled {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.025);
   color: var(--admin-text);
-  transition:
-    transform 0.15s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
 }
 
 .admin-calendar-day:hover {
-  transform: translateY(-1px);
   border-color: rgba(184, 58, 48, 0.5);
   background: rgba(184, 58, 48, 0.09);
 }
@@ -1168,14 +1308,12 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.56rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
 }
 
 .admin-calendar-day strong {
   margin-top: 4px;
   font-family: var(--admin-font-display);
   font-size: 2rem;
-  line-height: 1;
   font-weight: 400;
 }
 
@@ -1190,15 +1328,6 @@ button:disabled {
   border-color: rgba(241, 237, 231, 0.42);
 }
 
-.admin-calendar-day.is-today::after {
-  content: "";
-  width: 4px;
-  height: 4px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: var(--admin-text);
-}
-
 .admin-calendar-day.is-selected {
   border-color: var(--admin-red);
   background: var(--admin-red);
@@ -1207,14 +1336,10 @@ button:disabled {
 
 .admin-calendar-day.is-selected small,
 .admin-calendar-day.is-selected span {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.admin-calendar-day.is-selected.is-today::after {
-  background: #ffffff;
-}
-
-.admin-date-clear {
+.admin-date-today {
   width: 100%;
   min-height: 40px;
   margin-top: 12px;
@@ -1227,11 +1352,12 @@ button:disabled {
   letter-spacing: 0.07em;
 }
 
-.admin-date-clear:hover {
+.admin-date-today:hover {
   border-color: var(--admin-red-border);
   background: var(--admin-red-soft);
-  color: var(--admin-text);
 }
+
+/* LISTA */
 
 .admin-global-message {
   margin-bottom: 16px;
@@ -1254,7 +1380,6 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.7rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
 }
 
 .admin-empty strong {
@@ -1280,14 +1405,6 @@ button:disabled {
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
   background: rgba(255, 255, 255, 0.018);
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-
-.admin-booking-card:hover {
-  border-color: var(--admin-border-strong);
-  background: rgba(255, 255, 255, 0.027);
 }
 
 .booking-card-main {
@@ -1296,13 +1413,11 @@ button:disabled {
     105px
     115px
     1fr;
-  align-items: stretch;
 }
 
 .booking-card-status {
   padding: 18px 15px;
   display: flex;
-  align-items: flex-start;
   justify-content: center;
   border-right: 1px solid var(--admin-border);
 }
@@ -1315,8 +1430,6 @@ button:disabled {
   padding: 0 9px;
   border: 1px solid var(--admin-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--admin-text-soft);
   font-size: 0.56rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1342,8 +1455,6 @@ button:disabled {
 }
 
 .booking-status-badge.status-expired {
-  border-color: rgba(137, 143, 159, 0.25);
-  background: rgba(137, 143, 159, 0.08);
   color: var(--admin-text-muted);
 }
 
@@ -1354,7 +1465,6 @@ button:disabled {
   align-items: center;
   justify-content: center;
   border-right: 1px solid var(--admin-border);
-  text-align: center;
 }
 
 .booking-card-date > span {
@@ -1367,18 +1477,15 @@ button:disabled {
   margin-top: 2px;
   font-family: var(--admin-font-display);
   font-size: 2rem;
-  line-height: 1;
   font-weight: 400;
 }
 
 .booking-card-date > b {
   margin-top: 5px;
-  color: var(--admin-text-soft);
   font-size: 0.72rem;
 }
 
 .booking-card-info {
-  min-width: 0;
   padding: 18px;
   display: grid;
   grid-template-columns:
@@ -1401,14 +1508,11 @@ button:disabled {
   color: var(--admin-text-muted);
   font-size: 0.55rem;
   font-weight: 800;
-  letter-spacing: 0.07em;
 }
 
 .booking-card-info strong {
   overflow: hidden;
-  color: var(--admin-text);
   font-size: 0.7rem;
-  line-height: 1.4;
   text-overflow: ellipsis;
 }
 
@@ -1432,7 +1536,6 @@ button:disabled {
   flex-wrap: wrap;
   gap: 8px;
   border-top: 1px solid var(--admin-border);
-  background: rgba(0, 0, 0, 0.08);
 }
 
 .booking-action {
@@ -1449,11 +1552,6 @@ button:disabled {
   color: #8ddfae;
 }
 
-.booking-confirm:hover {
-  border-color: var(--admin-green);
-  background: rgba(58, 167, 109, 0.19);
-}
-
 .booking-reject,
 .booking-cancel {
   border-color: var(--admin-red-border);
@@ -1461,21 +1559,10 @@ button:disabled {
   color: #efa39c;
 }
 
-.booking-reject:hover,
-.booking-cancel:hover {
-  border-color: var(--admin-red);
-  background: rgba(184, 58, 48, 0.18);
-}
-
 .booking-paid {
-  border-color: rgba(95, 139, 216, 0.4);
-  background: rgba(95, 139, 216, 0.11);
+  border-color: var(--admin-blue-border);
+  background: var(--admin-blue-soft);
   color: #aac6f2;
-}
-
-.booking-paid:hover:not(:disabled) {
-  border-color: #5f8bd8;
-  background: rgba(95, 139, 216, 0.19);
 }
 
 .booking-refund {
@@ -1484,24 +1571,7 @@ button:disabled {
   color: #e8c37d;
 }
 
-.booking-refund:hover:not(:disabled) {
-  border-color: var(--admin-yellow);
-  background: rgba(218, 167, 79, 0.18);
-}
-
-.admin-footer {
-  width: min(100% - 40px, 1380px);
-  margin: 0 auto;
-  padding: 23px 0 32px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-top: 1px solid var(--admin-border);
-  color: var(--admin-text-muted);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
+/* MODAL */
 
 .admin-confirm-modal {
   position: fixed;
@@ -1528,20 +1598,13 @@ button:disabled {
   padding: 28px;
   border: 1px solid var(--admin-border-strong);
   border-radius: var(--admin-radius-lg);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.035),
-      rgba(255, 255, 255, 0.01)
-    ),
-    #0d152a;
+  background: #0d152a;
   box-shadow:
     0 30px 90px rgba(0, 0, 0, 0.55);
 }
 
 .admin-confirm-dialog h2 {
   font-size: 2.5rem;
-  line-height: 0.95;
 }
 
 .admin-confirm-dialog > p {
@@ -1558,6 +1621,8 @@ button:disabled {
   gap: 9px;
 }
 
+/* PAGAMENTO MODAL */
+
 .payment-method-section {
   margin-top: 21px;
   padding-top: 20px;
@@ -1567,16 +1632,13 @@ button:disabled {
 .payment-method-head {
   margin-bottom: 12px;
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
 }
 
 .payment-method-head > span {
-  color: var(--admin-text);
   font-size: 0.66rem;
   font-weight: 800;
-  letter-spacing: 0.075em;
 }
 
 .payment-method-head > small {
@@ -1601,7 +1663,6 @@ button:disabled {
   width: 1px;
   height: 1px;
   opacity: 0;
-  pointer-events: none;
 }
 
 .payment-method-option-content {
@@ -1614,11 +1675,6 @@ button:disabled {
   border: 1px solid var(--admin-border);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.022);
-  transition:
-    transform 0.15s ease,
-    border-color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .payment-method-option-content::after {
@@ -1630,34 +1686,11 @@ button:disabled {
   height: 13px;
   border: 1px solid var(--admin-border-strong);
   border-radius: 50%;
-  background: transparent;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.payment-method-option:hover .payment-method-option-content {
-  transform: translateY(-1px);
-  border-color: rgba(184, 58, 48, 0.42);
-  background: rgba(184, 58, 48, 0.055);
-}
-
-.payment-method-option input:focus-visible + .payment-method-option-content {
-  outline: 2px solid var(--admin-red);
-  outline-offset: 2px;
 }
 
 .payment-method-option input:checked + .payment-method-option-content {
   border-color: var(--admin-red);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(184, 58, 48, 0.18),
-      rgba(184, 58, 48, 0.07)
-    );
-  box-shadow:
-    inset 0 0 0 1px rgba(184, 58, 48, 0.16);
+  background: rgba(184, 58, 48, 0.14);
 }
 
 .payment-method-option input:checked + .payment-method-option-content::after {
@@ -1669,26 +1702,14 @@ button:disabled {
 
 .payment-method-option-content strong {
   padding-right: 25px;
-  color: var(--admin-text);
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.045em;
 }
 
 .payment-method-option-content small {
   margin-top: 5px;
-  padding-right: 20px;
   color: var(--admin-text-muted);
   font-size: 0.59rem;
-  line-height: 1.4;
-}
-
-.payment-method-option input:checked + .payment-method-option-content strong {
-  color: #ffffff;
-}
-
-.payment-method-option input:checked + .payment-method-option-content small {
-  color: #d8d2ce;
 }
 
 .payment-method-error {
@@ -1697,6 +1718,21 @@ button:disabled {
   font-size: 0.65rem !important;
   font-weight: 700;
 }
+
+/* FOOTER */
+
+.admin-footer {
+  width: min(100% - 40px, 1380px);
+  margin: 0 auto;
+  padding: 23px 0 32px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--admin-border);
+  color: var(--admin-text-muted);
+  font-size: 0.6rem;
+}
+
+/* RESPONSIVO */
 
 @media (max-width: 1180px) {
   .cash-summary-grid,
@@ -1710,96 +1746,37 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .booking-card-main {
-    grid-template-columns:
-      100px
-      110px
-      1fr;
-  }
-
   .booking-card-info {
     grid-template-columns:
       repeat(3, minmax(110px, 1fr));
   }
-
-  .booking-card-info > div:nth-child(4),
-  .booking-card-info > div:nth-child(5) {
-    padding-top: 8px;
-    border-top: 1px solid var(--admin-border);
-  }
 }
 
-@media (max-width: 920px) {
-  .admin-header-inner {
-    min-height: auto;
-    padding: 14px 0;
-    align-items: flex-start;
+@media (max-width: 900px) {
+  .admin-booking-tabs {
+    grid-template-columns: 1fr;
   }
 
-  .admin-header-actions {
-    flex-wrap: wrap;
+  .admin-booking-tab {
+    min-height: 85px;
   }
 
-  .admin-user-email {
-    width: 100%;
-    max-width: none;
-    text-align: right;
-  }
-
-  .admin-welcome {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .admin-controls {
+  .admin-controls-daily {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      1fr 1fr;
   }
 
   .clear-filters-button {
-    width: 100%;
-  }
-
-  .booking-card-main {
-    grid-template-columns:
-      92px
-      105px
-      1fr;
+    grid-column: 1 / -1;
   }
 
   .booking-card-info {
     grid-template-columns:
       repeat(2, minmax(120px, 1fr));
   }
-
-  .booking-card-info > div {
-    padding-top: 0 !important;
-    border-top: 0 !important;
-  }
-
-  .cash-day-row {
-    grid-template-columns:
-      minmax(110px, 1.2fr)
-      repeat(2, minmax(90px, 1fr));
-  }
-
-  .cash-day-row > div:nth-child(4),
-  .cash-day-row > div:nth-child(5) {
-    padding-top: 8px;
-    border-top: 1px solid var(--admin-border);
-  }
 }
 
 @media (max-width: 700px) {
-  .admin-login {
-    padding: 20px 13px;
-  }
-
-  .login-card {
-    padding: 28px 20px;
-  }
-
   .admin-header-inner,
   .admin-main,
   .admin-footer {
@@ -1809,41 +1786,42 @@ button:disabled {
   .admin-header-inner {
     display: grid;
     grid-template-columns: 1fr;
+    padding: 14px 0;
   }
 
   .admin-header-actions {
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
-  .admin-user-email {
-    text-align: left;
-  }
-
-  .admin-main {
-    padding-top: 28px;
+  .admin-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
   }
 
   .cash-section,
-  .admin-bookings-section {
+  .admin-bookings-section,
+  .admin-booking-workspace {
     padding: 17px;
   }
 
   .admin-section-head,
   .cash-section-head,
   .cash-payment-section-head,
-  .cash-history-head {
-    align-items: flex-start;
+  .cash-history-head,
+  .admin-booking-workspace-head {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .cash-status-area {
-    width: 100%;
-    justify-content: space-between;
+  .admin-selected-day {
+    justify-items: start;
   }
 
   .cash-main-card {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .cash-main-actions {
@@ -1858,38 +1836,12 @@ button:disabled {
   .cash-summary-grid,
   .cash-payment-grid,
   .admin-stats,
-  .admin-controls {
+  .admin-controls-daily {
     grid-template-columns: 1fr;
   }
 
-  .cash-payment-section {
-    padding: 16px;
-  }
-
-  .cash-history-filters {
-    width: 100%;
-  }
-
-  .cash-history-filters select {
-    min-width: 0;
-    flex: 1;
-  }
-
-  .cash-day-row {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .cash-day-row > div:first-child {
-    grid-column: 1 / -1;
-    padding-bottom: 9px;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .cash-day-row > div:nth-child(4),
-  .cash-day-row > div:nth-child(5) {
-    padding-top: 0;
-    border-top: 0;
+  .clear-filters-button {
+    grid-column: auto;
   }
 
   .admin-date-popover {
@@ -1897,9 +1849,7 @@ button:disabled {
     top: 50%;
     left: 50%;
     width: calc(100vw - 24px);
-    max-width: 520px;
     transform: translate(-50%, -50%);
-    padding: 15px;
   }
 
   .admin-date-days {
@@ -1907,35 +1857,24 @@ button:disabled {
       repeat(3, minmax(0, 1fr));
   }
 
-  .admin-calendar-day {
-    min-height: 84px;
-  }
-
   .booking-card-main {
     display: block;
   }
 
   .booking-card-status {
-    padding: 13px;
     justify-content: flex-start;
     border-right: 0;
     border-bottom: 1px solid var(--admin-border);
   }
 
   .booking-card-date {
-    padding: 15px;
     border-right: 0;
     border-bottom: 1px solid var(--admin-border);
   }
 
   .booking-card-info {
-    padding: 15px;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-
-  .booking-card-info > div:last-child {
-    grid-column: 1 / -1;
+    grid-template-columns:
+      1fr 1fr;
   }
 
   .booking-card-actions {
@@ -1946,17 +1885,9 @@ button:disabled {
     flex: 1 1 calc(50% - 8px);
   }
 
-  .admin-confirm-dialog {
-    padding: 22px 17px;
-  }
-
-  .payment-method-head {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
   .payment-method-options {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      1fr 1fr;
   }
 
   .admin-confirm-actions {
@@ -1968,66 +1899,19 @@ button:disabled {
   }
 
   .admin-footer {
-    align-items: flex-start;
     flex-direction: column;
+    gap: 10px;
   }
 }
 
 @media (max-width: 470px) {
-  .admin-header-brand img {
-    width: 48px;
-    height: 48px;
-  }
-
-  .admin-header-actions .admin-secondary-button {
-    flex: 1;
-  }
-
   .cash-summary-grid,
   .cash-payment-grid {
     grid-template-columns: 1fr;
   }
 
-  .cash-summary-card {
-    min-height: 115px;
-  }
-
-  .cash-payment-card {
-    min-height: 135px;
-  }
-
-  .cash-history-filters {
-    flex-direction: column;
-  }
-
-  .cash-history-filters select {
-    width: 100%;
-  }
-
-  .cash-day-row {
-    grid-template-columns: 1fr;
-  }
-
-  .cash-day-row > div {
-    padding: 7px 0;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .cash-day-row > div:last-child {
-    border-bottom: 0;
-  }
-
-  .cash-day-row > div:nth-child(4),
-  .cash-day-row > div:nth-child(5) {
-    border-top: 0;
-  }
-
   .booking-card-info {
     grid-template-columns: 1fr;
-  }
-
-  .booking-card-info > div:last-child {
-    grid-column: auto;
   }
 
   .booking-action {
@@ -2038,15 +1922,18 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .payment-method-option-content {
-    min-height: 70px;
+  .admin-booking-tab {
+    min-height: 82px;
+    padding: 14px;
   }
 
-  .admin-date-days {
-    gap: 6px;
+  .admin-booking-tab-label {
+    font-size: 1.45rem;
   }
 
-  .admin-calendar-day {
-    min-height: 80px;
+  .admin-booking-tab strong {
+    min-width: 42px;
+    height: 42px;
+    font-size: 1.5rem;
   }
 }
