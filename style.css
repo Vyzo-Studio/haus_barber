@@ -1920,3 +1920,222 @@ section {
   }
 }
 
+
+/* ===== V6.0 - AGENDAMENTO SEMANAL E LIGHTBOX LIMPO ===== */
+
+#lightbox-caption,
+.lightbox-content figcaption {
+  display: none !important;
+}
+
+.schedule-field {
+  min-width: 0;
+}
+
+.schedule-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.schedule-head label {
+  margin: 0;
+}
+
+.schedule-head > span {
+  margin: 0;
+  color: rgba(241, 237, 231, 0.58) !important;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+}
+
+.schedule-days {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.schedule-day {
+  min-width: 0;
+  min-height: 92px;
+  padding: 13px 10px;
+  border: 1px solid rgba(241, 237, 231, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #f1ede7;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.schedule-day:hover:not(:disabled) {
+  border-color: rgba(184, 58, 48, 0.72);
+  background: rgba(184, 58, 48, 0.08);
+  transform: translateY(-2px);
+}
+
+.schedule-day.is-active {
+  border-color: #b83a30;
+  background: #b83a30;
+  color: #ffffff;
+}
+
+.schedule-day:disabled,
+.schedule-day.is-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.schedule-day small,
+.schedule-day strong,
+.schedule-day span {
+  display: block;
+  margin: 0;
+}
+
+.schedule-day small {
+  margin-bottom: 7px;
+  color: inherit;
+  font-family: "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.schedule-day strong {
+  color: inherit;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 31px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.schedule-day span {
+  margin-top: 5px;
+  color: inherit;
+  font-family: "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.schedule-times {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  width: 100%;
+}
+
+.schedule-time {
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 8px;
+  border: 1px solid rgba(241, 237, 231, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #f1ede7;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.schedule-time:hover {
+  border-color: rgba(184, 58, 48, 0.72);
+  background: rgba(184, 58, 48, 0.08);
+  transform: translateY(-1px);
+}
+
+.schedule-time.is-active {
+  border-color: #b83a30;
+  background: #b83a30;
+  color: #ffffff;
+}
+
+.schedule-summary {
+  padding: 13px 15px;
+  border: 1px solid rgba(241, 237, 231, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(241, 237, 231, 0.7);
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.schedule-summary strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.schedule-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid rgba(241, 237, 231, 0.12);
+  border-radius: 8px;
+  color: rgba(241, 237, 231, 0.65);
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .schedule-days {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .schedule-times {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .schedule-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .schedule-days {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .schedule-day {
+    min-height: 82px;
+    padding: 11px 7px;
+  }
+
+  .schedule-day strong {
+    font-size: 27px;
+  }
+
+  .schedule-times {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .schedule-time {
+    min-height: 44px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+  .schedule-days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-times {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
