@@ -1,4 +1,5 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
@@ -26,8 +27,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="style.css?v=5.0" rel="stylesheet"/>
-
+<link href="style.css?v=6.0" rel="stylesheet"/>
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -132,13 +132,13 @@
           Barba <span>2</span>
 </button>
 <button aria-pressed="false" class="portfolio-filter" data-filter="luzes" type="button">
-          Luzes <span>5</span>
+          Luzes <span>4</span>
 </button>
 <button aria-pressed="true" class="portfolio-filter active" data-filter="freestyle" type="button">
-          Freestyle <span>21</span>
+          Freestyle <span>19</span>
 </button>
 <button aria-pressed="false" class="portfolio-filter" data-filter="all" type="button">
-          Todos <span>38</span>
+          Todos <span>35</span>
 </button>
 </div>
 <div aria-live="polite" class="gallery portfolio-gallery">
@@ -210,10 +210,7 @@
 <img alt="Corte com degradê realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-020.webp" width="1200"/>
 <span><small>DEGRADÊ</small></span>
 </button>
-<button class="gallery-item reveal" data-alt="Trabalho com luzes realizado pela Haus Barber" data-category="luzes" data-image="portfolio-022.webp" data-title="Luzes" type="button">
-<img alt="Trabalho com luzes realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-022.webp" width="1200"/>
-<span><small>LUZES</small></span>
-</button>
+
 <button class="gallery-item reveal" data-alt="Corte com degradê realizado pela Haus Barber" data-category="degrade" data-image="portfolio-028.webp" data-title="Degradê" type="button">
 <img alt="Corte com degradê realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-028.webp" width="1200"/>
 <span><small>DEGRADÊ</small></span>
@@ -238,10 +235,7 @@
 <img alt="Corte com desenho freestyle realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-043.webp" width="1200"/>
 <span><small>FREESTYLE</small></span>
 </button>
-<button class="gallery-item reveal" data-alt="Corte com desenho freestyle realizado pela Haus Barber" data-category="freestyle" data-image="portfolio-045.webp" data-title="Freestyle / Desenho" type="button">
-<img alt="Corte com desenho freestyle realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-045.webp" width="1200"/>
-<span><small>FREESTYLE</small></span>
-</button>
+
 <button class="gallery-item reveal" data-alt="Corte com desenho freestyle realizado pela Haus Barber" data-category="freestyle" data-image="portfolio-046.webp" data-title="Freestyle / Desenho" type="button">
 <img alt="Corte com desenho freestyle realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-046.webp" width="1200"/>
 <span><small>FREESTYLE</small></span>
@@ -290,14 +284,11 @@
 <img alt="Corte com degradê realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-128.webp" width="1200"/>
 <span><small>DEGRADÊ</small></span>
 </button>
-<button class="gallery-item reveal" data-alt="Corte com desenho freestyle realizado pela Haus Barber" data-category="freestyle" data-image="portfolio-141.webp" data-title="Freestyle / Desenho" type="button">
-<img alt="Corte com desenho freestyle realizado pela Haus Barber" height="1600" loading="lazy" src="portfolio-141.webp" width="1200"/>
-<span><small>FREESTYLE</small></span>
-</button>
+
 </div>
 <p class="portfolio-empty" hidden="" id="portfolio-empty">Nenhum trabalho encontrado nessa categoria.</p>
 <div class="gallery-cta reveal">
-<div class="portfolio-note"><strong>38</strong><span>trabalhos no portfólio</span></div>
+<div class="portfolio-note"><strong>35</strong><span>trabalhos no portfólio</span></div>
 <a class="button button-instagram" href="https://www.instagram.com/hausbarber_/" rel="noopener noreferrer" target="_blank">VER MAIS NO INSTAGRAM</a>
 </div>
 </section>
@@ -356,12 +347,12 @@
 <form class="booking-form reveal" id="booking-form">
 <div class="field field-full">
 <label for="nome">Seu nome</label>
-<input autocomplete="name" id="nome" name="nome" placeholder="Como podemos te chamar?" required type="text"/>
+<input autocomplete="name" id="nome" name="nome" placeholder="Como podemos te chamar?" required="" type="text"/>
 </div>
 <div class="field field-full">
 <label for="servico">Serviço</label>
-<select id="servico" name="servico" required>
-<option disabled selected value="">Escolha um serviço</option>
+<select id="servico" name="servico" required="">
+<option disabled="" selected="" value="">Escolha um serviço</option>
 <option>Corte Social - R$ 20</option>
 <option>Corte Degradê - R$ 25</option>
 <option>Corte Navalhado - R$ 25</option>
@@ -379,7 +370,7 @@
 <div class="field field-full schedule-field">
 <div class="schedule-head">
 <label>Escolha o dia</label>
-<span>Próximos 7 dias • domingo não aparece</span>
+<span>Segunda a sábado • atualização automática semanal</span>
 </div>
 <div aria-label="Dias disponíveis" class="schedule-days" id="schedule-days" role="group"></div>
 </div>
@@ -453,10 +444,10 @@
 <button aria-label="Foto anterior" class="lightbox-nav lightbox-prev" type="button">‹</button>
 <figure class="lightbox-content">
 <img alt="" src=""/>
-<figcaption id="lightbox-caption"></figcaption>
+
 </figure>
 <button aria-label="Próxima foto" class="lightbox-nav lightbox-next" type="button">›</button>
 </div>
-<script defer="" src="script.js?v=5.0"></script>
+<script defer="" src="script.js?v=6.0"></script>
 </body>
 </html>
