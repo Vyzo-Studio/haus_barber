@@ -5,7 +5,7 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
   <meta
@@ -18,11 +18,41 @@
     content="#101936"
   >
 
+  <meta
+    name="color-scheme"
+    content="dark"
+  >
+
+  <meta
+    name="format-detection"
+    content="telephone=no"
+  >
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
   <title>Painel Administrativo | Haus Barber</title>
 
   <link
     rel="icon"
     type="image/png"
+    href="logo-haus-barber.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
     href="logo-haus-barber.png"
   >
 
@@ -34,6 +64,18 @@
   <link
     rel="preconnect"
     href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    rel="preconnect"
+    href="https://cdn.jsdelivr.net"
+    crossorigin
+  >
+
+  <link
+    rel="preconnect"
+    href="https://pmhpgrdeknzbvegkrnxi.supabase.co"
     crossorigin
   >
 
@@ -98,6 +140,10 @@
               name="email"
               type="email"
               autocomplete="email"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              inputmode="email"
               placeholder="seuemail@exemplo.com"
               required
             >
@@ -117,6 +163,9 @@
                 name="password"
                 type="password"
                 autocomplete="current-password"
+                autocapitalize="none"
+                autocorrect="off"
+                spellcheck="false"
                 placeholder="Sua senha"
                 required
               >
@@ -493,7 +542,7 @@
                     stroke-width="1.7"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                  />
+                  ></path>
                 </svg>
 
               </button>
@@ -576,6 +625,9 @@
               type="search"
               placeholder="Nome ou serviço"
               autocomplete="off"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
             >
 
           </div>
@@ -1622,10 +1674,11 @@
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     defer
+    onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"
   ></script>
 
   <script
-    src="config.js?v=1.0"
+    src="config.js?v=1.1"
     defer
   ></script>
 
