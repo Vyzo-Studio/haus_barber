@@ -504,3 +504,340 @@ h1,h2,h3 {line-height:.98}
   .gallery-item.is-hero::before {top:10px;left:10px;padding:6px 8px;font-size:8px}
   .portfolio-footer {gap:12px;margin-top:18px;padding-top:18px}
 }
+
+/* HAUS / V15 — Premium editorial. Real photographs. One coherent brand language. */
+:root {
+  --haus-paper:#f1ede7;
+  --haus-ink:#080d1a;
+  --haus-mark:#b83a30;
+  --haus-rule:rgba(241,237,231,.16);
+}
+
+/* Branded navigation: restrained, geometric and cinematic. */
+.site-header {background:rgba(8,13,26,.93);border-bottom:1px solid rgba(241,237,231,.11)}
+.header-inner {height:80px}
+.brand>img {border:0;width:56px;height:56px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.2))}
+.brand-lockup strong {font-size:30px;letter-spacing:.045em}
+.brand-lockup small {font-size:9px;letter-spacing:.14em}
+.main-nav {gap:27px}
+.main-nav>a:not(.nav-cta) {font-size:11px;letter-spacing:.04em;position:relative}
+.main-nav>a:not(.nav-cta)::after {content:'';position:absolute;left:0;bottom:-8px;height:2px;width:0;background:var(--red);transition:width .25s ease}
+.main-nav>a:not(.nav-cta):hover::after {width:100%}
+.nav-cta {border-radius:2px;padding:14px 20px}
+
+/* Hero: controlled overlap, oversized editorial type and a single dominant image. */
+.haus-campaign {position:relative;overflow:hidden;background:#080d1a;isolation:isolate}
+.haus-campaign::before {content:'';position:absolute;pointer-events:none;inset:0;background:radial-gradient(ellipse at 33% 25%,rgba(184,58,48,.13),transparent 42%),linear-gradient(115deg,#0d152a 0%,#080d1a 76%)}
+.haus-campaign .hero-layout {min-height:735px;grid-template-columns:1.02fr .98fr;align-items:stretch}
+.haus-campaign .hero-text {padding:85px 0 110px;max-width:none;z-index:5;position:relative}
+.haus-kicker {display:flex;align-items:center;gap:12px;font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--muted)}
+.haus-kicker-spark {font-size:25px;line-height:1;color:var(--red-hover)}
+.haus-kicker-line {height:1px;width:35px;background:var(--red);display:block;flex:none}
+.haus-display-wrap {position:relative;margin:45px -120px 20px 0;z-index:5}
+.haus-hero-overline {display:block;margin-bottom:18px;font-size:12px;font-weight:800;letter-spacing:.18em;color:var(--red-hover)}
+.haus-campaign h1 {margin:0;font:400 clamp(95px,11.1vw,170px)/.78 var(--font-head);letter-spacing:-.017em;position:relative;max-width:none;white-space:nowrap;text-shadow:0 10px 45px rgba(4,8,16,.3)}
+.haus-campaign h1 span {display:inline-block;margin:9px 0 0;color:var(--cream);font:inherit;letter-spacing:inherit;text-decoration:none}
+.haus-hero-outline {display:block;margin-top:14px;font:400 clamp(52px,6.3vw,97px)/.87 var(--font-head);letter-spacing:.004em;color:transparent;-webkit-text-stroke:1.45px var(--red-hover);text-shadow:0 7px 30px rgba(0,0,0,.35);white-space:nowrap}
+.haus-campaign .hero-text>p {font-size:14px;line-height:1.85;max-width:410px;color:#dedbd7;margin:16px 0 0}
+.haus-campaign .hero-actions {margin-top:30px;gap:22px}
+.haus-campaign .btn-accent {min-width:186px;border-radius:3px}
+.haus-campaign .hero-seal {margin-top:45px}
+.haus-campaign .hero-art {margin-right:calc(-1 * max(36px, (100vw - 1192px)/2));min-height:735px;overflow:hidden;border-left:1px solid rgba(241,237,231,.07)}
+.haus-campaign .hero-art>img {object-position:center 38%;filter:saturate(.8) contrast(1.09)}
+.haus-campaign .hero-art::before {background:linear-gradient(90deg,rgba(8,13,26,.58),transparent 40%),linear-gradient(0deg,rgba(8,13,26,.76),transparent 50%)}
+.haus-campaign .hero-art::after {inset:24px 24px 24px 0;border:1px solid rgba(241,237,231,.14);border-left:0}
+.haus-photo-index {position:absolute;top:49px;right:50px;z-index:4;color:#f1ede7;font-weight:800;font-size:11px;letter-spacing:.2em}
+.haus-photo-index span {color:var(--red-hover);padding:0 8px}
+.haus-campaign .hero-stamp {bottom:80px;left:calc(14% + 8px);padding-left:20px;background:rgba(8,13,26,.18)}
+.haus-campaign .hero-stamp strong {font-size:43px;line-height:.86}
+.haus-hero-edge {position:absolute;right:0;left:0;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:20px;z-index:7;pointer-events:none;background:#080d1a;padding:8px max(36px,calc((100vw - 1192px)/2));color:var(--quiet);font-size:9px;letter-spacing:.16em;font-weight:800;border-top:1px solid var(--haus-rule)}
+.haus-hero-edge span:last-child {font-size:23px;color:var(--red-hover);line-height:1}
+.haus-hero-grain {pointer-events:none;position:absolute;inset:0;opacity:.09;z-index:2;background:repeating-linear-gradient(45deg,transparent 0px,transparent 7px,rgba(255,255,255,.1) 8px,transparent 9px);mix-blend-mode:screen}
+
+/* Ticker: a strong visual pause, information not repetitive cards. */
+.haus-ticker {background:#121b33;border-block:1px solid var(--haus-rule)}
+.haus-ticker .info-items>div {padding-block:22px}
+.haus-ticker .info-items>div:first-child {padding-left:0}
+.haus-ticker .info-icon {color:var(--red-hover)}
+.haus-ticker .info-items strong {font-size:10px;letter-spacing:.07em}
+.haus-ticker .info-items small {color:var(--quiet)}
+
+/* Lookbook: the work is the art; the framing stays quiet. */
+.haus-lookbook {padding-top:112px;padding-bottom:100px;background:#0b1020;overflow:hidden}
+.haus-lookbook::before {content:'H';position:absolute;right:-45px;top:-150px;font:400 480px/1 var(--font-head);color:rgba(241,237,231,.018);pointer-events:none}
+.lookbook-heading {display:flex;align-items:end;justify-content:space-between;gap:60px;padding-bottom:35px;position:relative}
+.lookbook-heading>div:first-child {max-width:840px;min-width:0}
+.lookbook-heading h2 {margin:19px 0 0;font:400 clamp(62px,8.5vw,121px)/.83 var(--font-head);letter-spacing:-.01em;color:var(--cream)}
+.lookbook-heading h2 span {color:var(--red-hover)}
+.lookbook-heading-aside {max-width:255px;margin-bottom:4px;flex:none}
+.lookbook-heading-aside p {margin:5px 0 23px;color:var(--muted);font-size:12px;line-height:1.85}
+.lookbook-mark {font:400 45px/.9 var(--font-head);color:var(--red-hover);border-bottom:1px solid var(--haus-rule);padding-bottom:14px;margin-bottom:15px}
+.lookbook-stage {display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:18px;align-items:start}
+.lookbook-cover {position:relative;min-height:770px;overflow:hidden;isolation:isolate;background:#111a32;border:1px solid var(--haus-rule);border-radius:3px}
+.lookbook-cover img {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 32%;filter:saturate(.84) contrast(1.07)}
+.lookbook-cover::after {content:'';pointer-events:none;position:absolute;inset:0;background:linear-gradient(0deg,#080d1a 0%,transparent 48%),linear-gradient(90deg,rgba(8,13,26,.15),transparent 60%)}
+.lookbook-cover::before {content:'';pointer-events:none;position:absolute;inset:22px;border:1px solid rgba(241,237,231,.38);z-index:1}
+.lookbook-cover-top {display:flex;align-items:center;justify-content:space-between;gap:10px;position:absolute;top:42px;left:45px;right:45px;z-index:2;color:var(--cream);font-weight:800;font-size:10px;letter-spacing:.13em}
+.lookbook-cover-top span {color:var(--red-hover);font-size:19px}
+.lookbook-cover-bottom {position:absolute;left:44px;right:35px;bottom:45px;z-index:2}
+.lookbook-cover-bottom>span {display:block;margin-bottom:14px;color:var(--red-hover);font-size:10px;letter-spacing:.17em;font-weight:800}
+.lookbook-cover-bottom strong {font:400 clamp(55px,6vw,90px)/.87 var(--font-head);color:var(--cream);letter-spacing:-.01em}
+.lookbook-gallery-panel {margin:0;padding:24px;background:#101936;border:1px solid var(--haus-rule);border-radius:3px;box-shadow:none;min-width:0}
+.portfolio-gallery-heading {display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--haus-rule)}
+.portfolio-gallery-heading>div>span {display:block;margin-bottom:8px;color:var(--red-hover);font-size:10px;font-weight:800;letter-spacing:.15em}
+.portfolio-gallery-heading strong {display:block;font:400 35px/.9 var(--font-head);color:var(--cream)}
+.portfolio-gallery-heading p {max-width:240px;margin:0;color:var(--muted);font-size:11px;line-height:1.75}
+.lookbook-gallery-panel .portfolio-toolbar {gap:7px;margin-bottom:20px}
+.lookbook-gallery-panel .portfolio-filter {min-height:35px;border-radius:2px;padding:7px 11px;font-size:10px;background:#121c35;color:var(--muted)}
+.lookbook-gallery-panel .portfolio-filter.active,.lookbook-gallery-panel .portfolio-filter[aria-pressed=true] {background:var(--red);border-color:var(--red);color:var(--white)}
+.lookbook-gallery-panel .portfolio-filter-count {min-width:20px;height:20px;font-size:9px;background:rgba(0,0,0,.2)}
+.lookbook-gallery-panel .gallery {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;grid-auto-flow:row dense}
+.lookbook-gallery-panel .gallery-item {grid-column:span 2;aspect-ratio:4/5;grid-row:auto;min-height:0;max-height:none;border:0;border-radius:2px;box-shadow:none}
+.lookbook-gallery-panel .gallery-item.is-hero {grid-column:span 4;grid-row:span 2;aspect-ratio:auto;min-height:430px;max-height:none}
+.lookbook-gallery-panel .gallery-item.is-bottom {grid-column:span 2;aspect-ratio:4/5}
+.lookbook-gallery-panel .gallery.is-compact .gallery-item {grid-column:span 3;aspect-ratio:4/5}
+.lookbook-gallery-panel .gallery-item::after {background:linear-gradient(transparent 55%,rgba(8,13,26,.83))}
+.lookbook-gallery-panel .gallery-item>span {left:13px;right:12px;bottom:12px}
+.lookbook-gallery-panel .gallery-item>span small {background:rgba(8,13,26,.74);border:0;border-bottom:2px solid var(--red-hover);font-size:9px;padding:7px 8px}
+.lookbook-gallery-panel .gallery-item>span::after {content:'↗';font-size:18px;line-height:1;color:var(--white)}
+.lookbook-gallery-panel .gallery-item.is-hero::before {content:'HAUS ORIGINAL';border-radius:0;top:16px;left:16px;background:#080d1a;padding:8px 12px}
+.lookbook-gallery-panel .portfolio-footer {margin-top:20px;padding-top:18px;gap:12px}
+.lookbook-gallery-panel .portfolio-footer .btn {min-height:43px;border-radius:2px}
+.lookbook-outro {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:26px 0 0;border-top:1px solid var(--haus-rule);margin-top:30px;color:var(--quiet);font-size:10px;font-weight:800;letter-spacing:.12em}
+.lookbook-outro a {color:var(--cream);letter-spacing:.06em}
+.lookbook-outro a:hover {color:var(--red-hover)}
+.lookbook-outro-sigil {font-size:35px;color:var(--red-hover);line-height:1}
+
+/* Prices with a showroom rhythm. */
+.haus-menu {background:#080d1a}
+.haus-menu .section-top {margin-bottom:42px}
+.haus-menu .section-top h2 {font-size:clamp(60px,6.6vw,96px);letter-spacing:-.01em}
+.haus-menu .menu-grid {gap:0;border:1px solid var(--haus-rule);background:#111a32;border-radius:3px;overflow:hidden}
+.haus-menu .menu-card {border:0;border-right:1px solid var(--haus-rule);border-radius:0;box-shadow:none;min-width:0;transition:background .2s ease}
+.haus-menu .menu-card:last-child {border-right:0}
+.haus-menu .menu-card:hover {transform:none;box-shadow:none;background:#16213e}
+.haus-menu .menu-photo {height:255px}
+.haus-menu .menu-photo::after {background:linear-gradient(0deg,rgba(8,13,26,.55),transparent 65%)}
+.haus-menu .menu-photo-tag {position:absolute;z-index:2;left:20px;bottom:18px;font:400 24px/.9 var(--font-head);letter-spacing:.06em;color:var(--cream);background:rgba(8,13,26,.76);padding:9px 11px;border-left:3px solid var(--red)}
+.haus-menu .menu-card-content {padding:27px 25px 31px}
+.haus-menu .menu-card h3 {font-size:45px;letter-spacing:.01em}
+.haus-menu .menu-card-content>p {color:var(--quiet)}
+.haus-menu .menu-prices li {padding-block:13px}
+.haus-menu .menu-prices li strong {color:var(--cream)}
+.haus-menu .services-footer {padding:20px 0 0;border-top:1px solid var(--haus-rule)}
+
+/* A true editorial interlude between discovery and conversion. */
+.haus-experience {position:relative;overflow:hidden;background:#121b33;border-top:1px solid var(--haus-rule);border-bottom:1px solid var(--haus-rule);padding:77px 0}
+.haus-experience-layout {display:grid;grid-template-columns:minmax(0,1.07fr) minmax(0,1fr) minmax(0,.62fr);gap:36px;align-items:center}
+.haus-experience-copy h2 {font:400 clamp(62px,6.7vw,99px)/.86 var(--font-head);color:var(--cream);margin:19px 0 22px}
+.haus-experience-copy h2 span {color:var(--red-hover)}
+.haus-experience-copy p {font-size:12px;color:var(--muted);max-width:335px;line-height:1.9;margin-bottom:19px}
+.haus-experience-steps {border-top:1px solid var(--haus-rule)}
+.haus-experience-steps article {display:grid;grid-template-columns:32px minmax(0,1fr);gap:18px;padding:17px 0 14px;border-bottom:1px solid var(--haus-rule)}
+.haus-experience-steps article>span {color:var(--red-hover);font:400 26px/.85 var(--font-head)}
+.haus-experience-steps h3 {margin:0 0 8px;color:var(--cream);font:400 25px/.95 var(--font-head);letter-spacing:.04em}
+.haus-experience-steps p {margin:0;color:var(--muted);font-size:11px;line-height:1.75}
+.haus-experience-image {height:340px;position:relative;overflow:hidden;border-radius:2px;border:1px solid var(--haus-rule)}
+.haus-experience-image img {width:100%;height:100%;object-fit:cover;filter:saturate(.8)}
+.haus-experience-image::after {content:'';position:absolute;inset:30% 0 0;background:linear-gradient(transparent,rgba(8,13,26,.8))}
+.haus-experience-image span {position:absolute;right:16px;bottom:19px;z-index:1;color:var(--cream);font:400 43px/.8 var(--font-head);text-align:right}
+
+/* Booking: legible, trustworthy and conversion-first, not decorative. */
+.haus-booking {background:#0c1325;padding:104px 0}
+.haus-booking .booking-grid {gap:50px}
+.haus-booking .booking-intro h2 {font-size:clamp(65px,7vw,104px)}
+.haus-booking .booking-panel {border-radius:3px;box-shadow:0 30px 75px rgba(0,0,0,.25)}
+.haus-booking .booking-panel-head {background:#172345;padding:26px 30px}
+.haus-booking .booking-panel-head strong {font-size:38px}
+.haus-booking .booking-form {padding:29px 30px}
+.haus-booking .booking-tip {background:rgba(184,58,48,.09)}
+.haus-booking .whatsapp-button {border-radius:3px}
+
+/* Membership: price typography feels like a club, without inventing benefits. */
+.haus-membership {background:#0b1020;padding:104px 0}
+.haus-membership .section-top {margin-bottom:44px}
+.haus-membership .section-top h2 {font-size:clamp(61px,7vw,100px)}
+.haus-membership .plan-grid {gap:12px}
+.haus-membership .plan-card {padding:25px 26px 29px;border-radius:3px;border:1px solid var(--haus-rule);background:linear-gradient(160deg,#18223d,#101936 75%);position:relative;overflow:hidden}
+.haus-membership .plan-card::before {content:'';position:absolute;top:0;left:0;width:62px;height:3px;background:var(--red)}
+.haus-membership .plan-card:hover {border-color:rgba(184,58,48,.55);transform:translateY(-3px)}
+.haus-membership-mini {display:flex;justify-content:space-between;gap:15px;color:var(--red-hover);font-weight:800;letter-spacing:.16em;font-size:9px;margin-bottom:23px}
+.haus-membership-mini span {font-size:16px;line-height:1}
+.haus-membership .plan-card h3 {font-size:64px;margin:0 0 12px}
+.haus-membership .plan-label {order:2}
+.haus-membership .plan-card>p {margin:0 0 19px;color:var(--quiet)}
+.haus-membership .plan-card li {padding-block:16px}
+.haus-membership .plan-card li b {font-size:18px;color:var(--cream)}
+.haus-membership .plan-bottom {border-radius:3px;background:#141e38;padding:24px}
+
+/* More graphic storytelling and closing moments. */
+.haus-story {background:#080d1a}
+.haus-story .about-grid {gap:80px}
+.haus-story .about-images {height:585px;border-radius:3px;box-shadow:30px 30px 0 rgba(184,58,48,.12)}
+.haus-story .about-images::before {content:'HAUS / ORIGINAL';position:absolute;top:28px;left:28px;z-index:2;color:#f1ede7;font-size:10px;letter-spacing:.2em;font-weight:800;text-shadow:0 2px 8px #080d1a}
+.haus-story .about-brand {border-radius:2px}
+.haus-story .about-copy h2 {font-size:clamp(65px,7vw,103px)}
+.haus-location {background:#0c1325}
+.haus-location .location-grid {gap:0}
+.haus-location .location-card {border-radius:3px 0 0 3px;padding:45px}
+.haus-location .location-map {border-radius:0 3px 3px 0}
+.haus-final {position:relative;overflow:hidden;background:var(--red);border-top:0;padding:100px 0}
+.haus-final-inner {display:flex;justify-content:space-between;align-items:end;gap:36px;position:relative;z-index:1}
+.haus-final .eyebrow {color:#f1ede7;letter-spacing:.14em}
+.haus-final .eyebrow::before {background:#f1ede7}
+.haus-final h2 {margin:22px 0 19px;color:#fffaf4;font:400 clamp(72px,8.5vw,130px)/.83 var(--font-head);letter-spacing:-.015em}
+.haus-final h2 em {color:#080d1a;font-style:normal}
+.haus-final p {margin:0;color:#fff1ed;font-size:13px;max-width:440px;line-height:1.8}
+.haus-final-actions {display:flex;flex-direction:column;align-items:stretch;gap:19px;min-width:238px;position:relative;z-index:2}
+.haus-final .btn-accent {background:#080d1a;color:#f1ede7;border-radius:2px}
+.haus-final .btn-accent:hover {background:#172348}
+.haus-final .text-link {color:#fffaf4;border-color:#fffaf4;align-self:flex-start}
+.haus-final-watermark {position:absolute;bottom:-129px;right:0;font:400 clamp(240px,29vw,470px)/1 var(--font-head);letter-spacing:-.03em;color:rgba(8,13,26,.11);z-index:-1;pointer-events:none}
+
+@media (max-width:1150px) {
+ .haus-campaign .hero-layout {grid-template-columns:1.05fr .95fr;min-height:655px}
+ .haus-campaign .hero-text {padding-block:77px 90px}
+ .haus-campaign .hero-art {min-height:655px}
+ .haus-campaign h1 {font-size:clamp(88px,10.7vw,135px)}
+ .haus-display-wrap {margin-right:-90px}
+ .haus-hero-outline {font-size:clamp(56px,6.5vw,79px)}
+ .lookbook-stage {grid-template-columns:minmax(0,.73fr) minmax(0,1.27fr)}
+ .lookbook-cover {min-height:700px}
+ .lookbook-gallery-panel {padding:17px}
+ .haus-experience-layout {grid-template-columns:1fr 1fr}
+ .haus-experience-image {display:none}
+}
+@media (max-width:900px) {
+ .header-inner {height:73px}
+ .haus-campaign .hero-layout {grid-template-columns:.98fr 1.02fr;min-height:600px}
+ .haus-campaign .hero-art {min-height:600px}
+ .haus-campaign .hero-text {padding-block:65px 95px}
+ .haus-campaign h1 {font-size:clamp(72px,10.2vw,112px)}
+ .haus-hero-outline {font-size:clamp(48px,6.2vw,72px)}
+ .haus-display-wrap {margin-right:-35px}
+ .haus-campaign .hero-text>p {max-width:320px;font-size:12px}
+ .haus-campaign .hero-stamp {left:22px;bottom:65px}
+ .haus-campaign .hero-stamp strong {font-size:31px}
+ .lookbook-heading h2 {font-size:clamp(68px,9vw,89px)}
+ .lookbook-stage {grid-template-columns:1fr}
+ .lookbook-cover {height:450px;min-height:450px}
+ .lookbook-cover img {object-position:center 30%}
+ .lookbook-cover-bottom strong {font-size:75px}
+ .lookbook-gallery-panel {padding:23px}
+ .haus-menu .menu-photo {height:185px}
+ .haus-menu .menu-card h3 {font-size:36px}
+ .haus-experience-layout {gap:25px}
+ .haus-membership .plan-card {padding:23px 18px}
+ .haus-membership .plan-card h3 {font-size:48px}
+ .haus-story .about-images {height:430px}
+ .haus-story .about-grid {gap:40px}
+ .haus-location .location-card {padding:28px}
+}
+@media (max-width:640px) {
+ .site-header {backdrop-filter:blur(12px)}
+ .header-inner {height:68px}
+ .haus-campaign .hero-layout {display:flex;flex-direction:column;min-height:0}
+ .haus-campaign .hero-text {padding:58px 0 43px;z-index:5}
+ .haus-kicker {font-size:9px;gap:8px;letter-spacing:.08em}
+ .haus-kicker-line {width:19px}
+ .haus-display-wrap {margin:32px 0 18px}
+ .haus-hero-overline {font-size:10px;margin-bottom:14px}
+ .haus-campaign h1 {font-size:clamp(79px,18vw,122px);line-height:.79;letter-spacing:-.016em}
+ .haus-campaign h1 span {margin-top:5px}
+ .haus-hero-outline {font-size:clamp(54px,12vw,80px);margin-top:10px;white-space:normal}
+ .haus-campaign .hero-text>p {max-width:420px;font-size:12px;line-height:1.8;margin-top:16px}
+ .haus-campaign .hero-actions {display:flex;flex-direction:row;align-items:center;gap:17px;margin-top:28px}
+ .haus-campaign .hero-actions .btn {width:auto;min-width:0;padding-inline:20px}
+ .haus-campaign .hero-actions .text-link {font-size:9px}
+ .haus-campaign .hero-seal {display:none}
+ .haus-campaign .hero-art {height:415px;min-height:415px;margin:0 -17px}
+ .haus-campaign .hero-art::after {inset:14px;border-left:1px solid rgba(241,237,231,.14)}
+ .haus-campaign .hero-art>img {object-position:center 34%}
+ .haus-photo-index {top:26px;right:27px}
+ .haus-campaign .hero-stamp {left:30px;bottom:55px}
+ .haus-campaign .hero-stamp strong {font-size:33px}
+ .haus-hero-edge {padding:7px 17px;font-size:8px}
+ .haus-ticker .info-items {grid-template-columns:1fr;gap:0}
+ .haus-ticker .info-items>div {padding-block:15px}
+ .haus-lookbook {padding:74px 0 76px}
+ .lookbook-heading {display:block;padding-bottom:25px}
+ .lookbook-heading h2 {font-size:clamp(60px,12.8vw,83px);line-height:.88}
+ .lookbook-heading-aside {display:none}
+ .lookbook-stage {gap:11px}
+ .lookbook-cover {height:405px;min-height:405px}
+ .lookbook-cover::before {inset:13px}
+ .lookbook-cover-top {top:26px;left:27px;right:27px;font-size:9px}
+ .lookbook-cover-bottom {left:27px;bottom:30px}
+ .lookbook-cover-bottom strong {font-size:clamp(60px,16vw,77px)}
+ .lookbook-gallery-panel {padding:17px 13px;border-radius:2px}
+ .portfolio-gallery-heading {display:block;margin-bottom:15px;padding-bottom:15px}
+ .portfolio-gallery-heading strong {font-size:32px}
+ .portfolio-gallery-heading p {margin-top:8px;max-width:none}
+ .lookbook-gallery-panel .portfolio-toolbar {gap:6px;margin-bottom:16px}
+ .lookbook-gallery-panel .portfolio-filter {min-height:37px;padding:7px 10px;font-size:10px}
+ .lookbook-gallery-panel .gallery {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;grid-auto-flow:row}
+ .lookbook-gallery-panel .gallery-item,.lookbook-gallery-panel .gallery-item.is-hero,.lookbook-gallery-panel .gallery-item.is-bottom,.lookbook-gallery-panel .gallery.is-compact .gallery-item {grid-column:span 1;grid-row:auto;aspect-ratio:4/5;max-height:none;min-height:0}
+ .lookbook-gallery-panel .gallery-item.is-hero::before {display:none}
+ .lookbook-gallery-panel .gallery-item>span {left:7px;bottom:7px;right:7px}
+ .lookbook-gallery-panel .gallery-item>span small {font-size:8px;padding:6px 7px;letter-spacing:.045em}
+ .lookbook-gallery-panel .gallery-item>span::after {display:none}
+ .lookbook-outro {gap:8px;flex-wrap:wrap;margin-top:22px}
+ .lookbook-outro-sigil {display:none}
+ .lookbook-outro span:first-child {font-size:9px}
+ .lookbook-outro a {font-size:10px}
+ .haus-menu .section-top {margin-bottom:24px}
+ .haus-menu .section-top h2 {font-size:clamp(53px,11.8vw,69px)}
+ .haus-menu .menu-grid {display:block}
+ .haus-menu .menu-card {border-right:0;border-bottom:1px solid var(--haus-rule)}
+ .haus-menu .menu-card:last-child {border:0}
+ .haus-menu .menu-photo {height:200px}
+ .haus-menu .menu-card-content {padding:23px}
+ .haus-menu .menu-card h3 {font-size:43px}
+ .haus-experience {padding:63px 0}
+ .haus-experience-layout {display:block}
+ .haus-experience-copy h2 {font-size:clamp(64px,13vw,85px)}
+ .haus-experience-steps {margin-top:34px}
+ .haus-experience-steps article {padding:17px 0}
+ .haus-booking {padding:73px 0}
+ .haus-booking .booking-intro h2 {font-size:clamp(57px,12.8vw,80px)}
+ .haus-booking .booking-panel-head {padding:21px 18px}
+ .haus-booking .booking-form {padding:21px 16px}
+ .haus-membership {padding:78px 0}
+ .haus-membership .section-top h2 {font-size:clamp(52px,11vw,67px)}
+ .haus-membership .plan-card {padding:24px}
+ .haus-membership .plan-card h3 {font-size:58px}
+ .haus-story .about-images {height:375px;box-shadow:13px 13px 0 rgba(184,58,48,.12)}
+ .haus-story .about-grid {gap:36px}
+ .haus-story .about-copy h2 {font-size:clamp(58px,12vw,83px)}
+ .haus-location .location-card {border-radius:3px 3px 0 0}
+ .haus-location .location-map {border-radius:0 0 3px 3px}
+ .haus-final {padding:73px 0}
+ .haus-final-inner {display:block}
+ .haus-final h2 {font-size:clamp(67px,13vw,98px)}
+ .haus-final p {font-size:12px}
+ .haus-final-actions {min-width:0;align-items:stretch;margin-top:29px;max-width:400px}
+ .haus-final-watermark {font-size:220px;bottom:-50px;right:-90px}
+}
+@media (max-width:370px) {
+ .haus-kicker {font-size:8px}
+ .haus-campaign h1 {font-size:clamp(69px,17.6vw,83px)}
+ .haus-hero-outline {font-size:52px}
+ .haus-campaign .hero-actions {flex-direction:column;align-items:stretch;gap:12px;width:100%}
+ .haus-campaign .hero-actions .btn,.haus-campaign .hero-actions .text-link {width:100%}
+ .lookbook-heading h2 {font-size:54px}
+ .lookbook-cover {height:340px;min-height:340px}
+ .lookbook-cover-bottom strong {font-size:55px}
+ .lookbook-gallery-panel .gallery-item>span small {font-size:7px}
+ .haus-membership .section-top h2 {font-size:51px}
+ .haus-final h2 {font-size:65px}
+}
+@media (prefers-reduced-motion:reduce) {
+ .haus-campaign .hero-art>img,.lookbook-cover img,.haus-menu .menu-card,.lookbook-gallery-panel .gallery-item {transition:none!important}
+}
+
+/* Extra-small phones: keep long editorial words inside the usable viewport. */
+@media (max-width:370px) {
+  .haus-experience-copy h2 {font-size:54px;overflow-wrap:anywhere}
+  .haus-story .about-copy h2 {font-size:52px;overflow-wrap:anywhere}
+  .haus-final h2 {font-size:56px;overflow-wrap:anywhere}
+}
