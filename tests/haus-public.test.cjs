@@ -25,8 +25,9 @@ test('combos são informativos e não substituem serviços avulsos', () => {
     ['4 Cortes Social + Barba', '120'],
     ['4 Barbas', '60']
   ];
-  const section = html.slice(html.indexOf('<section\n      aria-labelledby="combos-title"'), html.indexOf('<section\n      aria-labelledby="about-title"'));
-  assert.match(section, /45 dias após a assinatura/);
+  const section = html.slice(html.indexOf('<section class="section haus-combos"'), html.indexOf('<section class="section about-section"'));
+  assert.match(section, /45 DIAS/);
+  assert.match(section, /após a assinatura/);
   assert.doesNotMatch(section, /<img\b/);
   for (const [name, price] of offers) {
     const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
