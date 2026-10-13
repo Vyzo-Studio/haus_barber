@@ -24,6 +24,10 @@ const filterButtons = [
 ];
 
 const portfolioEmpty = document.querySelector('#portfolio-empty');
+const portfolioMore = document.querySelector('#portfolio-more');
+let portfolioExpanded = false;
+let currentPortfolioFilter = 'all';
+const PORTFOLIO_PREVIEW_LIMIT = 8;
 const revealItems = document.querySelectorAll('.reveal');
 
 const WEEKDAYS = [
@@ -250,65 +254,46 @@ lightbox?.addEventListener(
   }
 );
 
-function applyPortfolioFilter(
-  filter,
-  activeButton = null
-) {
-  filterButtons.forEach(
-    (button) => {
-      const active =
-        activeButton
-          ? button === activeButton
-          : button.dataset.filter ===
-            filter;
+function applyPortfolioFilter(filter, activeButton = null) {
+  currentPortfolioFilter = filter;
+  filterButtons.forEach((button) => {
+    const active = activeButton
+      ? button === activeButton
+      : button.dataset.filter === filter;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
 
-      button.classList.toggle(
-        'active',
-        active
-      );
+  let matchingCount = 0;
+  galleryItems.forEach((item) => {
+    const categories = (item.dataset.category || '').split(/\s+/).filter(Boolean);
+    const matches = filter === 'all' || categories.includes(filter);
+    if (matches) matchingCount += 1;
+    item.hidden = !matches || (!portfolioExpanded && matchingCount > PORTFOLIO_PREVIEW_LIMIT);
+  });
 
-      button.setAttribute(
-        'aria-pressed',
-        String(active)
-      );
-    }
-  );
-
-  let visibleCount = 0;
-
-  galleryItems.forEach(
-    (item) => {
-      const categories =
-        (
-          item.dataset.category ||
-          ''
-        )
-          .split(/\s+/)
-          .filter(Boolean);
-
-      const visible =
-        filter === 'all' ||
-        categories.includes(filter);
-
-      item.hidden = !visible;
-
-      if (visible) {
-        visibleCount += 1;
-      }
-    }
-  );
-
-  if (portfolioEmpty) {
-    portfolioEmpty.hidden =
-      visibleCount > 0;
+  if (portfolioEmpty) portfolioEmpty.hidden = matchingCount > 0;
+  if (portfolioMore) {
+    portfolioMore.hidden = matchingCount <= PORTFOLIO_PREVIEW_LIMIT;
+    portfolioMore.textContent = portfolioExpanded ? 'MOSTRAR MENOS ↑' : 'VER MAIS TRABALHOS ↓';
+    portfolioMore.setAttribute('aria-expanded', String(portfolioExpanded));
   }
 }
+
+portfolioMore?.addEventListener('click', () => {
+  portfolioExpanded = !portfolioExpanded;
+  applyPortfolioFilter(currentPortfolioFilter);
+  if (!portfolioExpanded) {
+    document.querySelector('.portfolio-toolbar')?.scrollIntoView({block: 'start', behavior: 'smooth'});
+  }
+});
 
 filterButtons.forEach(
   (button) => {
     button.addEventListener(
       'click',
       () => {
+        portfolioExpanded = false;
         applyPortfolioFilter(
           button.dataset.filter ||
             'all',
@@ -319,15 +304,8 @@ filterButtons.forEach(
   }
 );
 
-const initialPortfolioFilter =
-  document.querySelector(
-    '.portfolio-filter[data-filter="freestyle"]'
-  );
-
-applyPortfolioFilter(
-  'freestyle',
-  initialPortfolioFilter
-);
+const initialPortfolioFilter = document.querySelector('.portfolio-filter[data-filter="all"]');
+applyPortfolioFilter('all', initialPortfolioFilter);
 
 document.addEventListener(
   'keydown',
@@ -336,6 +314,18 @@ document.addEventListener(
       lightbox &&
       !lightbox.hidden
     ) {
+      if (event.key === 'Tab') {
+        const focusables = [lightboxClose, lightboxPrev, lightboxNext].filter(Boolean);
+        const current = focusables.indexOf(document.activeElement);
+        if (current < 0) {
+          focusables[0]?.focus();
+          event.preventDefault();
+        } else if ((event.shiftKey && current === 0) || (!event.shiftKey && current === focusables.length - 1)) {
+          focusables[event.shiftKey ? focusables.length - 1 : 0]?.focus();
+          event.preventDefault();
+        }
+        return;
+      }
       if (event.key === 'Escape') {
         closeLightbox();
         return;
@@ -1736,7 +1726,7 @@ bookingForm?.addEventListener(
           false;
 
         bookingSubmit.textContent =
-          'CONTINUAR NO WHATSAPP';
+          'SOLICITAR AGENDAMENTO';
       }
     }
   }
