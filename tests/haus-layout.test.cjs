@@ -19,9 +19,9 @@ test('seções principais, formulário e pop-up mantêm seus pontos de integraç
 
 test('identidade Haus com paleta harmonizada ao painel administrativo', () => {
   for (const color of ['#080d1a', '#101936', '#b83a30', '#f1ede7']) assert.ok(css.includes(color), `Cor do painel ausente: ${color}`);
-  assert.match(html, /name="theme-color" content="#080d1a"/);
+  assert.match(html, /<meta[^>]*content="#080d1a"[^>]*name="theme-color"/);
   assert.doesNotMatch(css, /#223a76|#b33539|#f6f2ea/);
-  assert.match(html, /family=Bebas\+Neue&family=Montserrat/);
+  assert.match(html, /family=Bebas\+Neue&amp;family=Montserrat/);
   assert.ok(html.includes('logo-haus-barber.png'));
   assert.match(css, /@media\s*\(max-width:\s*640px\)/);
   assert.match(css, /safe-area-inset-bottom/);
