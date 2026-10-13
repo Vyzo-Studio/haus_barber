@@ -61,6 +61,8 @@ let displayWeekDates = [];
 let bookedSlots = new Map();
 let scheduleRefreshTimer = null;
 let scheduleRequestRunning = false;
+let scheduleAvailabilityReady = false;
+let bookingRequestInProgress = false;
 
 function closeMenu() {
   navigation?.classList.remove('open');
@@ -521,13 +523,6 @@ function getMondayForDisplayedWeek() {
     );
   }
 
-  if (dayOfWeek === 6) {
-    return addDays(
-      today,
-      2
-    );
-  }
-
   return addDays(
     today,
     -(dayOfWeek - 1)
@@ -633,6 +628,10 @@ function getSlotStatus(
   dateValue,
   timeValue
 ) {
+  if (!scheduleAvailabilityReady) {
+    return 'unavailable';
+  }
+
   return (
     bookedSlots.get(
       getSlotKey(
@@ -668,8 +667,8 @@ function showBookingStatus(
   );
 }
 
-function hideBookingStatus() {
-  if (!bookingStatus) {
+function hideBookingStatus(force = false) {
+  if (!bookingStatus || (!force && bookingStatus.classList.contains('is-success'))) {
     return;
   }
 
@@ -875,11 +874,13 @@ function createTimeButton(
 
   button.addEventListener(
     'click',
-    () =>
+    () => {
+      hideBookingStatus(true);
       selectScheduleTime(
         time,
         button
-      )
+      );
+    }
   );
 
   return button;
@@ -1121,11 +1122,13 @@ function renderScheduleDays() {
       } else {
         button.addEventListener(
           'click',
-          () =>
+          () => {
+            hideBookingStatus(true);
             selectScheduleDate(
               date,
               button
-            )
+            );
+          }
         );
 
         if (
@@ -1203,7 +1206,9 @@ function renderScheduleDays() {
       'schedule-empty';
 
     message.textContent =
-      'Não há horários disponíveis nesta semana.';
+      scheduleAvailabilityReady
+        ? 'Não há horários disponíveis nesta semana.'
+        : 'Consultando os horários. Aguarde a atualização da agenda.';
 
     scheduleTimes.appendChild(
       message
@@ -1305,13 +1310,25 @@ async function loadBookedSlots(
       throw error;
     }
 
+    if (!Array.isArray(data)) {
+      throw new Error('Resposta de disponibilidade inválida.');
+    }
+
+    if (formatDateValue(displayWeekDates[0]) !== startDate ||
+        formatDateValue(displayWeekDates[displayWeekDates.length - 1]) !== endDate) {
+      return false;
+    }
+
     const nextBookedSlots =
       new Map();
 
-    (
-      data || []
-    ).forEach(
+    data.forEach(
       (slot) => {
+        if (!slot || !/^\d{4}-\d{2}-\d{2}$/.test(String(slot.booking_date || '').slice(0,10)) ||
+            !/^\d{2}:\d{2}$/.test(formatTimeValue(slot.booking_time)) ||
+            !['pending','occupied'].includes(slot.slot_status)) {
+          throw new Error('Registro de disponibilidade inválido.');
+        }
         const dateValue =
           String(
             slot.booking_date ||
@@ -1346,8 +1363,12 @@ async function loadBookedSlots(
 
     bookedSlots =
       nextBookedSlots;
+    scheduleAvailabilityReady = true;
 
     renderScheduleDays();
+    if (bookingSubmit && !bookingRequestInProgress) {
+      bookingSubmit.disabled = false;
+    }
 
     return true;
   } catch (error) {
@@ -1356,9 +1377,15 @@ async function loadBookedSlots(
       error
     );
 
-    if (!silent) {
+    scheduleAvailabilityReady = false;
+    bookedSlots = new Map();
+    renderScheduleDays();
+    if (bookingSubmit) {
+      bookingSubmit.disabled = true;
+    }
+    if (!bookingStatus?.classList.contains('is-success')) {
       showBookingStatus(
-        'Não foi possível carregar a disponibilidade agora. Atualize a página em alguns instantes.',
+        'Não foi possível consultar os horários. Aguarde a atualização automática ou recarregue a página.',
         'error'
       );
     }
@@ -1501,6 +1528,10 @@ bookingForm?.addEventListener(
   async (event) => {
     event.preventDefault();
 
+    if (bookingRequestInProgress) {
+      return;
+    }
+
     if (
       !window.supabaseClient
     ) {
@@ -1571,6 +1602,14 @@ bookingForm?.addEventListener(
       return;
     }
 
+    if (!scheduleAvailabilityReady) {
+      showBookingStatus(
+        'Espere a confirmação dos horários disponíveis antes de continuar.',
+        'error'
+      );
+      return;
+    }
+
     const currentStatus =
       getSlotStatus(
         data,
@@ -1590,6 +1629,8 @@ bookingForm?.addEventListener(
 
       return;
     }
+
+    bookingRequestInProgress = true;
 
     const whatsappWindow =
       window.open(
@@ -1631,7 +1672,7 @@ bookingForm?.addEventListener(
       renderScheduleDays();
 
       showBookingStatus(
-        'Horário reservado temporariamente por até 30 minutos. Abrindo o WhatsApp para você confirmar com a Haus Barber.',
+        'Solicitação registrada! Seu horário fica reservado por até 30 minutos. Confirme pelo WhatsApp para concluir.',
         'success'
       );
 
@@ -1648,14 +1689,19 @@ bookingForm?.addEventListener(
       const whatsappUrl =
         `https://wa.me/5561995705082?text=${encodeURIComponent(message)}`;
 
+      const continueLink = document.createElement('a');
+      continueLink.href = whatsappUrl;
+      continueLink.target = '_blank';
+      continueLink.rel = 'noopener noreferrer';
+      continueLink.className = 'booking-continue-link';
+      continueLink.textContent = 'ABRIR CONVERSA NO WHATSAPP ↗';
+      bookingStatus?.appendChild(continueLink);
+
       if (
         whatsappWindow &&
         !whatsappWindow.closed
       ) {
         whatsappWindow.location.href =
-          whatsappUrl;
-      } else {
-        window.location.href =
           whatsappUrl;
       }
     } catch (error) {
@@ -1684,6 +1730,7 @@ bookingForm?.addEventListener(
         }
       );
     } finally {
+      bookingRequestInProgress = false;
       if (bookingSubmit) {
         bookingSubmit.disabled =
           false;
@@ -1707,6 +1754,14 @@ function startScheduleAutoRefresh() {
   scheduleRefreshTimer =
     window.setInterval(
       () => {
+        const newWeek = getDisplayedWeekDates();
+        if (newWeek.length && displayWeekDates.length &&
+            formatDateValue(newWeek[0]) !== formatDateValue(displayWeekDates[0])) {
+          displayWeekDates = newWeek;
+          scheduleAvailabilityReady = false;
+          bookedSlots = new Map();
+          renderScheduleDays();
+        }
         loadBookedSlots(
           {
             silent: true
@@ -1727,6 +1782,10 @@ async function initializeSchedule() {
 
   displayWeekDates =
     getDisplayedWeekDates();
+  scheduleAvailabilityReady = false;
+  if (bookingSubmit) {
+    bookingSubmit.disabled = true;
+  }
 
   renderScheduleDays();
 
@@ -1785,3 +1844,14 @@ document.addEventListener(
 );
 
 initializeSchedule();
+
+if (window.matchMedia('(max-width: 900px)').matches) {
+  document.querySelectorAll('.booking-form input:not([type="hidden"]), .booking-form select').forEach((field) => {
+    field.addEventListener('focus', () => document.body.classList.add('mobile-keyboard-open'));
+    field.addEventListener('blur', () => document.body.classList.remove('mobile-keyboard-open'));
+  });
+}
+
+bookingForm?.querySelectorAll('#nome, #servico').forEach((field) => {
+  field.addEventListener('change', () => hideBookingStatus(true));
+});

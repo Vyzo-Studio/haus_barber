@@ -125,7 +125,7 @@
   >
 
   <link
-    href="style.css?v=7.0"
+    href="style.css?v=8.0"
     rel="stylesheet"
   >
 </head>
@@ -192,12 +192,16 @@
           Preços
         </a>
 
+        <a href="#combos">
+          Combos
+        </a>
+
         <a href="#sobre">
           Sobre
         </a>
 
         <a href="#localizacao">
-          Contato
+          Localização
         </a>
 
         <a
@@ -1628,6 +1632,70 @@
     </section>
 
     <section
+      aria-labelledby="combos-title"
+      class="haus-combos"
+      id="combos"
+    >
+      <div class="combos-container">
+        <div class="combos-heading reveal">
+          <div>
+            <span class="combos-overline">COMBOS HAUS • QUATRO ATENDIMENTOS</span>
+            <h2 id="combos-title">SEU VISUAL, <span>NO SEU RITMO.</span></h2>
+          </div>
+          <p>Escolha seu combo para manter o visual em dia. Consulte a Haus Barber pelo Instagram para saber como assinar.</p>
+        </div>
+
+        <div class="combos-grid">
+          <article class="combo-card reveal" aria-labelledby="combo-degrade-title">
+            <div class="combo-card-top">
+              <span class="combo-index">01 / CORTES</span>
+              <h3 id="combo-degrade-title">DEGRADÊ</h3>
+              <span class="combo-subtitle">4 atendimentos</span>
+            </div>
+            <ul class="combo-options">
+              <li><span>4 Cortes Degradê</span><strong>R$ 75</strong></li>
+              <li><span>4 Cortes Degradê + Sobrancelha</span><strong>R$ 90</strong></li>
+              <li><span>4 Cortes Degradê + Barba</span><strong>R$ 135</strong></li>
+            </ul>
+          </article>
+
+          <article class="combo-card reveal" aria-labelledby="combo-social-title">
+            <div class="combo-card-top">
+              <span class="combo-index">02 / CORTES</span>
+              <h3 id="combo-social-title">SOCIAL</h3>
+              <span class="combo-subtitle">4 atendimentos</span>
+            </div>
+            <ul class="combo-options">
+              <li><span>4 Cortes Social</span><strong>R$ 60</strong></li>
+              <li><span>4 Cortes Social + Sobrancelha</span><strong>R$ 75</strong></li>
+              <li><span>4 Cortes Social + Barba</span><strong>R$ 120</strong></li>
+            </ul>
+          </article>
+
+          <article class="combo-card combo-card-barba reveal" aria-labelledby="combo-barba-title">
+            <div class="combo-card-top">
+              <span class="combo-index">03 / BARBA</span>
+              <h3 id="combo-barba-title">BARBA</h3>
+              <span class="combo-subtitle">4 atendimentos</span>
+            </div>
+            <ul class="combo-options">
+              <li><span>4 Barbas</span><strong>R$ 60</strong></li>
+            </ul>
+            <p class="combo-card-note">O cuidado com a barba também tem seu combo.</p>
+          </article>
+        </div>
+
+        <div class="combos-footer reveal">
+          <p><span aria-hidden="true">◷</span> Combos válidos até 45 dias após a assinatura.</p>
+          <a class="combos-cta" href="https://www.instagram.com/hausbarber_/" target="_blank" rel="noopener noreferrer" aria-label="Consultar combos pelo Instagram da Haus Barber">
+            MAIS INFORMAÇÕES PELO INSTAGRAM <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p class="combos-assistance reveal">Para assinar, entre em contato pela DM do Instagram. Os combos não são contratados pelo formulário de agendamento avulso.</p>
+      </div>
+    </section>
+
+    <section
       aria-labelledby="about-title"
       class="about-section"
       id="sobre"
@@ -1710,11 +1778,16 @@
         </h2>
 
         <p>
-          Escolha o dia e o horário.
-          Ao continuar, sua solicitação fica reservada temporariamente
-          enquanto você entra em contato pelo WhatsApp.
-          Atendimentos de segunda a sábado, das 09:00 às 20:00.
+          Selecione o serviço e encontre um horário disponível.
+          Sua solicitação fica reservada temporariamente até a confirmação
+          pelo WhatsApp. Atendimentos de segunda a sábado, das 09:00 às 20:00.
         </p>
+
+        <ol class="booking-steps" aria-label="Como agendar">
+          <li><span>01</span> Nome e serviço</li>
+          <li><span>02</span> Dia e horário</li>
+          <li><span>03</span> Confirmação no WhatsApp</li>
+        </ol>
 
       </div>
 
@@ -1823,7 +1896,7 @@
             </label>
 
             <span>
-              Segunda a sábado • atualização automática semanal
+              Segunda a sábado • horários sujeitos a confirmação
             </span>
 
           </div>
@@ -1951,11 +2024,11 @@
           </address>
 
           <a
-            href="https://www.google.com/maps/search/?api=1&query=Ch%C3%A1cara%20128%2C%20Conjunto%20A%2C%20Lote%2018%2C%20Condom%C3%ADnio%20Vit%C3%B3ria%2C%20Sol%20Nascente%2C%20Bras%C3%ADlia%20DF"
+            href="https://www.google.com/maps/search/?api=1&amp;query=-15.8246584%2C-48.1270409"
             rel="noopener noreferrer"
             target="_blank"
           >
-            ABRIR NO MAPS →
+            VER PONTO EXATO NO MAPS →
           </a>
 
         </article>
@@ -2017,6 +2090,28 @@
 
       </div>
 
+      <div class="haus-map-panel reveal">
+        <div class="haus-map-frame">
+          <iframe
+            title="Mapa com a localização indicada da Haus Barber no Sol Nascente"
+            src="https://maps.google.com/maps?q=-15.8246584%2C-48.1270409&amp;z=16&amp;output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+        <div class="haus-map-details">
+          <span>CHEGUE ATÉ A HAUS</span>
+          <h3>O SEU PRÓXIMO CORTE TEM ENDEREÇO.</h3>
+          <p>Sol Nascente • Brasília/DF. Veja o ponto informado pela barbearia e abra a rota pelo Google Maps.</p>
+          <a
+            class="haus-map-directions"
+            href="https://www.google.com/maps/dir/?api=1&amp;destination=-15.8246584%2C-48.1270409"
+            target="_blank"
+            rel="noopener noreferrer"
+          >TRAÇAR ROTA NO GOOGLE MAPS <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -2058,6 +2153,10 @@
 
         <a href="#precos">
           Preços
+        </a>
+
+        <a href="#combos">
+          Combos
         </a>
 
         <a href="#agendar">
@@ -2154,6 +2253,12 @@
 
   </div>
 
+  <nav class="haus-mobile-dock" aria-label="Acesso rápido no celular">
+    <a href="#combos"><span aria-hidden="true">01</span> COMBOS</a>
+    <a href="#agendar" class="haus-mobile-dock-primary"><span aria-hidden="true">02</span> AGENDAR</a>
+    <a href="https://www.google.com/maps/dir/?api=1&amp;destination=-15.8246584%2C-48.1270409" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">03</span> ROTA</a>
+  </nav>
+
   <script
     defer
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
@@ -2166,7 +2271,7 @@
 
   <script
     defer
-    src="script.js?v=7.0"
+    src="script.js?v=8.0"
   ></script>
 
 </body>
