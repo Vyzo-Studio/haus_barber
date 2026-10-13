@@ -25,7 +25,10 @@ test('combos são informativos e não substituem serviços avulsos', () => {
     ['4 Cortes Social + Barba', '120'],
     ['4 Barbas', '60']
   ];
-  const section = html.slice(html.indexOf('<section class="section combos"'), html.indexOf('<section class="section about"'));
+  const plansAt = html.indexOf('id="combos"');
+  const nextAt = html.indexOf('id="sobre"', plansAt);
+  assert.ok(plansAt > 0 && nextAt > plansAt);
+  const section = html.slice(html.lastIndexOf('<section', plansAt), html.lastIndexOf('<section', nextAt));
   assert.match(section, /45 DIAS/);
   assert.match(section, /após a assinatura/);
   assert.doesNotMatch(section, /<img\b/);
