@@ -25,10 +25,19 @@ const filterButtons = [
 
 const portfolioEmpty = document.querySelector('#portfolio-empty');
 const portfolioMore = document.querySelector('#portfolio-more');
+const portfolioCurrentTitle = document.querySelector('#portfolio-current-title');
 let portfolioExpanded = false;
 let currentPortfolioFilter = 'all';
 const PORTFOLIO_PREVIEW_LIMIT = 8;
 const revealItems = document.querySelectorAll('.reveal');
+const PORTFOLIO_LABELS = {
+  all: 'Todos os estilos',
+  freestyle: 'Freestyle / desenho',
+  degrade: 'Degradê',
+  barba: 'Barba',
+  luzes: 'Luzes',
+  navalhado: 'Navalhado'
+};
 
 const WEEKDAYS = [
   'DOM',
@@ -254,6 +263,49 @@ lightbox?.addEventListener(
   }
 );
 
+function getPortfolioCountByFilter(filter) {
+  return galleryItems.reduce((count, item) => {
+    const categories = (item.dataset.category || '').split(/\s+/).filter(Boolean);
+    if (filter === 'all' || categories.includes(filter)) {
+      return count + 1;
+    }
+    return count;
+  }, 0);
+}
+
+function updatePortfolioFilterCounts() {
+  filterButtons.forEach((button) => {
+    const filter = button.dataset.filter || 'all';
+    const count = getPortfolioCountByFilter(filter);
+    let badge = button.querySelector('.portfolio-filter-count');
+
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'portfolio-filter-count';
+      button.appendChild(badge);
+    }
+
+    badge.textContent = String(count).padStart(2, '0');
+  });
+}
+
+function applyPortfolioEditorialLayout() {
+  const visibleItems = getVisibleGalleryItems();
+  const gallery = document.querySelector('.portfolio-gallery');
+  gallery?.classList.toggle('is-compact', visibleItems.length <= 4);
+
+  galleryItems.forEach((item) => {
+    item.classList.remove('is-hero', 'is-bottom');
+  });
+
+  if (visibleItems.length >= 8) {
+    visibleItems[0].classList.add('is-hero');
+    visibleItems.slice(5, 8).forEach((item) => {
+      item.classList.add('is-bottom');
+    });
+  }
+}
+
 function applyPortfolioFilter(filter, activeButton = null) {
   currentPortfolioFilter = filter;
   filterButtons.forEach((button) => {
@@ -272,12 +324,22 @@ function applyPortfolioFilter(filter, activeButton = null) {
     item.hidden = !matches || (!portfolioExpanded && matchingCount > PORTFOLIO_PREVIEW_LIMIT);
   });
 
-  if (portfolioEmpty) portfolioEmpty.hidden = matchingCount > 0;
+  if (portfolioEmpty) {
+    portfolioEmpty.hidden = matchingCount > 0;
+  }
+
   if (portfolioMore) {
     portfolioMore.hidden = matchingCount <= PORTFOLIO_PREVIEW_LIMIT;
     portfolioMore.textContent = portfolioExpanded ? 'MOSTRAR MENOS ↑' : 'VER MAIS TRABALHOS ↓';
     portfolioMore.setAttribute('aria-expanded', String(portfolioExpanded));
   }
+
+  const label = PORTFOLIO_LABELS[filter] || 'Todos os estilos';
+  if (portfolioCurrentTitle) {
+    portfolioCurrentTitle.textContent = label;
+  }
+
+  applyPortfolioEditorialLayout();
 }
 
 portfolioMore?.addEventListener('click', () => {
@@ -304,6 +366,7 @@ filterButtons.forEach(
   }
 );
 
+updatePortfolioFilterCounts();
 const initialPortfolioFilter = document.querySelector('.portfolio-filter[data-filter="all"]');
 applyPortfolioFilter('all', initialPortfolioFilter);
 
