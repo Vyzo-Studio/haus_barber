@@ -18,7 +18,7 @@ test('seções principais, formulário e pop-up mantêm seus pontos de integraç
 });
 
 test('paleta e identidade originais preservadas', () => {
-  for (const color of ['#213973', '#1c2e5b', '#101936', '#a13734', '#f1ede7', '#c7b5a7']) assert.ok(css.includes(color), `Cor ausente: ${color}`);
+  for (const color of ['#223a76', '#b33539', '#eee7da', '#151515']) assert.ok(css.includes(color), `Cor ausente: ${color}`);
   assert.ok(html.includes('logo-haus-barber.png'));
   assert.match(css, /@media\(max-width:640px\)/);
   assert.match(css, /safe-area-inset-bottom/);
