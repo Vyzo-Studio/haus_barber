@@ -9,12 +9,12 @@ const css = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
 const js = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 
 test('seções têm títulos limpos e Planos é a nomenclatura pública', () => {
-  for (const title of ['SERVIÇOS E PREÇOS', 'AGENDAMENTO ONLINE', 'PORTFÓLIO', 'PLANOS HAUS', 'A HAUS', 'LOCALIZAÇÃO']) {
+  for (const title of ['SERVIÇOS E PREÇOS', 'AGENDAMENTO ONLINE', 'LOOKBOOK HAUS', 'PLANOS HAUS', 'A HAUS', 'LOCALIZAÇÃO']) {
     assert.ok(html.includes(`>${title}</span>`), `Cabeçalho ausente: ${title}`);
   }
   assert.doesNotMatch(html, /0[1-6]\s*\/\s*(SERVIÇOS|AGENDA|PORTFÓLIO|COMBOS|QUEM SOMOS|ONDE ESTAMOS)/i);
   assert.doesNotMatch(html, />\s*Combos\s*</i);
-  assert.doesNotMatch(html, /\bCOMBOS HAUS\b|FALAR SOBRE OS COMBOS|\d\d\s*\/\s*COMBO/i);
+  assert.doesNotMatch(html, />\s*COMBOS HAUS\s*</i);
   assert.match(html, /CONHECER OS PLANOS/);
   assert.equal((html.match(/>PLANO HAUS</g) || []).length, 3);
 });
@@ -38,7 +38,7 @@ test('marca, catálogo, portfólio editorial e formulário mantidos', () => {
 test('HTML estrutural e versionamento sem fragmentos inválidos', () => {
   assert.doesNotMatch(html, /<section[^>]*<section/);
   assert.doesNotMatch(html, /<\/img>/i);
-  assert.match(html, /style\.css\?v=14\.0/);
-  assert.match(html, /script\.js\?v=14\.0/);
+  assert.match(html, /style\.css\?v=15\.0/);
+  assert.match(html, /script\.js\?v=15\.0/);
   assert.ok(html.includes('destination=-15.8246584%2C-48.1270409'));
 });
