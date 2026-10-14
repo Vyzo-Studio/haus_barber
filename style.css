@@ -18,7 +18,7 @@
   --red-soft: rgba(184,58,48,.13);
   --font-head: 'Bebas Neue', 'Liberation Sans Narrow', 'Arial Narrow', Impact, sans-serif;
   --font-body: 'Montserrat', 'Segoe UI', sans-serif;
-  --header-height: 84px;
+  --header-height: 104px;
   --radius: 14px;
   --shadow: 0 22px 54px rgba(0,0,0,.25);
 }
@@ -62,12 +62,12 @@ h1,h2,h3 {line-height:.98}
 .site-header {position:sticky;top:0;z-index:1100;background:rgba(8,13,26,.96);color:var(--cream);border-bottom:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .header-inner {height:var(--header-height);display:flex;align-items:center;justify-content:space-between;gap:28px}
 .brand {display:inline-flex;align-items:center;min-width:0;flex:none}
-.brand-v3 {gap:17px;position:relative}
-.brand-v3>img {display:block;flex:none;width:84px;height:84px;object-fit:contain;object-position:center;-webkit-mask-image:radial-gradient(ellipse 56% 53% at 50% 61%,#000 52%,transparent 95%);mask-image:radial-gradient(ellipse 56% 53% at 50% 61%,#000 52%,transparent 95%);filter:drop-shadow(0 10px 15px rgba(0,0,0,.26));transition:transform .3s ease,filter .3s ease}
-.brand-v3:hover>img {transform:translateY(-2px);filter:drop-shadow(0 13px 18px rgba(0,0,0,.35))}
-.brand-v3 .brand-lockup {display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0;padding-left:16px;border-left:2px solid var(--red);white-space:nowrap}
-.brand-v3 .brand-lockup strong {font:400 29px/.95 var(--font-head);letter-spacing:.07em;color:var(--cream)}
-.brand-v3 .brand-lockup small {font:700 9px/1.45 var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--quiet)}
+.brand-v3 {gap:15px;position:relative;flex-shrink:0}
+.brand-v3>.brand-logo {display:block;flex:none;width:86px;height:94px;object-fit:contain;object-position:center;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 8px 12px rgba(0,0,0,.22));transition:transform .25s ease,filter .25s ease}
+.brand-v3:hover>.brand-logo {transform:translateY(-2px);filter:drop-shadow(0 10px 16px rgba(0,0,0,.32))}
+.brand-v3 .brand-lockup {display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0;padding-left:15px;border-left:2px solid var(--red);white-space:nowrap}
+.brand-v3 .brand-lockup strong {font:400 29px/.98 var(--font-head);letter-spacing:.065em;color:var(--cream)}
+.brand-v3 .brand-lockup small {font:700 8px/1.5 var(--font-body);letter-spacing:.105em;text-transform:uppercase;color:var(--quiet)}
 .brand-v3 .brand-lockup small span {color:var(--red-hover);padding-inline:2px}
 .main-nav {display:flex;align-items:center;gap:22px}
 .main-nav>a:not(.nav-cta) {position:relative;padding-block:10px;font-size:11px;font-weight:700;color:var(--muted);transition:color .2s}
@@ -314,13 +314,13 @@ h1,h2,h3 {line-height:.98}
   .footer-social {margin-left:0}
 }
 @media (max-width:900px) {
-  :root {--header-height:73px}
+  :root {--header-height:88px}
   .container {width:calc(100% - 44px)}
   .brand-v3 {gap:12px}
-  .brand-v3>img {width:72px;height:72px}
+  .brand-v3>.brand-logo {width:75px;height:80px}
   .brand-v3 .brand-lockup {padding-left:12px}
   .brand-v3 .brand-lockup strong {font-size:25px}
-  .brand-v3 .brand-lockup small {font-size:8px;letter-spacing:.11em}
+  .brand-v3 .brand-lockup small {font-size:7.5px;letter-spacing:.065em}
   .menu-toggle {display:flex}
   .main-nav {display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;padding:12px 22px 25px;background:var(--bg);border-bottom:1px solid var(--line-strong);box-shadow:0 20px 45px rgba(0,0,0,.45)}
   .main-nav.open {display:flex}
@@ -358,14 +358,14 @@ h1,h2,h3 {line-height:.98}
   .footer-top nav {margin-left:auto}
 }
 @media (max-width:640px) {
-  :root {--header-height:68px}
+  :root {--header-height:78px}
   .container {width:calc(100% - 34px)}
-  html {scroll-padding-top:83px}
+  html {scroll-padding-top:95px}
   .brand-v3 {gap:9px}
-  .brand-v3>img {width:60px;height:60px}
+  .brand-v3>.brand-logo {width:66px;height:71px}
   .brand-v3 .brand-lockup {padding-left:10px;gap:4px}
   .brand-v3 .brand-lockup strong {font-size:22px}
-  .brand-v3 .brand-lockup small {font-size:7px;letter-spacing:.075em}
+  .brand-v3 .brand-lockup small {font-size:6.8px;letter-spacing:.015em}
   .section {padding:66px 0}
   .section-top {display:block;margin-bottom:25px}
   .section-top h2 {font-size:clamp(51px,12.4vw,68px)}
@@ -518,9 +518,9 @@ h1,h2,h3 {line-height:.98}
 
 /* Haus header signature — narrow handsets */
 @media (max-width:370px) {
-  .brand-v3>img {width:53px;height:53px}
+  .brand-v3>.brand-logo {width:55px;height:62px}
   .brand-v3 .brand-lockup {padding-left:8px}
   .brand-v3 .brand-lockup strong {font-size:19px}
-  .brand-v3 .brand-lockup small {font-size:6.5px;letter-spacing:.025em}
+  .brand-v3 .brand-lockup small {font-size:6px;letter-spacing:0}
   .header-inner {gap:10px}
 }
