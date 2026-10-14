@@ -22,7 +22,7 @@ test('identidade Haus com paleta harmonizada ao painel administrativo', () => {
   assert.match(html, /name="theme-color" content="#080d1a"/);
   assert.doesNotMatch(css, /#223a76|#b33539|#f6f2ea/);
   assert.match(html, /family=Bebas\+Neue&family=Montserrat/);
-  assert.ok(html.includes('logo-haus-barber.png'));
+  assert.ok(html.includes('logo-haus-barber-transparente.png'));
   assert.match(css, /@media\s*\(max-width:\s*640px\)/);
   assert.match(css, /safe-area-inset-bottom/);
 });
