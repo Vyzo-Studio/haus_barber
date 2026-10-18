@@ -947,7 +947,8 @@ button:disabled {
       rgba(255, 255, 255, 0.025),
       rgba(255, 255, 255, 0.008)
     ),
-    var(--admin-bg-soft);}
+    var(--admin-bg-soft);
+}
 
 .admin-booking-workspace-head {
   display: flex;
@@ -1896,7 +1897,8 @@ button:disabled {
     grid-template-columns: 1fr 1fr;
   }
 
-  .admin-confirm-dialog {    max-height: calc(
+  .admin-confirm-dialog {
+    max-height: calc(
       100dvh -
       24px -
       var(--ios-safe-top) -
