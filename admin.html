@@ -86,7 +86,7 @@
 
   <link
     rel="stylesheet"
-    href="admin.css?v=6.0"
+    href="admin.css?v=7.0"
   >
 </head>
 
@@ -295,13 +295,14 @@
 
           </div>
 
-          <button
-            class="admin-refresh-button"
-            id="admin-refresh-button"
-            type="button"
-          >
-            ATUALIZAR PAINEL
-          </button>
+          <div class="admin-welcome-actions">
+            <button class="admin-primary-button manual-sale-open" id="manual-sale-open" type="button">
+              <span aria-hidden="true">＋</span> LANÇAR ATENDIMENTO
+            </button>
+            <button class="admin-refresh-button" id="admin-refresh-button" type="button">
+              ATUALIZAR PAINEL
+            </button>
+          </div>
 
         </section>
 
@@ -1186,6 +1187,7 @@
             class="booking-status-badge"
             data-booking-status
           ></span>
+          <span class="booking-manual-tag" data-booking-manual hidden>MANUAL</span>
 
         </div>
 
@@ -1347,6 +1349,101 @@
     </article>
 
   </template>
+
+  <div class="manual-sale-modal" id="manual-sale-modal" hidden>
+    <div class="manual-sale-backdrop" data-manual-close></div>
+    <div class="manual-sale-dialog" role="dialog" aria-modal="true" aria-labelledby="manual-sale-title" aria-describedby="manual-sale-description" tabindex="-1">
+      <div class="manual-sale-heading">
+        <div>
+          <span class="manual-sale-eyebrow">REGISTRO ADMINISTRATIVO</span>
+          <h2 id="manual-sale-title">LANÇAR ATENDIMENTO</h2>
+        </div>
+        <button type="button" class="manual-sale-close" id="manual-sale-close" aria-label="Fechar lançamento">×</button>
+      </div>
+      <p class="manual-sale-description" id="manual-sale-description">Registre um serviço já realizado e recebido. Ele aparecerá em Finalizados e no faturamento do dia selecionado.</p>
+      <form id="manual-sale-form" class="manual-sale-form">
+        <div class="manual-sale-field manual-sale-wide">
+          <label for="manual-sale-service">SERVIÇO <span aria-hidden="true">*</span></label>
+          <select id="manual-sale-service" name="service" required>
+            <option value="">Selecione o serviço</option>
+                  <option value="Corte Social - R$ 20" data-price="2000">Corte Social - R$ 20</option>
+                  <option value="Corte Degradê - R$ 25" data-price="2500">Corte Degradê - R$ 25</option>
+                  <option value="Corte Navalhado - R$ 25" data-price="2500">Corte Navalhado - R$ 25</option>
+                  <option value="Barba - R$ 20" data-price="2000">Barba - R$ 20</option>
+                  <option value="Pezinho - R$ 10" data-price="1000">Pezinho - R$ 10</option>
+                  <option value="Sobrancelha - R$ 5" data-price="500">Sobrancelha - R$ 5</option>
+                  <option value="Pigmentação - R$ 20" data-price="2000">Pigmentação - R$ 20</option>
+                  <option value="Progressiva Avulsa - R$ 50" data-price="5000">Progressiva Avulsa - R$ 50</option>
+                  <option value="Progressiva + Corte - R$ 70" data-price="7000">Progressiva + Corte - R$ 70</option>
+                  <option value="Graxa / Alisante - R$ 20" data-price="2000">Graxa / Alisante - R$ 20</option>
+                  <option value="Luzes + Corte - R$ 110" data-price="11000">Luzes + Corte - R$ 110</option>
+                  <option value="Platinado + Corte - R$ 140" data-price="14000">Platinado + Corte - R$ 140</option>
+          </select>
+        </div>
+        <div class="manual-sale-grid">
+          <div class="manual-sale-field">
+            <label for="manual-sale-date">DATA <span aria-hidden="true">*</span></label>
+            <input id="manual-sale-date" name="date" type="date" required>
+          </div>
+          <div class="manual-sale-field">
+            <label for="manual-sale-time">HORÁRIO <span aria-hidden="true">*</span></label>
+            <select id="manual-sale-time" name="time" required>
+              <option value="">Selecione</option>
+                  <option value="09:00">09:00</option>
+                  <option value="09:30">09:30</option>
+                  <option value="10:00">10:00</option>
+                  <option value="10:30">10:30</option>
+                  <option value="11:00">11:00</option>
+                  <option value="11:30">11:30</option>
+                  <option value="12:00">12:00</option>
+                  <option value="12:30">12:30</option>
+                  <option value="13:00">13:00</option>
+                  <option value="13:30">13:30</option>
+                  <option value="14:00">14:00</option>
+                  <option value="14:30">14:30</option>
+                  <option value="15:00">15:00</option>
+                  <option value="15:30">15:30</option>
+                  <option value="16:00">16:00</option>
+                  <option value="16:30">16:30</option>
+                  <option value="17:00">17:00</option>
+                  <option value="17:30">17:30</option>
+                  <option value="18:00">18:00</option>
+                  <option value="18:30">18:30</option>
+                  <option value="19:00">19:00</option>
+                  <option value="19:30">19:30</option>
+                  <option value="20:00">20:00</option>
+            </select>
+          </div>
+        </div>
+        <div class="manual-sale-grid">
+          <div class="manual-sale-field">
+            <label for="manual-sale-payment">PAGAMENTO <span aria-hidden="true">*</span></label>
+            <select id="manual-sale-payment" name="payment" required>
+              <option value="">Selecione</option>
+              <option value="cash">Dinheiro</option>
+              <option value="pix">Pix</option>
+              <option value="debit">Débito</option>
+              <option value="credit">Crédito</option>
+            </select>
+          </div>
+          <div class="manual-sale-field">
+            <label for="manual-sale-name">NOME <span class="manual-sale-optional">OPCIONAL</span></label>
+            <input id="manual-sale-name" name="customer" type="text" maxlength="80" placeholder="Cliente não informado" autocomplete="off">
+          </div>
+        </div>
+        <div class="manual-sale-summary">
+          <span>VALOR DO SERVIÇO</span>
+          <strong id="manual-sale-price">R$ 0,00</strong>
+        </div>
+        <p class="manual-sale-note">O caixa da data escolhida precisa estar aberto. Não é possível alterar caixas fechados nem lançar atendimentos futuros.</p>
+        <p class="manual-sale-message" id="manual-sale-message" role="status" aria-live="polite" hidden></p>
+        <div class="manual-sale-actions">
+          <button class="admin-secondary-button" id="manual-sale-cancel" type="button">CANCELAR</button>
+          <button class="admin-primary-button" id="manual-sale-submit" type="submit">REGISTRAR RECEBIMENTO</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div
     class="admin-confirm-modal"
@@ -1538,7 +1635,7 @@
 
   <script src="config.js?v=1.2"></script>
 
-  <script src="admin.js?v=6.0"></script>
+  <script src="admin.js?v=7.0"></script>
 
 </body>
 </html>
