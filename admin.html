@@ -86,7 +86,7 @@
 
   <link
     rel="stylesheet"
-    href="admin.css?v=7.0"
+    href="admin.css?v=8.0"
   >
 </head>
 
@@ -1360,7 +1360,7 @@
         </div>
         <button type="button" class="manual-sale-close" id="manual-sale-close" aria-label="Fechar lançamento">×</button>
       </div>
-      <p class="manual-sale-description" id="manual-sale-description">Registre um serviço já realizado e recebido. Ele aparecerá em Finalizados e no faturamento do dia selecionado.</p>
+      <p class="manual-sale-description" id="manual-sale-description">Registre um atendimento com a data que escolher, mesmo em dias anteriores ou futuros. O recebimento será vinculado ao caixa dessa data.</p>
       <form id="manual-sale-form" class="manual-sale-form">
         <div class="manual-sale-field manual-sale-wide">
           <label for="manual-sale-service">SERVIÇO <span aria-hidden="true">*</span></label>
@@ -1381,9 +1381,21 @@
           </select>
         </div>
         <div class="manual-sale-grid">
-          <div class="manual-sale-field">
-            <label for="manual-sale-date">DATA <span aria-hidden="true">*</span></label>
-            <input id="manual-sale-date" name="date" type="date" required>
+          <div class="manual-sale-field manual-calendar-field">
+            <label id="manual-sale-date-label">DATA <span aria-hidden="true">*</span></label>
+            <div class="manual-week-picker" aria-label="Escolha o dia do atendimento">
+              <div class="manual-week-head">
+                <button id="manual-week-prev" class="manual-week-nav" type="button" aria-label="Ver semana anterior">←</button>
+                <strong id="manual-week-label" aria-live="polite">CARREGANDO SEMANA...</strong>
+                <button id="manual-week-next" class="manual-week-nav" type="button" aria-label="Ver próxima semana">→</button>
+              </div>
+              <div id="manual-week-days" class="manual-week-days" role="group" aria-label="Dias da semana, de segunda a domingo"></div>
+              <div class="manual-week-foot">
+                <span id="manual-date-chosen" aria-live="polite"></span>
+                <button id="manual-week-today" type="button">HOJE ↗</button>
+              </div>
+              <input id="manual-sale-date" name="date" type="hidden">
+            </div>
           </div>
           <div class="manual-sale-field">
             <label for="manual-sale-time">HORÁRIO <span aria-hidden="true">*</span></label>
@@ -1435,7 +1447,7 @@
           <span>VALOR DO SERVIÇO</span>
           <strong id="manual-sale-price">R$ 0,00</strong>
         </div>
-        <p class="manual-sale-note">O caixa da data escolhida precisa estar aberto. Não é possível alterar caixas fechados nem lançar atendimentos futuros.</p>
+        <p class="manual-sale-note">O dia de hoje fica selecionado automaticamente. Lançamentos em dias anteriores atualizam o histórico da data escolhida, inclusive após fechamento; datas futuras entram no caixa do respectivo dia.</p>
         <p class="manual-sale-message" id="manual-sale-message" role="status" aria-live="polite" hidden></p>
         <div class="manual-sale-actions">
           <button class="admin-secondary-button" id="manual-sale-cancel" type="button">CANCELAR</button>
@@ -1635,7 +1647,7 @@
 
   <script src="config.js?v=1.2"></script>
 
-  <script src="admin.js?v=7.0"></script>
+  <script src="admin.js?v=8.0"></script>
 
 </body>
 </html>
