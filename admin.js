@@ -10,6 +10,24 @@ const loginMessage = document.querySelector('#login-message');
 const adminUserEmail = document.querySelector('#admin-user-email');
 const adminLogoutButton = document.querySelector('#admin-logout-button');
 const adminRefreshButton = document.querySelector('#admin-refresh-button');
+const manualSaleOpen = document.querySelector('#manual-sale-open');
+const manualSaleModal = document.querySelector('#manual-sale-modal');
+const manualSaleDialog = document.querySelector('.manual-sale-dialog');
+const manualSaleForm = document.querySelector('#manual-sale-form');
+const manualSaleClose = document.querySelector('#manual-sale-close');
+const manualSaleCancel = document.querySelector('#manual-sale-cancel');
+const manualSaleSubmit = document.querySelector('#manual-sale-submit');
+const manualSaleService = document.querySelector('#manual-sale-service');
+const manualSaleDate = document.querySelector('#manual-sale-date');
+const manualSaleTime = document.querySelector('#manual-sale-time');
+const manualSalePayment = document.querySelector('#manual-sale-payment');
+const manualSaleName = document.querySelector('#manual-sale-name');
+const manualSalePrice = document.querySelector('#manual-sale-price');
+const manualSaleMessage = document.querySelector('#manual-sale-message');
+const manualSaleBackdrop = document.querySelector('[data-manual-close]');
+let manualSaleSaving = false;
+let manualSaleRequestId = null;
+let manualSalePreviousFocus = null;
 
 const adminDateFilter = document.querySelector('#admin-date-filter');
 const adminSearch = document.querySelector('#admin-search');
@@ -1941,6 +1959,11 @@ function createBookingCard(booking) {
     status
   );
 
+  const manualTag = card.querySelector('[data-booking-manual]');
+  if (manualTag) {
+    manualTag.hidden = booking.is_manual !== true;
+  }
+
   if (weekdayElement) {
     weekdayElement.textContent =
       getWeekdayLabel(
@@ -1985,6 +2008,10 @@ function createBookingCard(booking) {
     paymentElement,
     booking
   );
+
+  if (createdElement?.previousElementSibling) {
+    createdElement.previousElementSibling.textContent = booking.is_manual === true ? 'LANÇADO EM' : 'SOLICITADO EM';
+  }
 
   if (createdElement) {
     createdElement.textContent =
@@ -2151,6 +2178,7 @@ async function loadBookings(
           customer_name,
           service,
           service_amount_cents,
+          is_manual,
           booking_date,
           booking_time,
           status,
@@ -4132,6 +4160,190 @@ function stopAutoRefresh() {
       null;
   }
 }
+
+function showManualSaleMessage(message, type = 'error') {
+  if (!manualSaleMessage) return;
+  manualSaleMessage.hidden = false;
+  manualSaleMessage.textContent = message;
+  manualSaleMessage.className = `manual-sale-message is-${type}`;
+}
+
+function hideManualSaleMessage() {
+  if (!manualSaleMessage) return;
+  manualSaleMessage.hidden = true;
+  manualSaleMessage.textContent = '';
+  manualSaleMessage.className = 'manual-sale-message';
+}
+
+function updateManualSalePrice() {
+  const option = manualSaleService?.selectedOptions[0];
+  const cents = Number(option?.dataset.price || 0);
+  if (manualSalePrice) {
+    manualSalePrice.textContent = formatCurrency(cents);
+  }
+}
+
+function openManualSaleModal() {
+  if (!currentUser || !window.supabaseClient || !manualSaleModal || !manualSaleForm) return;
+  manualSalePreviousFocus = document.activeElement;
+  manualSaleForm.reset();
+  manualSaleRequestId = null;
+  manualSaleDate.value = adminDateFilter?.value || getTodayValue();
+  manualSaleDate.max = getTodayValue();
+  hideManualSaleMessage();
+  updateManualSalePrice();
+  manualSaleModal.hidden = false;
+  document.body.classList.add('modal-open');
+  manualSaleService?.focus();
+}
+
+function closeManualSaleModal() {
+  if (!manualSaleModal || manualSaleSaving) return;
+  manualSaleModal.hidden = true;
+  document.body.classList.remove('modal-open');
+  hideManualSaleMessage();
+  manualSaleRequestId = null;
+  manualSalePreviousFocus?.focus();
+}
+
+function manualSaleErrorMessage(error) {
+  const msg = String(error?.message || '').toLowerCase();
+  if (msg.includes('caixa') && (msg.includes('fechado') || msg.includes('aberto'))) {
+    return 'O caixa da data escolhida precisa estar aberto. Não é possível alterar um dia já fechado.';
+  }
+  if (msg.includes('horário') && (msg.includes('agendamento') || msg.includes('atendimento'))) {
+    return 'Já existe um atendimento ou agendamento neste horário. Confira a agenda.';
+  }
+  if (msg.includes('já aconteceu') || msg.includes('antes do lançamento') || msg.includes('futuro')) {
+    return 'Escolha uma data e um horário que já passaram.';
+  }
+  if (msg.includes('serviço inválido') || msg.includes('serviço sem valor')) {
+    return 'Escolha um dos serviços cadastrados.';
+  }
+  if (msg.includes('não autorizado') || msg.includes('administrativo obrigatório')) {
+    return 'Sua conta não tem permissão para lançar atendimentos.';
+  }
+  if (msg.includes('intervalos') || msg.includes('domingo')) {
+    return error.message;
+  }
+  return 'Não foi possível registrar o atendimento. Confira os dados e tente novamente. Se a conexão caiu, repita o envio sem alterar os campos.';
+}
+
+async function submitManualSale(event) {
+  event.preventDefault();
+  if (manualSaleSaving || !currentUser || !window.supabaseClient || !manualSaleForm) return;
+  if (!manualSaleForm.reportValidity()) return;
+
+  const service = manualSaleService.value;
+  const date = manualSaleDate.value;
+  const time = manualSaleTime.value;
+  const payment = manualSalePayment.value;
+  const name = manualSaleName.value.trim();
+  const today = getTodayValue();
+
+  if (!date || date > today) {
+    showManualSaleMessage('Escolha uma data de hoje ou anterior.');
+    return;
+  }
+  if (!/^\d{2}:(00|30)$/.test(time) || time < '09:00' || time > '20:00') {
+    showManualSaleMessage('Selecione um horário entre 09:00 e 20:00.');
+    return;
+  }
+  if (!['cash', 'pix', 'debit', 'credit'].includes(payment)) {
+    showManualSaleMessage('Selecione a forma de pagamento.');
+    return;
+  }
+  if (name.length === 1 || name.length > 80) {
+    showManualSaleMessage('Informe ao menos 2 caracteres ou deixe o nome vazio.');
+    return;
+  }
+  if (!manualSaleRequestId) {
+    if (!window.crypto?.randomUUID) {
+      showManualSaleMessage('Não foi possível iniciar um registro seguro. Atualize a página e tente novamente.');
+      return;
+    }
+    manualSaleRequestId = window.crypto.randomUUID();
+  }
+
+  manualSaleSaving = true;
+  manualSaleSubmit.disabled = true;
+  manualSaleSubmit.textContent = 'REGISTRANDO...';
+  manualSaleCancel.disabled = true;
+  manualSaleClose.disabled = true;
+  hideManualSaleMessage();
+  try {
+    const { error } = await window.supabaseClient.rpc('admin_register_manual_service', {
+      p_request_id: manualSaleRequestId,
+      p_service: service,
+      p_booking_date: date,
+      p_booking_time: `${time}:00`,
+      p_payment_method: payment,
+      p_customer_name: name || null
+    });
+    if (error) throw error;
+
+    manualSaleSaving = false;
+    manualSaleModal.hidden = true;
+    document.body.classList.remove('modal-open');
+    manualSaleRequestId = null;
+    manualSalePreviousFocus?.focus();
+    if (adminSearch) adminSearch.value = '';
+    const chosen = parseBookingDate(date);
+    if (chosen) selectAdminCalendarDate(date);
+    setBookingView('finalized');
+    showGlobalMessage(`Atendimento de ${formatCurrency(Number(manualSaleService.selectedOptions[0]?.dataset.price || 0))} lançado e recebido com sucesso.`, 'success');
+    await refreshAllData({ silent: true });
+  } catch (error) {
+    console.error('Erro no lançamento manual:', error);
+    showManualSaleMessage(manualSaleErrorMessage(error));
+  } finally {
+    manualSaleSaving = false;
+    manualSaleSubmit.disabled = false;
+    manualSaleSubmit.textContent = 'REGISTRAR RECEBIMENTO';
+    manualSaleCancel.disabled = false;
+    manualSaleClose.disabled = false;
+  }
+}
+
+manualSaleOpen?.addEventListener('click', openManualSaleModal);
+manualSaleClose?.addEventListener('click', closeManualSaleModal);
+manualSaleCancel?.addEventListener('click', closeManualSaleModal);
+manualSaleBackdrop?.addEventListener('click', closeManualSaleModal);
+manualSaleService?.addEventListener('change', () => {
+  manualSaleRequestId = null;
+  hideManualSaleMessage();
+  updateManualSalePrice();
+});
+manualSaleForm?.querySelectorAll('input, select').forEach((control) => {
+  if (control !== manualSaleService) {
+    control.addEventListener('change', () => {
+      manualSaleRequestId = null;
+      hideManualSaleMessage();
+    });
+  }
+});
+manualSaleForm?.addEventListener('submit', submitManualSale);
+
+document.addEventListener('keydown', (event) => {
+  if (!manualSaleModal || manualSaleModal.hidden) return;
+  if (event.key === 'Escape' && !manualSaleSaving) {
+    event.preventDefault();
+    closeManualSaleModal();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const focusables = Array.from(manualSaleDialog.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled)'));
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
 
 adminLoginForm?.addEventListener(
   'submit',

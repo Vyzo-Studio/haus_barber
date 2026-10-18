@@ -1976,3 +1976,40 @@ button:disabled {
     padding: 22px 18px;
   }
 }
+
+.admin-welcome-actions {display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.manual-sale-open {min-height:46px;gap:9px;white-space:nowrap}
+.manual-sale-open span {font-size:19px;font-weight:500;line-height:1}
+.booking-manual-tag {display:inline-flex;align-items:center;padding:5px 8px;border-radius:6px;border:1px solid var(--admin-blue-border);color:#b5c8ed;background:var(--admin-blue-soft);font-size:9px;font-weight:800;letter-spacing:.13em}
+.manual-sale-modal {position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:calc(18px + var(--ios-safe-top)) calc(18px + var(--ios-safe-right)) calc(18px + var(--ios-safe-bottom)) calc(18px + var(--ios-safe-left))}
+.manual-sale-backdrop {position:absolute;inset:0;background:rgba(2,5,12,.84);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+.manual-sale-dialog {position:relative;z-index:1;width:min(100%,610px);max-height:calc(100dvh - 36px - var(--ios-safe-top) - var(--ios-safe-bottom));overflow-y:auto;padding:28px;border-radius:var(--admin-radius-lg);border:1px solid var(--admin-border-strong);background:linear-gradient(160deg,var(--admin-surface),#0b1223);box-shadow:0 30px 90px rgba(0,0,0,.55);-webkit-overflow-scrolling:touch}
+.manual-sale-heading {display:flex;align-items:start;justify-content:space-between;gap:16px}
+.manual-sale-eyebrow {display:block;color:var(--admin-red-hover);font-size:10px;font-weight:800;letter-spacing:.14em;margin-bottom:8px}
+.manual-sale-heading h2 {font:400 clamp(31px,5vw,42px)/1 var(--admin-font-display);margin:0;letter-spacing:.02em}
+.manual-sale-close {flex:none;width:36px;height:36px;border-radius:9px;border:1px solid var(--admin-border-strong);background:var(--admin-surface-2);color:var(--admin-text);font-size:25px;line-height:1;cursor:pointer}
+.manual-sale-description {max-width:480px;margin:14px 0 22px;font-size:12px;line-height:1.7;color:var(--admin-text-soft)}
+.manual-sale-form {display:grid;gap:17px}
+.manual-sale-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.manual-sale-field {min-width:0;display:grid;gap:8px}
+.manual-sale-field label {font-size:10px;font-weight:800;letter-spacing:.09em;color:var(--admin-text-soft)}
+.manual-sale-field label>span[aria-hidden] {color:var(--admin-red-hover)}
+.manual-sale-field input,.manual-sale-field select {width:100%;min-width:0;height:47px;padding:0 13px;border:1px solid var(--admin-border-strong);border-radius:var(--admin-radius-sm);background:#151e35;color:var(--admin-text);outline:none;color-scheme:dark;font-size:12px}
+.manual-sale-field input:focus-visible,.manual-sale-field select:focus-visible {border-color:var(--admin-red);box-shadow:0 0 0 3px var(--admin-red-soft)}
+.manual-sale-field input::placeholder {color:var(--admin-text-muted)}
+.manual-sale-optional {font-size:9px;letter-spacing:.04em;color:var(--admin-text-muted);font-weight:600}
+.manual-sale-summary {display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--admin-border);border-radius:12px;background:rgba(255,255,255,.025);padding:14px 17px}
+.manual-sale-summary span {color:var(--admin-text-soft);font-size:10px;font-weight:800;letter-spacing:.08em}
+.manual-sale-summary strong {font:400 32px/1 var(--admin-font-display);color:var(--admin-text)}
+.manual-sale-note {color:var(--admin-text-muted);font-size:11px;line-height:1.65;margin:0}
+.manual-sale-message {padding:12px 14px;margin:0;border-radius:8px;border:1px solid var(--admin-border);font-size:12px;line-height:1.5}
+.manual-sale-message.is-error {border-color:var(--admin-red-border);background:var(--admin-red-soft);color:#f6bbb6}
+.manual-sale-message.is-success {border-color:var(--admin-green-border);background:var(--admin-green-soft);color:#a6e5bd}
+.manual-sale-actions {display:flex;justify-content:flex-end;gap:10px}
+.manual-sale-actions button {min-height:46px}
+@media(max-width:700px) {.admin-welcome-actions {width:100%;justify-content:stretch}.admin-welcome-actions button {flex:1 1 170px}.manual-sale-dialog {padding:24px}}
+@media(max-width:480px) {.manual-sale-grid {grid-template-columns:1fr}.manual-sale-dialog {padding:20px 17px;max-height:calc(100dvh - 18px - var(--ios-safe-top) - var(--ios-safe-bottom))}.manual-sale-modal {padding:calc(9px + var(--ios-safe-top)) calc(9px + var(--ios-safe-right)) calc(9px + var(--ios-safe-bottom)) calc(9px + var(--ios-safe-left))}.manual-sale-actions {flex-direction:column-reverse}.manual-sale-actions button {width:100%}.manual-sale-summary strong {font-size:28px}}
+@media (max-width:470px) {
+  .admin-section-head h2,
+  .admin-booking-workspace-head h2 {font-size:clamp(1.85rem,8vw,2.45rem);overflow-wrap:anywhere}
+}
