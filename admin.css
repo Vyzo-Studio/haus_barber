@@ -1273,7 +1273,7 @@ button:disabled {
 
 .admin-date-days {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 7px;
 }
 
@@ -2013,3 +2013,42 @@ button:disabled {
   .admin-section-head h2,
   .admin-booking-workspace-head h2 {font-size:clamp(1.85rem,8vw,2.45rem);overflow-wrap:anywhere}
 }
+
+/* Admin manual booking: seven-day selector, same design language as the public calendar. */
+.manual-calendar-field {grid-column:1/-1}
+.manual-week-picker {padding:14px;border:1px solid var(--admin-border-strong);border-radius:13px;background:linear-gradient(150deg,var(--admin-bg-soft),var(--admin-surface-2));}
+.manual-week-head {display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:8px;margin-bottom:14px}
+.manual-week-head strong {text-align:center;font-size:11px;letter-spacing:.045em;line-height:1.45;color:var(--admin-text)}
+.manual-week-nav {height:40px;width:40px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--admin-border-strong);background:var(--admin-surface-2);color:var(--admin-text);font-size:21px;cursor:pointer}
+.manual-week-nav:hover,.manual-week-nav:focus-visible {border-color:var(--admin-red);background:var(--admin-red-soft)}
+.manual-week-days {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.manual-week-day {display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:80px;padding:9px 2px;border:1px solid var(--admin-border-strong);border-radius:10px;background:rgba(255,255,255,.025);color:var(--admin-text);cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.manual-week-day .manual-weekday,.manual-week-day small {font-size:9px;color:var(--admin-text-muted);font-weight:800;letter-spacing:.04em}
+.manual-week-day strong {margin-block:4px;font:400 27px/1 var(--admin-font-display)}
+.manual-week-day.is-today {box-shadow:inset 0 0 0 1px rgba(241,237,231,.6)}
+.manual-week-day.is-selected {border-color:var(--admin-red);background:var(--admin-red);box-shadow:0 8px 18px rgba(184,58,48,.21)}
+.manual-week-day.is-selected span,.manual-week-day.is-selected small {color:#fff}
+.manual-week-day:hover:not(.is-selected) {border-color:var(--admin-red);background:var(--admin-red-soft);transform:translateY(-1px)}
+.manual-week-foot {display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}
+.manual-week-foot span {font-size:10px;font-weight:700;color:var(--admin-text-soft)}
+.manual-week-foot button {padding:9px 12px;border:1px solid var(--admin-red-border);border-radius:8px;background:var(--admin-red-soft);color:var(--admin-text);font-size:10px;font-weight:800;cursor:pointer}
+.manual-week-foot button:hover {background:var(--admin-red)}
+@media(max-width:480px) {
+ .manual-week-picker {padding:11px 8px}
+ .manual-week-days {gap:4px}
+ .manual-week-day {min-height:70px;padding:6px 0;border-radius:7px}
+ .manual-week-day strong {font-size:22px}
+ .manual-week-day .manual-weekday,.manual-week-day small {font-size:8px}
+ .manual-week-head strong {font-size:10px}
+ .manual-week-foot {flex-wrap:wrap}
+ .admin-date-days {gap:4px}
+ .admin-calendar-day {padding:7px 1px;min-height:77px}
+ .admin-calendar-day strong {font-size:1.7rem}
+}
+@media(max-width:350px) {
+ .manual-week-picker {padding:9px 6px}
+ .manual-week-day strong {font-size:20px}
+ .manual-week-day .manual-weekday,.manual-week-day small {font-size:7px}
+}
+
+.manual-week-day:disabled {opacity:.32;cursor:not-allowed;transform:none!important}

@@ -19,6 +19,13 @@ const manualSaleCancel = document.querySelector('#manual-sale-cancel');
 const manualSaleSubmit = document.querySelector('#manual-sale-submit');
 const manualSaleService = document.querySelector('#manual-sale-service');
 const manualSaleDate = document.querySelector('#manual-sale-date');
+const manualWeekPrev = document.querySelector('#manual-week-prev');
+const manualWeekNext = document.querySelector('#manual-week-next');
+const manualWeekLabel = document.querySelector('#manual-week-label');
+const manualWeekDays = document.querySelector('#manual-week-days');
+const manualWeekToday = document.querySelector('#manual-week-today');
+const manualDateChosen = document.querySelector('#manual-date-chosen');
+let manualWeekStart = null;
 const manualSaleTime = document.querySelector('#manual-sale-time');
 const manualSalePayment = document.querySelector('#manual-sale-payment');
 const manualSaleName = document.querySelector('#manual-sale-name');
@@ -831,7 +838,7 @@ function formatCalendarWeekLabel(startDate) {
     cloneDate(startDate);
 
   endDate.setDate(
-    endDate.getDate() + 5
+    endDate.getDate() + 6
   );
 
   const startDay =
@@ -917,7 +924,7 @@ function renderAdminDateCalendar() {
 
   for (
     let offset = 0;
-    offset < 6;
+    offset < 7;
     offset += 1
   ) {
     const date =
@@ -4183,13 +4190,73 @@ function updateManualSalePrice() {
   }
 }
 
+function renderManualWeekCalendar() {
+  if (!manualWeekDays || !manualWeekStart) return;
+  const today = getTodayValue();
+  const selected = manualSaleDate?.value || today;
+  manualWeekDays.replaceChildren();
+
+  for (let offset = 0; offset < 7; offset += 1) {
+    const day = cloneDate(manualWeekStart);
+    day.setDate(manualWeekStart.getDate() + offset);
+    const value = formatDateValue(day);
+    const latest = cloneDate(getBrazilTodayDate());
+    latest.setDate(latest.getDate() + 365);
+    const outOfRange = value < '2020-01-01' || value > formatDateValue(latest);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'manual-week-day';
+    button.dataset.date = value;
+    button.disabled = outOfRange;
+    button.setAttribute('aria-label', formatSelectedDay(value));
+    button.setAttribute('aria-pressed', String(value === selected));
+    if (value === selected) button.classList.add('is-selected');
+    if (value === today) button.classList.add('is-today');
+    const abbr = document.createElement('span');
+    abbr.className = 'manual-weekday';
+    abbr.textContent = WEEKDAY_LABELS[day.getDay()];
+    const number = document.createElement('strong');
+    number.textContent = String(day.getDate()).padStart(2, '0');
+    const month = document.createElement('small');
+    month.textContent = MONTH_SHORT[day.getMonth()];
+    button.append(abbr, number, month);
+    button.addEventListener('click', () => selectManualSaleDate(value));
+    manualWeekDays.appendChild(button);
+  }
+  if (manualWeekLabel) manualWeekLabel.textContent = formatCalendarWeekLabel(manualWeekStart);
+  if (manualDateChosen) manualDateChosen.textContent = `Selecionado: ${formatSelectedDay(selected)}`;
+}
+
+function selectManualSaleDate(value) {
+  const parsed = parseBookingDate(value);
+  const latest = cloneDate(getBrazilTodayDate());
+  latest.setDate(latest.getDate() + 365);
+  if (!parsed || formatDateValue(parsed) !== value || !manualSaleDate ||
+      value < '2020-01-01' || value > formatDateValue(latest)) return;
+  manualSaleDate.value = value;
+  manualWeekStart = getMondayOfWeek(parsed);
+  manualSaleRequestId = null;
+  hideManualSaleMessage();
+  renderManualWeekCalendar();
+}
+
+function moveManualWeek(amount) {
+  if (!manualWeekStart) manualWeekStart = getMondayOfWeek(getBrazilTodayDate());
+  manualWeekStart = cloneDate(manualWeekStart);
+  manualWeekStart.setDate(manualWeekStart.getDate() + amount * 7);
+  renderManualWeekCalendar();
+}
+
+function resetManualWeekToToday() {
+  selectManualSaleDate(getTodayValue());
+}
+
 function openManualSaleModal() {
   if (!currentUser || !window.supabaseClient || !manualSaleModal || !manualSaleForm) return;
   manualSalePreviousFocus = document.activeElement;
   manualSaleForm.reset();
   manualSaleRequestId = null;
-  manualSaleDate.value = adminDateFilter?.value || getTodayValue();
-  manualSaleDate.max = getTodayValue();
+  resetManualWeekToToday();
   hideManualSaleMessage();
   updateManualSalePrice();
   manualSaleModal.hidden = false;
@@ -4208,14 +4275,14 @@ function closeManualSaleModal() {
 
 function manualSaleErrorMessage(error) {
   const msg = String(error?.message || '').toLowerCase();
-  if (msg.includes('caixa') && (msg.includes('fechado') || msg.includes('aberto'))) {
-    return 'O caixa da data escolhida precisa estar aberto. Não é possível alterar um dia já fechado.';
+  if (msg.includes('caixa')) {
+    return 'Não foi possível registrar o movimento no caixa dessa data. Confira o estado do caixa e tente novamente.';
   }
   if (msg.includes('horário') && (msg.includes('agendamento') || msg.includes('atendimento'))) {
     return 'Já existe um atendimento ou agendamento neste horário. Confira a agenda.';
   }
-  if (msg.includes('já aconteceu') || msg.includes('antes do lançamento') || msg.includes('futuro')) {
-    return 'Escolha uma data e um horário que já passaram.';
+  if (msg.includes('data inválida') || msg.includes('data fora')) {
+    return 'Selecione uma data válida no calendário.';
   }
   if (msg.includes('serviço inválido') || msg.includes('serviço sem valor')) {
     return 'Escolha um dos serviços cadastrados.';
@@ -4223,7 +4290,7 @@ function manualSaleErrorMessage(error) {
   if (msg.includes('não autorizado') || msg.includes('administrativo obrigatório')) {
     return 'Sua conta não tem permissão para lançar atendimentos.';
   }
-  if (msg.includes('intervalos') || msg.includes('domingo')) {
+  if (msg.includes('intervalos')) {
     return error.message;
   }
   return 'Não foi possível registrar o atendimento. Confira os dados e tente novamente. Se a conexão caiu, repita o envio sem alterar os campos.';
@@ -4239,10 +4306,13 @@ async function submitManualSale(event) {
   const time = manualSaleTime.value;
   const payment = manualSalePayment.value;
   const name = manualSaleName.value.trim();
-  const today = getTodayValue();
+  const parsedDate = parseBookingDate(date);
 
-  if (!date || date > today) {
-    showManualSaleMessage('Escolha uma data de hoje ou anterior.');
+  const latestDate = cloneDate(getBrazilTodayDate());
+  latestDate.setDate(latestDate.getDate() + 365);
+  if (!parsedDate || formatDateValue(parsedDate) !== date ||
+      date < '2020-01-01' || date > formatDateValue(latestDate)) {
+    showManualSaleMessage('Selecione uma data válida no calendário, até um ano à frente.');
     return;
   }
   if (!/^\d{2}:(00|30)$/.test(time) || time < '09:00' || time > '20:00') {
@@ -4309,6 +4379,9 @@ manualSaleOpen?.addEventListener('click', openManualSaleModal);
 manualSaleClose?.addEventListener('click', closeManualSaleModal);
 manualSaleCancel?.addEventListener('click', closeManualSaleModal);
 manualSaleBackdrop?.addEventListener('click', closeManualSaleModal);
+manualWeekPrev?.addEventListener('click', () => moveManualWeek(-1));
+manualWeekNext?.addEventListener('click', () => moveManualWeek(1));
+manualWeekToday?.addEventListener('click', resetManualWeekToToday);
 manualSaleService?.addEventListener('change', () => {
   manualSaleRequestId = null;
   hideManualSaleMessage();
