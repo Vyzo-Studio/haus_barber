@@ -227,7 +227,7 @@ declare
 begin
  if not coalesce(public.is_admin(),false) then raise exception 'Acesso administrativo obrigatório.'; end if;
  if p_request_id is null or p_membership_id is null then raise exception 'Operação inválida.'; end if;
- perform pg_advisory_xact_lock(hashtextextended('haus_combo_use|'||p_membership_id::text,0));
+ perform pg_advisory_xact_lock(hashtextextended('haus_combo_membership|'||p_membership_id::text,0));
  select id into v_id from public.haus_combo_uses where request_id=p_request_id;
  if found then return v_id; end if;
  select * into v_member from public.haus_combo_memberships where id=p_membership_id for update;
@@ -321,7 +321,7 @@ declare
 begin
  if not coalesce(public.is_admin(),false) then raise exception 'Acesso administrativo obrigatório.'; end if;
  if p_request_id is null or p_membership_id is null then raise exception 'Operação inválida.'; end if;
- perform pg_advisory_xact_lock(hashtextextended('haus_combo_visit|'||p_membership_id::text,0));
+ perform pg_advisory_xact_lock(hashtextextended('haus_combo_membership|'||p_membership_id::text,0));
  if exists(select 1 from public.haus_combo_uses where visit_request_id=p_request_id) then
    select coalesce(jsonb_agg(to_jsonb(x.id)),'[]'::jsonb) into v_ids
    from public.haus_combo_uses x where x.visit_request_id=p_request_id;
@@ -333,7 +333,7 @@ begin
  if p_used_on is null or p_used_on<v_member.start_date or p_used_on>=v_member.expires_on
    or p_used_on>v_today then raise exception 'Data fora da validade do combo ou no futuro.'; end if;
  if p_note is not null and char_length(p_note)>300 then raise exception 'Observação muito longa.'; end if;
- if p_kinds is null or array_length(p_kinds,1) not between 1 and 3 then
+ if p_kinds is null or coalesce(array_length(p_kinds,1),0) not between 1 and 3 then
    raise exception 'Selecione pelo menos um serviço deste atendimento.'; end if;
  if p_barber_id is not null and not exists(
    select 1 from public.haus_barbers where id=p_barber_id and active)
