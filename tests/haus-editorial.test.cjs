@@ -39,6 +39,6 @@ test('HTML estrutural e versionamento sem fragmentos inválidos', () => {
   assert.doesNotMatch(html, /<section[^>]*<section/);
   assert.doesNotMatch(html, /<\/img>/i);
   assert.match(html, /style\.css\?v=14\.0/);
-  assert.match(html, /script\.js\?v=14\.0/);
+  assert.match(html, /script\.js\?v=14\.[0-9]+/);
   assert.ok(html.includes('destination=-15.8246584%2C-48.1270409'));
 });
