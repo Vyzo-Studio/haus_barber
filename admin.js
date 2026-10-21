@@ -3480,7 +3480,7 @@ function getActionRpc(action) {
       'admin_cancel_booking',
 
     refund:
-      'refund_booking_payment'
+      'haus_refund_payment'
   };
 
   return (
@@ -3501,10 +3501,11 @@ async function executeBookingAction(
   ) {
     const payload = window.HausPayments?.build('booking', Number(booking.service_amount_cents), paymentMethod);
     if (!payload) throw new Error('Formulário financeiro indisponível. Atualize o painel.');
-    const { error } = await window.supabaseClient.rpc('admin_pay_booking_split', {
+    const { error } = await window.supabaseClient.rpc('haus_register_payment_parts', {
       p_booking_id: booking.id,
       p_parts: payload.parts,
-      p_cash_tendered_cents: payload.tender
+      p_cash_received_cents: payload.tender,
+      p_request_id: window.HausPayments.getRequestId('booking')
     });
     if (error) throw error;
     return;
@@ -4337,14 +4338,14 @@ async function submitManualSale(event) {
   try {
     const payload = window.HausPayments?.build('manual', Number(manualSaleService.selectedOptions[0]?.dataset.price || 0), payment);
     if (!payload) throw new Error('Formulário de pagamento indisponível. Atualize o painel.');
-    const { error } = await window.supabaseClient.rpc('admin_register_manual_service_v2', {
+    const { error } = await window.supabaseClient.rpc('haus_register_manual_parts', {
       p_request_id: manualSaleRequestId,
       p_service: service,
       p_booking_date: date,
       p_booking_time: `${time}:00`,
       p_parts: payload.parts,
       p_customer_name: name || null,
-      p_cash_tendered_cents: payload.tender,
+      p_cash_received_cents: payload.tender,
       p_barber_id: window.HausPayments.getBarber()
     });
     if (error) throw error;
