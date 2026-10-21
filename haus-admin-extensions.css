@@ -42,3 +42,7 @@
   #admin-bookings-title{font-size:clamp(25px,7vw,39px);max-width:100%;overflow-wrap:anywhere}
   .haus-manager h2{overflow-wrap:break-word}
 }
+@media(max-width:390px){
+  .admin-booking-workspace-head>div:first-child{min-width:0;max-width:100%}
+  #booking-workspace-title{font-size:clamp(27px,8.5vw,34px);max-width:100%;overflow-wrap:anywhere}
+}
