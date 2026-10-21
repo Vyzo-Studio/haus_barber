@@ -2,7 +2,7 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const client = window.supabaseClient;
-const state = {plans:[],barbers:[],memberships:[],filter:'all',detailId:null,visitId:null,history:[],loading:false,saving:false,createRequestId:null,visitRequestId:null};
+const state = {plans:[],barbers:[],memberships:[],filter:'all',detailId:null,visitId:null,history:[],statusEvents:[],manage:null,loading:false,saving:false,createRequestId:null,visitRequestId:null};
 const KINDS = [{id:'cut',label:'Corte',total:'cuts_total',used:'cuts_used'},{id:'beard',label:'Barba',total:'beards_total',used:'beards_used'},{id:'brows',label:'Sobrancelha',total:'brows_total',used:'brows_used'}];
 const PAY_FIELDS = {cash:$('payCash'),pix:$('payPix'),debit:$('payDebit'),credit:$('payCredit')};
 const money = (cents) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(cents)||0)/100);
@@ -115,15 +115,36 @@ function quotaMarkup(m){
     '<div class="quota-progress" aria-label="'+done+' de '+total+' utilizados"><span style="width:'+(done/total*100)+'%"></span></div></div>';
   }).join('');
 }
+function quotaAdjustments(m){
+  const today=brasilToday();
+  const canUse=m.status==='active'&&m.start_date<=today&&today<m.expires_on;
+  const items=KINDS.filter(k=>Number(m[k.total])>0);
+  if(!items.length)return '';
+  return '<div class="quota-adjustment"><div class="quota-adjustment-head">'+
+    '<strong>AJUSTAR UTILIZAÇÕES</strong><small>− dar baixa · + desfazer baixa</small></div>'+
+    '<div class="quota-adjustment-list">'+items.map(k=>{
+      const left=remaining(m,k);
+      const used=Number(m[k.used]||0);
+      return '<div class="quota-adjust-row"><span>'+escapeHtml(k.label.toUpperCase())+'</span>'+
+        '<div class="quota-adjust-buttons">'+
+          '<button type="button" data-action="consume" data-id="'+m.id+'" data-kind="'+k.id+'" '+
+          'aria-label="Dar baixa em um serviço de '+escapeHtml(k.label)+' de '+escapeHtml(m.full_name)+'" '+
+          (!canUse||!left?'disabled title="Sem saldo disponível, fora da validade ou cancelado"':'')+'>− USAR 1</button>'+
+          '<button type="button" data-action="return" data-id="'+m.id+'" data-kind="'+k.id+'" '+
+          'aria-label="Devolver um serviço de '+escapeHtml(k.label)+' ao saldo de '+escapeHtml(m.full_name)+'" '+
+          (!used?'disabled title="Nenhuma utilização registrada para devolver"':'')+'>+ DEVOLVER 1</button>'+
+        '</div></div>';
+    }).join('')+'</div></div>';
+}
 function memberCard(m){
   const status=computedStatus(m);const totalLeft=KINDS.reduce((n,k)=>n+remaining(m,k),0);
-  const canUse=m.status==='active'&&m.start_date<=brasilToday()&&totalLeft>0;
+  const canUse=m.status==='active'&&m.start_date<=brasilToday()&&brasilToday()<m.expires_on&&totalLeft>0;
   const label=(status==='expired'?'VENCIDO':status==='upcoming'?'INICIA EM': 'DIAS RESTANTES');
   const daysLabel=status==='expired'?'0':status==='upcoming'?fullDate(m.start_date):String(m.days_left);
   return '<article class="membership-card"><div class="card-head"><div><h3>'+escapeHtml(m.full_name)+'</h3><p>'+escapeHtml(displayPhone(m.whatsapp_digits))+'</p></div>'+
     '<span class="status '+status+'">'+STATE_LABELS[status]+'</span></div>'+
     '<div class="card-plan"><strong>'+escapeHtml(m.plan_name)+'</strong><small>'+money(m.price_cents)+'</small></div>'+
-    '<div class="quota-list">'+quotaMarkup(m)+'</div>'+
+    '<div class="quota-list">'+quotaMarkup(m)+'</div>'+quotaAdjustments(m)+
     '<div class="card-bottom"><div><span>'+label+'</span><strong>'+daysLabel+'</strong></div>'+
     '<div class="card-buttons"><button type="button" data-action="detail" data-id="'+m.id+'">DETALHES</button>'+
     '<button type="button" data-action="visit" data-id="'+m.id+'" class="primary" '+(!canUse?'disabled title="Sem saldo ou contrato ainda não iniciado"':'')+'>＋ BAIXAR</button></div></div></article>';
@@ -132,6 +153,8 @@ function filtered(){
   const term=$('searchInput').value.trim().toLocaleLowerCase('pt-BR').replace(/\s/g,'');
   return state.memberships.filter(m=>{
     const status=computedStatus(m);
+    if(state.filter!=='canceled'&&status==='canceled')return false;
+    if(state.filter==='canceled'&&status!=='canceled')return false;
     if(state.filter==='active'&&!['active','expiring','upcoming'].includes(status))return false;
     if(state.filter==='expiring'&&status!=='expiring')return false;
     if(state.filter==='expired'&&status!=='expired')return false;
@@ -150,6 +173,7 @@ function render(){
   });
   $('kpiActive').textContent=counts.active;$('kpiExpiring').textContent=counts.expiring;
   $('kpiComplete').textContent=counts.complete;$('kpiExpired').textContent=counts.expired;
+  if($('canceledCount'))$('canceledCount').textContent=String(state.memberships.filter(m=>m.status==='canceled').length);
   const items=filtered();$('memberships').innerHTML=items.map(memberCard).join('');
   $('empty').hidden=items.length!==0;$('loading').hidden=true;
 }
@@ -177,6 +201,8 @@ $('memberships').addEventListener('click',(event)=>{
   const m=state.memberships.find(x=>x.id===target.dataset.id);if(!m)return;
   if(target.dataset.action==='detail')openDetail(m.id);
   if(target.dataset.action==='visit')openVisit(m.id);
+  if(target.dataset.action==='consume')openVisit(m.id,target.dataset.kind);
+  if(target.dataset.action==='return')beginReturn(m.id,target.dataset.kind);
 });
 function selectedPlan(){return state.plans.find(p=>p.id===$('planSelect').value)}
 function planPrice(){return Number(selectedPlan()?.price_cents||0)}
@@ -267,8 +293,13 @@ async function openDetail(id){
   $('detailBody').innerHTML='<p class="detail-empty">Carregando histórico…</p>';
   openModal('detailModal');
   try{
-    state.history=await rpc('haus_combo_admin_history',{p_membership_id:id});
+    const [uses,events]=await Promise.all([
+      rpc('haus_combo_admin_history',{p_membership_id:id}),
+      rpc('haus_combo_admin_status_history',{p_membership_id:id})
+    ]);
     if(state.detailId!==id)return;
+    state.history=Array.isArray(uses)?uses:[];
+    state.statusEvents=Array.isArray(events)?events:[];
     renderDetail();
   }catch(error){$('detailBody').textContent=friendly(error)}
 }
@@ -283,6 +314,7 @@ function renderDetail(){
     '<div class="detail-stat"><span>ÚLTIMO DIA DE USO</span><strong>'+validTo+'</strong></div>'+
     '<div class="detail-stat"><span>DIAS RESTANTES</span><strong>'+m.days_left+'</strong></div></div>'+
     '<div class="quota-list">'+quotaMarkup(m)+'</div>';
+  out+=quotaAdjustments(m);
   if(m.notes)out+='<p class="helper" style="margin-top:17px">OBSERVAÇÃO: '+escapeHtml(m.notes)+'</p>';
   out+='<div class="history-head"><h3>HISTÓRICO DE UTILIZAÇÃO</h3></div>';
   out+='<div class="history-list">'+(state.history.length?state.history.map(h=>{
@@ -293,35 +325,130 @@ function renderDetail(){
       (h.barber_name?' · '+escapeHtml(h.barber_name):'')+'</small>'+
       (h.note?'<small>'+escapeHtml(h.note)+'</small>':'')+
       (isVoid?'<small>Motivo: '+escapeHtml(h.void_reason||'Não informado')+'</small>':'')+'</div>'+
-      (!isVoid?'<button type="button" data-void="'+escapeHtml(h.id)+'">CORRIGIR</button>':'')+'</div>';
+      (!isVoid?'<button type="button" data-void="'+escapeHtml(h.id)+'">+ DEVOLVER 1</button>':'')+'</div>';
   }).join(''):'<div class="detail-empty">Nenhum atendimento utilizado ainda.</div>')+'</div>';
+
+  if(state.statusEvents.length){
+    out+='<div class="history-head"><h3>ALTERAÇÕES DA ASSINATURA</h3></div>'+
+      '<div class="history-list">'+state.statusEvents.map(e=>
+        '<div class="history-row"><div><strong>'+
+        (e.event_type==='canceled'?'COMBO CANCELADO':'COMBO RESTAURADO')+
+        '</strong><small>'+escapeHtml(new Date(e.created_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'}))+
+        '</small><small>Motivo: '+escapeHtml(e.reason)+'</small></div></div>'
+      ).join('')+'</div>';
+  }
   $('detailBody').innerHTML=out;
-  $('detailBody').querySelectorAll('[data-void]').forEach(button=>button.addEventListener('click',()=>voidUse(button.dataset.void)));
+  const statusButton=$('membershipStatusButton');
+  if(statusButton){
+    const canceled=m.status==='canceled';
+    statusButton.textContent=canceled?'↶ RESTAURAR COMBO':'CANCELAR E ARQUIVAR COMBO';
+    statusButton.classList.toggle('danger',!canceled);
+    statusButton.classList.toggle('outline',canceled);
+  }
+  $('detailBody').querySelectorAll('[data-void]').forEach(button=>
+    button.addEventListener('click',()=>beginReturn(m.id,null,button.dataset.void))
+  );
   $('renewButton').disabled=false;
 }
-async function voidUse(id){
-  const reason=window.prompt('Por que deseja cancelar esta utilização? Ela continuará no histórico de auditoria.');
-  if(reason===null)return;
-  if(reason.trim().length<5){toast('Informe um motivo com pelo menos 5 caracteres.',true);return}
-  if(!window.confirm('Restaurar o saldo deste serviço? O lançamento original ficará marcado como corrigido.'))return;
+function openManagement(action,member,use=null){
+  if(!member)return;
+  state.manage={action,memberId:member.id,useId:use?.id||null};
+  const labels=KINDS.find(k=>k.id===use?.kind)?.label||'serviço';
+  const cancel=action==='cancel',restore=action==='restore',reversal=action==='return';
+  $('manageEyebrow').textContent=reversal?'CORREÇÃO DE UTILIZAÇÃO':'GESTÃO DE ASSINATURA';
+  $('manageTitle').textContent=reversal?'DEVOLVER 1 CRÉDITO':cancel?'CANCELAR COMBO':'RESTAURAR COMBO';
+  $('manageReason').value='';
+  $('manageReason').placeholder=reversal?'Ex.: uso lançado por engano':
+    cancel?'Ex.: cliente solicitou cancelamento':'Ex.: cancelamento feito por engano';
+  $('manageDescription').textContent=reversal
+    ?'Será desfeito um lançamento de '+labels+' realizado em '+fullDate(use.used_on)+
+     ' no combo de '+member.full_name+'. Um crédito retornará ao saldo. O lançamento original permanecerá no histórico.'
+    :cancel
+    ?'O combo '+member.plan_name+' de '+member.full_name+' será cancelado e retirado da lista principal. Você ainda poderá consultá-lo na aba Cancelados.'
+    :'O combo de '+member.full_name+' voltará à lista de assinaturas. Sua validade original ('+
+     fullDate(member.start_date)+' a '+fullDate(shiftDay(member.expires_on,-1))+') não será reiniciada.';
+  $('manageWarning').hidden=reversal;
+  $('manageWarning').textContent=cancel
+    ?'ATENÇÃO: cancelar e arquivar não gera estorno financeiro nem devolve dinheiro ao cliente. O pagamento permanece no caixa e no histórico.'
+    :restore
+    ?'A restauração não altera o valor já recebido nem prorroga o prazo de 45 dias.'
+    :'';
+  $('manageConfirm').textContent=reversal?'+ DEVOLVER CRÉDITO':cancel?'CANCELAR E ARQUIVAR':'RESTAURAR ASSINATURA';
+  $('manageConfirm').classList.toggle('danger',cancel);
+  $('manageConfirm').classList.toggle('primary',!cancel);
+  $('manageConfirm').disabled=false;
+  openModal('manageModal');
+  $('manageReason').focus();
+}
+async function beginReturn(memberId,kind=null,useId=null){
+  if(state.saving)return;
+  const member=memberById(memberId);if(!member)return;
   try{
-    await rpc('haus_combo_void_use',{p_use_id:id,p_reason:reason.trim()});
-    toast('Utilização corrigida. Saldo restaurado e auditoria preservada.');
-    await refresh();await openDetail(state.detailId);
+    const useList=state.detailId===memberId&&!$('detailModal').hidden
+      ?state.history
+      :await rpc('haus_combo_admin_history',{p_membership_id:memberId});
+    const found=[...(Array.isArray(useList)?useList:[])].filter(u=>
+      !u.voided_at&&(!kind||u.kind===kind)&&(!useId||u.id===useId)
+    ).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')))[0];
+    if(!found){toast('Não há utilização para devolver. Atualize os saldos e confira o histórico.',true);await refresh();return}
+    openManagement('return',member,found);
   }catch(error){toast(friendly(error),true)}
 }
+function beginStatusAction(){
+  if(state.saving)return;
+  const m=memberById(state.detailId);
+  if(m)openManagement(m.status==='canceled'?'restore':'cancel',m);
+}
+$('membershipStatusButton').addEventListener('click',beginStatusAction);
+$('detailBody').addEventListener('click',(event)=>{
+  const target=event.target.closest('button[data-action]');
+  if(!target)return;
+  if(target.dataset.action==='consume')openVisit(target.dataset.id,target.dataset.kind);
+  if(target.dataset.action==='return')beginReturn(target.dataset.id,target.dataset.kind);
+});
+$('manageForm').addEventListener('submit',async(event)=>{
+  event.preventDefault();
+  if(state.saving||!state.manage||!$('manageForm').reportValidity())return;
+  const reason=$('manageReason').value.trim();
+  if(reason.length<5||reason.length>250){toast('Informe um motivo de 5 a 250 caracteres.',true);return}
+  const action={...state.manage};
+  const detailVisible=!$('detailModal').hidden&&state.detailId===action.memberId;
+  setSaving(true);$('manageConfirm').disabled=true;$('manageConfirm').textContent='PROCESSANDO…';
+  try{
+    if(action.action==='return')await rpc('haus_combo_void_use',{p_use_id:action.useId,p_reason:reason});
+    else if(action.action==='cancel')await rpc('haus_combo_cancel',{p_membership_id:action.memberId,p_reason:reason});
+    else if(action.action==='restore')await rpc('haus_combo_restore',{p_membership_id:action.memberId,p_reason:reason});
+    else throw new Error('Ação administrativa inválida.');
+    state.manage=null;
+    setSaving(false);
+    closeModal('manageModal');
+    if(action.action!=='return')closeModal('detailModal');
+    const message=action.action==='return'
+      ?'Utilização desfeita. Um crédito foi devolvido ao saldo, com registro no histórico.'
+      :action.action==='cancel'
+      ?'Combo cancelado e arquivado. Ele está na aba Cancelados; o caixa não foi alterado.'
+      :'Combo restaurado sem alterar o prazo nem os pagamentos anteriores.';
+    await refresh();
+    if(action.action==='return'&&detailVisible)await openDetail(action.memberId);
+    toast(message);
+  }catch(error){toast(friendly(error),true)}
+  finally{setSaving(false);$('manageConfirm').disabled=false}
+});
 $('renewButton').addEventListener('click',()=>{
   const m=memberById(state.detailId);closeModal('detailModal');if(m)openCreate(m);
 });
-function openVisit(id){
+function openVisit(id,preselectKind=''){
   const m=memberById(id);if(!m)return;
+  if(m.status!=='active'||m.start_date>brasilToday()||brasilToday()>=m.expires_on){
+    toast('O combo não está dentro do período de utilização.',true);return;
+  }
   state.visitId=id;state.visitRequestId=null;
   $('visitForm').reset();$('visitCustomer').textContent=m.full_name+' · '+m.plan_name;
   $('visitBarber').innerHTML='<option value="">Não informado</option>'+state.barbers.map(b=>'<option value="'+escapeHtml(b.id)+'">'+escapeHtml(b.name)+'</option>').join('');
   KINDS.forEach(k=>{
     const left=remaining(m,k),row=$(k.id+'Option');
     row.hidden=left===0;
-    const check=row.querySelector('input');check.disabled=left===0;check.checked=false;
+    const check=row.querySelector('input');check.disabled=left===0;check.checked=!!left&&k.id===preselectKind;
     $(k.id+'Left').textContent=left+' de '+m[k.total]+' disponíveis';
   });
   const last=shiftDay(m.expires_on,-1),today=brasilToday();
