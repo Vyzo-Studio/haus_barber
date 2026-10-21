@@ -35,3 +35,10 @@
 .haus-finance-note{font-size:11px;color:var(--admin-text-soft)}
 @media(max-width:950px){.haus-manager-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.haus-manager-form,.haus-finance-grid{grid-template-columns:1fr}.haus-manager-row{grid-template-columns:1fr}.haus-manager-row .haus-row-actions{justify-content:flex-start}}
+/* Keep secondary actions quiet, preserving Haus's red for the primary action. */
+#haus-service-reset,#haus-barber-reset{background:transparent;border:1px solid var(--admin-border-strong);color:var(--admin-text-soft)}
+#haus-service-reset:hover,#haus-barber-reset:hover{border-color:var(--admin-red-hover);color:var(--admin-text)}
+@media(max-width:520px){
+  #admin-bookings-title{font-size:clamp(25px,7vw,39px);max-width:100%;overflow-wrap:anywhere}
+  .haus-manager h2{overflow-wrap:break-word}
+}
