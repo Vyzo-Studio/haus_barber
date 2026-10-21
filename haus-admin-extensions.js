@@ -5,7 +5,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const money = cents => (Number(cents || 0)/100).toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
   const METHODS = [['cash','Dinheiro'], ['pix','Pix'], ['debit','Débito'], ['credit','Crédito']];
-  const BUCKET = 'haus-portfolio';
+  const BUCKET = 'haus-gallery';
   const SITE_PATH = 'https://vyzo-studio.github.io/haus_barber/';
   let allowed = false;
   let currentTab = 'services';
@@ -43,7 +43,7 @@
     const [s,b,p] = await Promise.all([
       run(client().from('haus_services').select('*').order('sort_order')),
       run(client().from('haus_barbers').select('*').order('sort_order')),
-      run(client().from('haus_portfolio').select('*').order('sort_order'))
+      run(client().from('haus_gallery').select('*').order('sort_order'))
     ]);
     services = s || []; barbers = b || []; portfolio = p || [];
     renderServices(); renderBarbers(); renderPhotos(); updateManualDropdowns();
@@ -94,29 +94,29 @@
     });
   }
   function photoUrl(photo) {
-    if (photo.storage_path) return client().storage.from(BUCKET).getPublicUrl(photo.storage_path).data.publicUrl;
-    return SITE_PATH+encodeURIComponent(photo.image_path);
+    if (photo.storage_key) return client().storage.from(BUCKET).getPublicUrl(photo.storage_key).data.publicUrl;
+    return SITE_PATH+encodeURIComponent(photo.local_filename);
   }
   function renderPhotos() {
     const list=$('#haus-photos-list');if(!list)return;
     list.replaceChildren();
     portfolio.forEach(p=>{
       const [row,actions,info]=line(p.title,`${p.category.replace(/\s+/g,', ')} • ${p.active?'Visível':'Oculta'} • ordem ${p.sort_order}`,!p.active);
-      const img=el('img',{src:photoUrl(p),alt:p.alt_text,loading:'lazy'});
+      const img=el('img',{src:photoUrl(p),alt:p.description||p.title,loading:'lazy'});
       info.prepend(img);
       const toggle=el('button',{type:'button'},p.active?'OCULTAR':'EXIBIR');
-      toggle.addEventListener('click',async()=>{try{await run(client().from('haus_portfolio').update({active:!p.active}).eq('id',p.id));await refreshCatalogs();setMessage('Visibilidade da foto atualizada.');}catch(e){fail(e);}});
+      toggle.addEventListener('click',async()=>{try{await run(client().from('haus_gallery').update({active:!p.active}).eq('id',p.id));await refreshCatalogs();setMessage('Visibilidade da foto atualizada.');}catch(e){fail(e);}});
       const edit=el('button',{type:'button'},'EDITAR');
       edit.addEventListener('click',async()=>{
         const title=prompt('Título da foto',p.title);
         if(title===null)return;
         const clean=title.trim();if(clean.length<2||clean.length>100){setMessage('Título deve ter de 2 a 100 caracteres.',true);return;}
-        try{await run(client().from('haus_portfolio').update({title:clean,alt_text:`${clean} realizado na Haus Barber`}).eq('id',p.id));await refreshCatalogs();}catch(e){fail(e);}
+        try{await run(client().from('haus_gallery').update({title:clean,description:`${clean} realizado na Haus Barber`}).eq('id',p.id));await refreshCatalogs();}catch(e){fail(e);}
       });
       const remove=el('button',{type:'button'},'RETIRAR');
       remove.addEventListener('click',async()=>{
         if(!confirm('Retirar esta foto da galeria? O arquivo original não será apagado.'))return;
-        try{await run(client().from('haus_portfolio').delete().eq('id',p.id));await refreshCatalogs();setMessage('Foto retirada do portfólio, mantendo o arquivo como backup.');}catch(e){fail(e);}
+        try{await run(client().from('haus_gallery').delete().eq('id',p.id));await refreshCatalogs();setMessage('Foto retirada do portfólio, mantendo o arquivo como backup.');}catch(e){fail(e);}
       });
       actions.append(edit,toggle,remove);list.append(row);
     });
@@ -127,7 +127,7 @@
     const price=parseBRL($('#haus-service-price').value);
     const category=$('#haus-service-category').value;
     const sort_order=Number($('#haus-service-order').value || 0);
-    if(name.length<2||name.length>80||price===null||price<=0||price>1000000||!['corte','barba','quimica'].includes(category)){setMessage('Preencha nome, categoria e preço válido.',true);return;}
+    if(name.length<2||name.length>80||price===null||price<=0||price>2000000||!['cortes','detalhes','estilo'].includes(category)){setMessage('Preencha nome, categoria e preço válido.',true);return;}
     const btn=$('#haus-service-submit');btn.disabled=true;
     try{
       if(editingService) await run(client().from('haus_services').update({name,price_cents:price,category,sort_order,updated_at:new Date().toISOString()}).eq('id',editingService));
@@ -163,7 +163,7 @@
       const {error}=await client().storage.from(BUCKET).upload(storage_path,file,{contentType:file.type,upsert:false,cacheControl:'3600'});
       if(error)throw error;
       try{
-        await run(client().from('haus_portfolio').insert({image_path:`storage:${storage_path}`,storage_path,title,alt_text:`${title} realizado na Haus Barber`,category,sort_order:portfolio.length+1,active:true}));
+        await run(client().from('haus_gallery').insert({storage_key:storage_path,title,description:`${title} realizado na Haus Barber`,category,sort_order:portfolio.length+1,active:true}));
       }catch(err){await client().storage.from(BUCKET).remove([storage_path]);throw err;}
       event.target.reset();await refreshCatalogs();setMessage('Foto enviada. Ela aparecerá no portfólio da Haus.');
     }catch(e){fail(e);}finally{btn.disabled=false;}
@@ -240,11 +240,11 @@
     if(!parts.length||sum!==total)throw Error(`Distribuído: ${money(sum)}. Faltam ${money(total-sum)} para completar ${money(total)}.`);
     const cash=parts.filter(p=>p.method==='cash').reduce((s,p)=>s+p.amount_cents,0);
     const tenderRaw=wrap.querySelector('[data-haus-tender]').value.trim();
-    let tender=null;
+    let tender=cash>0?cash:0;
     if(tenderRaw){tender=parseBRL(tenderRaw);if(tender===null)throw Error('Dinheiro recebido inválido.');}
-    if(cash===0&&tender!==null)throw Error('O troco só se aplica se houver pagamento em dinheiro.');
-    if(cash>0&&tender!==null&&tender<cash)throw Error('Dinheiro entregue é menor que a parcela em dinheiro.');
-    return {parts,tender};
+    if(cash===0&&tender>0)throw Error('O troco só se aplica se houver pagamento em dinheiro.');
+    if(cash>0&&tender<cash)throw Error('Dinheiro entregue é menor que a parcela em dinheiro.');
+    return {parts:parts.map(p=>({method:p.method,cents:p.amount_cents})),tender};
   }
   function updateFinance(context){
     const wrap=financeRoot(context);if(!wrap)return;
@@ -260,6 +260,7 @@
   function resetFinance(context,total=0){
     const root=financeRoot(context);if(!root)return;
     root.dataset.total=total;
+    root.dataset.requestId=crypto.randomUUID();
     root.querySelector('.haus-split-toggle').checked=false;
     root.querySelector('.haus-finance-grid').hidden=true;
     root.querySelectorAll('input[type=text]').forEach(i=>i.value='');
@@ -271,6 +272,7 @@
     reset:resetFinance,
     build:(context,total,singleMethod)=>getParts(context,total,singleMethod),
     getBarber:()=>$('#haus-manual-barber')?.value||null,
+    getRequestId:(context)=>financeRoot(context)?.dataset.requestId||null,
     sync:()=>updateFinance('manual')
   };
 
