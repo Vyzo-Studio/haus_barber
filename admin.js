@@ -3178,6 +3178,7 @@ function getSelectedPaymentMethod() {
         input.checked
     );
 
+  if (window.HausPayments?.mode('booking')) return 'split';
   return (
     selected?.value ||
     ''
@@ -3419,6 +3420,7 @@ function openActionModal(
     action === 'paid'
   ) {
     showPaymentMethodSelection();
+    window.HausPayments?.reset('booking', Number(booking?.service_amount_cents || 0));
   } else {
     hidePaymentMethodSelection();
   }
@@ -3497,24 +3499,14 @@ async function executeBookingAction(
   if (
     action === 'paid'
   ) {
-    const {
-      error
-    } =
-      await window.supabaseClient.rpc(
-        'mark_booking_paid',
-        {
-          p_booking_id:
-            booking.id,
-
-          p_payment_method:
-            paymentMethod
-        }
-      );
-
-    if (error) {
-      throw error;
-    }
-
+    const payload = window.HausPayments?.build('booking', Number(booking.service_amount_cents), paymentMethod);
+    if (!payload) throw new Error('Formulário financeiro indisponível. Atualize o painel.');
+    const { error } = await window.supabaseClient.rpc('admin_pay_booking_split', {
+      p_booking_id: booking.id,
+      p_parts: payload.parts,
+      p_cash_tendered_cents: payload.tender
+    });
+    if (error) throw error;
     return;
   }
 
@@ -4255,6 +4247,7 @@ function openManualSaleModal() {
   if (!currentUser || !window.supabaseClient || !manualSaleModal || !manualSaleForm) return;
   manualSalePreviousFocus = document.activeElement;
   manualSaleForm.reset();
+  window.HausPayments?.reset('manual');
   manualSaleRequestId = null;
   resetManualWeekToToday();
   hideManualSaleMessage();
@@ -4319,7 +4312,7 @@ async function submitManualSale(event) {
     showManualSaleMessage('Selecione um horário entre 09:00 e 20:00.');
     return;
   }
-  if (!['cash', 'pix', 'debit', 'credit'].includes(payment)) {
+  if (!['cash', 'pix', 'debit', 'credit', 'split'].includes(payment)) {
     showManualSaleMessage('Selecione a forma de pagamento.');
     return;
   }
@@ -4342,13 +4335,17 @@ async function submitManualSale(event) {
   manualSaleClose.disabled = true;
   hideManualSaleMessage();
   try {
-    const { error } = await window.supabaseClient.rpc('admin_register_manual_service', {
+    const payload = window.HausPayments?.build('manual', Number(manualSaleService.selectedOptions[0]?.dataset.price || 0), payment);
+    if (!payload) throw new Error('Formulário de pagamento indisponível. Atualize o painel.');
+    const { error } = await window.supabaseClient.rpc('admin_register_manual_service_v2', {
       p_request_id: manualSaleRequestId,
       p_service: service,
       p_booking_date: date,
       p_booking_time: `${time}:00`,
-      p_payment_method: payment,
-      p_customer_name: name || null
+      p_parts: payload.parts,
+      p_customer_name: name || null,
+      p_cash_tendered_cents: payload.tender,
+      p_barber_id: window.HausPayments.getBarber()
     });
     if (error) throw error;
 
