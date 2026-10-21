@@ -88,6 +88,7 @@
     rel="stylesheet"
     href="admin.css?v=8.0"
   >
+  <link rel="stylesheet" href="haus-admin-extensions.css?v=1.0">
 </head>
 
 <body>
@@ -996,7 +997,6 @@
                   <span class="cash-payment-icon">
                     C
                   </span>
-
                   <div>
 
                     <span>
@@ -1157,6 +1157,52 @@
 
         </section>
 
+        <section id="haus-manager" class="haus-manager" aria-labelledby="haus-manager-title">
+          <div class="haus-manager-head">
+            <div><span>GESTÃO HAUS BARBER</span><h2 id="haus-manager-title">SERVIÇOS, EQUIPE E PORTFÓLIO</h2></div>
+            <button id="haus-manager-load" class="haus-management-action" type="button">ATUALIZAR CADASTROS</button>
+          </div>
+          <div class="haus-manager-tabs" role="tablist" aria-label="Cadastros da Haus">
+            <button type="button" role="tab" aria-selected="true" data-haus-manager-tab="services">SERVIÇOS E PREÇOS</button>
+            <button type="button" role="tab" aria-selected="false" data-haus-manager-tab="barbers">BARBEIROS</button>
+            <button type="button" role="tab" aria-selected="false" data-haus-manager-tab="photos">FOTOS</button>
+          </div>
+          <p id="haus-manager-message" role="status" aria-live="polite" hidden></p>
+          <div class="haus-module" data-haus-module="services">
+            <p class="haus-module-intro">Edite o nome e o preço dos serviços oferecidos pela Haus. As mudanças aparecem no agendamento; vendas antigas conservam os valores originais.</p>
+            <form id="haus-service-form" class="haus-manager-form">
+              <label>NOME DO SERVIÇO<input id="haus-service-name" maxlength="80" required placeholder="Ex.: Corte degradê"></label>
+              <label>PREÇO (R$)<input id="haus-service-price" inputmode="decimal" required placeholder="25,00"></label>
+              <label>CATEGORIA<select id="haus-service-category" required><option value="corte">Cortes</option><option value="barba">Barba e detalhes</option><option value="quimica">Química e estilo</option></select></label>
+              <label>ORDEM<input id="haus-service-order" type="number" step="1" value="50" min="0" max="999"></label>
+              <button type="submit" id="haus-service-submit">ADICIONAR SERVIÇO</button>
+              <button type="button" id="haus-service-reset" class="haus-management-action">LIMPAR</button>
+            </form>
+            <div id="haus-services-list" class="haus-manager-list" aria-live="polite"></div>
+          </div>
+          <div class="haus-module" data-haus-module="barbers" hidden>
+            <p class="haus-module-intro">Cadastre os profissionais da equipe, ative ou desative um barbeiro. No lançamento manual, você poderá identificar quem realizou o atendimento.</p>
+            <form id="haus-barber-form" class="haus-manager-form">
+              <label>NOME DO PROFISSIONAL<input id="haus-barber-name" maxlength="80" required placeholder="Nome do barbeiro"></label>
+              <label>ORDEM<input id="haus-barber-order" type="number" step="1" min="0" max="999" value="50"></label>
+              <button type="submit" id="haus-barber-submit">ADICIONAR BARBEIRO</button>
+              <button type="button" id="haus-barber-reset" class="haus-management-action">LIMPAR</button>
+            </form>
+            <div id="haus-barbers-list" class="haus-manager-list" aria-live="polite"></div>
+          </div>
+          <div class="haus-module" data-haus-module="photos" hidden>
+            <p class="haus-module-intro">Adicione cortes ao portfólio ou retire fotos da exibição. Arquivos JPEG, PNG e WebP de até 5 MB. As fotos existentes continuam intactas.</p>
+            <form id="haus-photo-form" class="haus-manager-form">
+              <label>FOTO<input type="file" id="haus-photo-file" accept="image/png,image/jpeg,image/webp" required></label>
+              <label>TÍTULO<input id="haus-photo-title" maxlength="100" placeholder="Ex.: Degradê navalhado" required></label>
+              <label>ESTILO<select id="haus-photo-category"><option value="degrade">Degradê</option><option value="freestyle">Freestyle</option><option value="barba">Barba</option><option value="luzes">Luzes</option><option value="navalhado">Navalhado</option></select></label>
+              <button type="submit" id="haus-photo-submit">ADICIONAR FOTO</button>
+            </form>
+            <div id="haus-photos-list" class="haus-manager-list" aria-live="polite"></div>
+          </div>
+          <p class="haus-module-intro" style="margin-top:18px">A identidade visual permanece protegida: este painel não oferece edição de cores, fontes ou tema.</p>
+        </section>
+        
       </main>
 
       <footer class="admin-footer">
@@ -1436,6 +1482,7 @@
               <option value="pix">Pix</option>
               <option value="debit">Débito</option>
               <option value="credit">Crédito</option>
+              <option value="split">Combinar pagamentos</option>
             </select>
           </div>
           <div class="manual-sale-field">
@@ -1443,6 +1490,8 @@
             <input id="manual-sale-name" name="customer" type="text" maxlength="80" placeholder="Cliente não informado" autocomplete="off">
           </div>
         </div>
+        <div class="manual-sale-field"><label for="haus-manual-barber">BARBEIRO (OPCIONAL)</label><select id="haus-manual-barber"><option value="">Sem barbeiro especificado</option></select></div>
+        <div id="haus-manual-finance-host"></div>
         <div class="manual-sale-summary">
           <span>VALOR DO SERVIÇO</span>
           <strong id="manual-sale-price">R$ 0,00</strong>
@@ -1599,6 +1648,7 @@
 
         </div>
 
+        <div id="haus-booking-finance-host"></div>
         <p
           class="payment-method-error"
           id="payment-method-error"
@@ -1647,7 +1697,8 @@
 
   <script src="config.js?v=1.2"></script>
 
-  <script src="admin.js?v=8.0"></script>
+  <script src="admin.js?v=9.0"></script>
+  <script src="haus-admin-extensions.js?v=1.0"></script>
 
 </body>
 </html>
