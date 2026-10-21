@@ -347,7 +347,7 @@ begin
    if v_quota=0 then raise exception 'Esse serviço não faz parte do combo.'; end if;
    select count(*) into v_used from public.haus_combo_uses
      where membership_id=p_membership_id and kind=v_kind and voided_at is null;
-   if v_used>=v_quota then raise exception 'Saldo esgotado para '||v_kind; end if;
+   if v_used>=v_quota then raise exception 'Saldo esgotado para %',v_kind; end if;
    if exists(select 1 from public.haus_combo_uses
       where membership_id=p_membership_id and kind=v_kind and used_on=p_used_on and voided_at is null)
      then raise exception 'Esse serviço já foi lançado nesta data.'; end if;
