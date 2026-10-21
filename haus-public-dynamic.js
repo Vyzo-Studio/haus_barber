@@ -1,0 +1,70 @@
+/* HAUS BARBER public catalog and portfolio — design/colors remain in the existing CSS. */
+(() => {
+ 'use strict';
+ const client=window.supabaseClient;
+ if(!client){
+  const submit=document.querySelector('#booking-submit');if(submit)submit.disabled=true;
+  document.querySelector('.portfolio-gallery')?.replaceChildren();
+  return;
+ }
+ const currency=cents=>(Number(cents)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:2});
+ async function loadServices(){
+  const {data,error}=await client.from('haus_services').select('name,category,price_cents,sort_order').eq('active',true).order('sort_order');
+  if(error||!Array.isArray(data))throw error||Error('Catálogo inválido');
+  const select=document.querySelector('#servico');
+  if(select){
+   const saved=select.value;
+   select.replaceChildren(new Option('Escolha um serviço','',true,false));
+   select.options[0].disabled=true;
+   data.forEach(s=>{
+    const option=new Option(`${s.name} — ${currency(s.price_cents)}`,s.name);
+    option.dataset.price=s.price_cents;
+    select.appendChild(option);
+   });
+   if(data.some(s=>s.name===saved))select.value=saved;
+  }
+  const minCut=data.filter(s=>s.category==='cortes').reduce((min,s)=>Math.min(min,s.price_cents),Infinity);
+  const heroPrice=[...document.querySelectorAll('.info-bar strong')].find(x=>/CORTES A PARTIR/i.test(x.textContent));
+  if(heroPrice)heroPrice.textContent=Number.isFinite(minCut)?`CORTES A PARTIR DE ${currency(minCut)}`:'CONSULTE NOSSOS SERVIÇOS';
+  const groups=[['cortes',0],['detalhes',1],['estilo',2]];
+  const cards=[...document.querySelectorAll('#precos .menu-card')];
+  groups.forEach(([category,index])=>{
+   const list=cards[index]?.querySelector('.menu-prices');if(!list)return;
+   list.replaceChildren();
+   const rows=data.filter(s=>s.category===category);
+   rows.forEach(s=>{
+    const li=document.createElement('li');const name=document.createElement('span');const price=document.createElement('strong');
+    name.textContent=s.name;price.textContent=currency(s.price_cents);li.append(name,price);list.append(li);
+   });
+   cards[index].hidden=!rows.length;
+  });
+  if(!data.length){const message=document.querySelector('#booking-status');if(message){message.hidden=false;message.className='booking-status is-error';message.textContent='Agendamentos online indisponíveis no momento. Consulte a Haus Barber.';}const submit=document.querySelector('#booking-submit');if(submit)submit.disabled=true;}
+ }
+ async function loadPortfolio(){
+  const {data,error}=await client.from('haus_gallery').select('local_filename,storage_key,category,title,description,sort_order').eq('active',true).order('sort_order');
+  if(error||!Array.isArray(data))throw error||Error('Galeria inválida');
+  const gallery=document.querySelector('.portfolio-gallery');if(!gallery)return;
+  const fresh=[];
+  data.forEach(p=>{
+   const button=document.createElement('button');button.type='button';button.className='gallery-item';
+   const src=p.storage_key?client.storage.from('haus-gallery').getPublicUrl(p.storage_key).data.publicUrl:p.local_filename;
+   button.dataset.image=src;button.dataset.alt=p.description||p.title;button.dataset.category=p.category;button.dataset.title=p.title;
+   const img=document.createElement('img');img.src=src;img.alt=p.description||p.title;img.loading='lazy';img.decoding='async';
+   const label=document.createElement('span');const small=document.createElement('small');small.textContent=p.title.toLocaleUpperCase('pt-BR');label.append(small);button.append(img,label);fresh.push(button);
+  });
+  gallery.replaceChildren(...fresh);
+  if(typeof window.hausRefreshGallery==='function')window.hausRefreshGallery();
+ }
+ // Fail gracefully, retain static page if database is temporarily unavailable.
+ loadServices().catch(error=>{
+   console.warn('Serviços Haus:',error);
+   const submit=document.querySelector('#booking-submit');if(submit)submit.disabled=true;
+   const select=document.querySelector('#servico');if(select)select.replaceChildren(new Option('Serviços indisponíveis no momento',''));
+   const status=document.querySelector('#booking-status');if(status){status.hidden=false;status.className='booking-status is-error';status.textContent='Não foi possível carregar os preços atuais. Tente novamente mais tarde.';}
+  });
+ loadPortfolio().catch(error=>{
+  console.warn('Portfólio Haus:',error);
+  document.querySelector('.portfolio-gallery')?.replaceChildren();
+  const msg=document.querySelector('#portfolio-empty');if(msg){msg.hidden=false;msg.textContent='Fotos indisponíveis no momento. Confira nossos trabalhos no Instagram.';}
+ });
+})();

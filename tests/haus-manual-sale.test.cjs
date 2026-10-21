@@ -27,7 +27,7 @@ function buildHarness(rpc) {
     adminDateFilter:{value:'2026-10-17'}, adminSearch:{value:'something'},
     manualSaleSaving:false, manualSaleRequestId:null,manualSalePreviousFocus:null,
     currentUser:{id:'admin'},
-    window:{crypto:{randomUUID(){return 'e5077777-1111-4111-8111-111111111111'}},supabaseClient:{async rpc(n,a){rpcCalls.push({n,a});return rpc(n,a);}}},
+    window:{HausPayments:{build:()=>({parts:[{method:'pix',cents:2500}],tender:0}),getBarber:()=>null,reset:()=>{}},crypto:{randomUUID(){return 'e5077777-1111-4111-8111-111111111111'}},supabaseClient:{async rpc(n,a){rpcCalls.push({n,a});return rpc(n,a);}}},
     document:{body:{classList:{add(){},remove(){}}},activeElement:{focus(){}},addEventListener(){}},
     getTodayValue(){return '2026-10-17'},formatCurrency(n){return `R$ ${(n/100).toFixed(2)}`;},
     getBrazilTodayDate(){return new Date('2026-10-17T12:00:00');},cloneDate(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());},
@@ -58,7 +58,7 @@ test('campos de lançamento e nome opcional, sem IDs repetidos', () => {
   assert.match(sql, /lançamento antecipado/i);
   assert.doesNotMatch(sql, /Não é permitido lançar atendimentos aos domingos/);
   assert.match(html, /admin\.css\?v=8\.0/);
-  assert.match(html, /admin\.js\?v=8\.0/);
+  assert.match(html, /admin\.js\?v=9\.0/);
   assert.match(css, /\.manual-sale-grid/);
   assert.match(css, /max-width:480px/);
   assert.equal([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]).length,new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size);
@@ -78,11 +78,13 @@ test('nome vazio é enviado como null e a data/pagamento/valor são preservados'
   await h.submit();
   assert.equal(h.calls.length,1);
   const call=h.calls[0];
-  assert.equal(call.n,'admin_register_manual_service');
+  assert.equal(call.n,'haus_register_manual_parts');
   assert.equal(call.a.p_customer_name,null);
   assert.equal(call.a.p_booking_date,'2026-10-17');
   assert.equal(call.a.p_booking_time,'10:30:00');
-  assert.equal(call.a.p_payment_method,'pix');
+  assert.equal(call.a.p_parts[0].method,'pix');
+  assert.equal(call.a.p_parts[0].cents,2500);
+  assert.equal(call.a.p_cash_received_cents,0);
   assert.equal(call.a.p_service,'Corte Degradê - R$ 25');
   assert.equal(h.ctx.manualSaleModal.hidden,true);
   assert.match(h.messages[0][0],/lançado e recebido/);

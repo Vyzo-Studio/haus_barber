@@ -15,7 +15,7 @@ const lightboxClose = lightbox?.querySelector('.lightbox-close');
 const lightboxPrev = lightbox?.querySelector('.lightbox-prev');
 const lightboxNext = lightbox?.querySelector('.lightbox-next');
 
-const galleryItems = [
+let galleryItems = [
   ...document.querySelectorAll('.portfolio-gallery .gallery-item')
 ];
 
@@ -238,6 +238,16 @@ galleryItems.forEach((item) => {
     () => openLightbox(item)
   );
 });
+
+// Exposed only for refreshing the public portfolio after an admin update.
+// No dependency on admin privileges or global RPC monkey-patching.
+window.hausRefreshGallery = () => {
+  galleryItems = [...document.querySelectorAll('.portfolio-gallery .gallery-item')];
+  galleryItems.forEach(item => item.addEventListener('click', () => openLightbox(item)));
+  portfolioExpanded = false;
+  updatePortfolioFilterCounts();
+  applyPortfolioFilter('all', document.querySelector('.portfolio-filter[data-filter="all"]'));
+};
 
 lightboxClose?.addEventListener(
   'click',
