@@ -327,21 +327,113 @@ function renderDetail(){
       (isVoid?'<small>Motivo: '+escapeHtml(h.void_reason||'Não informado')+'</small>':'')+'</div>'+
       (!isVoid?'<button type="button" data-void="'+escapeHtml(h.id)+'">+ DEVOLVER 1</button>':'')+'</div>';
   }).join(''):'<div class="detail-empty">Nenhum atendimento utilizado ainda.</div>')+'</div>';
+
+  if(state.statusEvents.length){
+    out+='<div class="history-head"><h3>ALTERAÇÕES DA ASSINATURA</h3></div>'+
+      '<div class="history-list">'+state.statusEvents.map(e=>
+        '<div class="history-row"><div><strong>'+
+        (e.event_type==='canceled'?'COMBO CANCELADO':'COMBO RESTAURADO')+
+        '</strong><small>'+escapeHtml(new Date(e.created_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'}))+
+        '</small><small>Motivo: '+escapeHtml(e.reason)+'</small></div></div>'
+      ).join('')+'</div>';
+  }
   $('detailBody').innerHTML=out;
-  $('detailBody').querySelectorAll('[data-void]').forEach(button=>button.addEventListener('click',()=>voidUse(button.dataset.void)));
+  const statusButton=$('membershipStatusButton');
+  if(statusButton){
+    const canceled=m.status==='canceled';
+    statusButton.textContent=canceled?'↶ RESTAURAR COMBO':'CANCELAR E ARQUIVAR COMBO';
+    statusButton.classList.toggle('danger',!canceled);
+    statusButton.classList.toggle('outline',canceled);
+  }
+  $('detailBody').querySelectorAll('[data-void]').forEach(button=>
+    button.addEventListener('click',()=>beginReturn(m.id,null,button.dataset.void))
+  );
   $('renewButton').disabled=false;
 }
-async function voidUse(id){
-  const reason=window.prompt('Por que deseja cancelar esta utilização? Ela continuará no histórico de auditoria.');
-  if(reason===null)return;
-  if(reason.trim().length<5){toast('Informe um motivo com pelo menos 5 caracteres.',true);return}
-  if(!window.confirm('Restaurar o saldo deste serviço? O lançamento original ficará marcado como corrigido.'))return;
+function openManagement(action,member,use=null){
+  if(!member)return;
+  state.manage={action,memberId:member.id,useId:use?.id||null};
+  const labels=KINDS.find(k=>k.id===use?.kind)?.label||'serviço';
+  const cancel=action==='cancel',restore=action==='restore',reversal=action==='return';
+  $('manageEyebrow').textContent=reversal?'CORREÇÃO DE UTILIZAÇÃO':'GESTÃO DE ASSINATURA';
+  $('manageTitle').textContent=reversal?'DEVOLVER 1 CRÉDITO':cancel?'CANCELAR COMBO':'RESTAURAR COMBO';
+  $('manageReason').value='';
+  $('manageReason').placeholder=reversal?'Ex.: uso lançado por engano':
+    cancel?'Ex.: cliente solicitou cancelamento':'Ex.: cancelamento feito por engano';
+  $('manageDescription').textContent=reversal
+    ?'Será desfeito um lançamento de '+labels+' realizado em '+fullDate(use.used_on)+
+     ' no combo de '+member.full_name+'. Um crédito retornará ao saldo. O lançamento original permanecerá no histórico.'
+    :cancel
+    ?'O combo '+member.plan_name+' de '+member.full_name+' será cancelado e retirado da lista principal. Você ainda poderá consultá-lo na aba Cancelados.'
+    :'O combo de '+member.full_name+' voltará à lista de assinaturas. Sua validade original ('+
+     fullDate(member.start_date)+' a '+fullDate(shiftDay(member.expires_on,-1))+') não será reiniciada.';
+  $('manageWarning').hidden=reversal;
+  $('manageWarning').textContent=cancel
+    ?'ATENÇÃO: cancelar e arquivar não gera estorno financeiro nem devolve dinheiro ao cliente. O pagamento permanece no caixa e no histórico.'
+    :restore
+    ?'A restauração não altera o valor já recebido nem prorroga o prazo de 45 dias.'
+    :'';
+  $('manageConfirm').textContent=reversal?'+ DEVOLVER CRÉDITO':cancel?'CANCELAR E ARQUIVAR':'RESTAURAR ASSINATURA';
+  $('manageConfirm').classList.toggle('danger',cancel);
+  $('manageConfirm').classList.toggle('primary',!cancel);
+  $('manageConfirm').disabled=false;
+  openModal('manageModal');
+  $('manageReason').focus();
+}
+async function beginReturn(memberId,kind=null,useId=null){
+  if(state.saving)return;
+  const member=memberById(memberId);if(!member)return;
   try{
-    await rpc('haus_combo_void_use',{p_use_id:id,p_reason:reason.trim()});
-    toast('Utilização corrigida. Saldo restaurado e auditoria preservada.');
-    await refresh();await openDetail(state.detailId);
+    const useList=state.detailId===memberId&&!$('detailModal').hidden
+      ?state.history
+      :await rpc('haus_combo_admin_history',{p_membership_id:memberId});
+    const found=[...(Array.isArray(useList)?useList:[])].filter(u=>
+      !u.voided_at&&(!kind||u.kind===kind)&&(!useId||u.id===useId)
+    ).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')))[0];
+    if(!found){toast('Não há utilização para devolver. Atualize os saldos e confira o histórico.',true);await refresh();return}
+    openManagement('return',member,found);
   }catch(error){toast(friendly(error),true)}
 }
+function beginStatusAction(){
+  if(state.saving)return;
+  const m=memberById(state.detailId);
+  if(m)openManagement(m.status==='canceled'?'restore':'cancel',m);
+}
+$('membershipStatusButton').addEventListener('click',beginStatusAction);
+$('detailBody').addEventListener('click',(event)=>{
+  const target=event.target.closest('button[data-action]');
+  if(!target)return;
+  if(target.dataset.action==='consume')openVisit(target.dataset.id,target.dataset.kind);
+  if(target.dataset.action==='return')beginReturn(target.dataset.id,target.dataset.kind);
+});
+$('manageForm').addEventListener('submit',async(event)=>{
+  event.preventDefault();
+  if(state.saving||!state.manage||!$('manageForm').reportValidity())return;
+  const reason=$('manageReason').value.trim();
+  if(reason.length<5||reason.length>250){toast('Informe um motivo de 5 a 250 caracteres.',true);return}
+  const action={...state.manage};
+  const detailVisible=!$('detailModal').hidden&&state.detailId===action.memberId;
+  setSaving(true);$('manageConfirm').disabled=true;$('manageConfirm').textContent='PROCESSANDO…';
+  try{
+    if(action.action==='return')await rpc('haus_combo_void_use',{p_use_id:action.useId,p_reason:reason});
+    else if(action.action==='cancel')await rpc('haus_combo_cancel',{p_membership_id:action.memberId,p_reason:reason});
+    else if(action.action==='restore')await rpc('haus_combo_restore',{p_membership_id:action.memberId,p_reason:reason});
+    else throw new Error('Ação administrativa inválida.');
+    state.manage=null;
+    setSaving(false);
+    closeModal('manageModal');
+    if(action.action!=='return')closeModal('detailModal');
+    const message=action.action==='return'
+      ?'Utilização desfeita. Um crédito foi devolvido ao saldo, com registro no histórico.'
+      :action.action==='cancel'
+      ?'Combo cancelado e arquivado. Ele está na aba Cancelados; o caixa não foi alterado.'
+      :'Combo restaurado sem alterar o prazo nem os pagamentos anteriores.';
+    await refresh();
+    if(action.action==='return'&&detailVisible)await openDetail(action.memberId);
+    toast(message);
+  }catch(error){toast(friendly(error),true)}
+  finally{setSaving(false);$('manageConfirm').disabled=false}
+});
 $('renewButton').addEventListener('click',()=>{
   const m=memberById(state.detailId);closeModal('detailModal');if(m)openCreate(m);
 });
