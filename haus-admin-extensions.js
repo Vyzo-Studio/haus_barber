@@ -130,7 +130,7 @@
     if(name.length<2||name.length>80||price===null||price<=0||price>2000000||!['cortes','detalhes','estilo'].includes(category)){setMessage('Preencha nome, categoria e preço válido.',true);return;}
     const btn=$('#haus-service-submit');btn.disabled=true;
     try{
-      if(editingService) await run(client().from('haus_services').update({name,price_cents:price,category,sort_order,updated_at:new Date().toISOString()}).eq('id',editingService));
+      if(editingService) await run(client().from('haus_services').update({name,price_cents:price,category,sort_order}).eq('id',editingService));
       else await run(client().from('haus_services').insert({id:crypto.randomUUID(),name,price_cents:price,category,sort_order,active:true}));
       editingService=null;event.target.reset();btn.textContent='ADICIONAR SERVIÇO';
       await refreshCatalogs();setMessage('Serviços atualizados. O site mostrará os preços novos sem alterar vendas anteriores.');
