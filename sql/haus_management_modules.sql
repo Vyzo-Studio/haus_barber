@@ -18,6 +18,8 @@ create table if not exists public.haus_barbers (
  sort_order integer not null default 0,
  created_at timestamptz not null default now()
 );
+alter table public.bookings add column if not exists haus_barber_id uuid references public.haus_barbers(id) on delete set null;
+create index if not exists haus_bookings_barber_index on public.bookings(haus_barber_id, booking_date);
 create table if not exists public.haus_gallery (
  id uuid primary key default gen_random_uuid(),
  title text not null check(char_length(btrim(title)) between 2 and 100),
