@@ -19,7 +19,7 @@
    });
    if(data.some(s=>s.name===saved))select.value=saved;
   }
-  const groups=[['corte',0],['barba',1],['quimica',2]];
+  const groups=[['cortes',0],['detalhes',1],['estilo',2]];
   const cards=[...document.querySelectorAll('#precos .menu-card')];
   groups.forEach(([category,index])=>{
    const list=cards[index]?.querySelector('.menu-prices');if(!list)return;
@@ -34,15 +34,15 @@
   if(!data.length){const message=document.querySelector('#booking-status');if(message){message.hidden=false;message.className='booking-status is-error';message.textContent='Agendamentos online indisponíveis no momento. Consulte a Haus Barber.';}const submit=document.querySelector('#booking-submit');if(submit)submit.disabled=true;}
  }
  async function loadPortfolio(){
-  const {data,error}=await client.from('haus_portfolio').select('image_path,storage_path,category,title,alt_text,sort_order').eq('active',true).order('sort_order');
+  const {data,error}=await client.from('haus_gallery').select('local_filename,storage_key,category,title,description,sort_order').eq('active',true).order('sort_order');
   if(error||!Array.isArray(data))throw error||Error('Galeria inválida');
   const gallery=document.querySelector('.portfolio-gallery');if(!gallery)return;
   const fresh=[];
   data.forEach(p=>{
    const button=document.createElement('button');button.type='button';button.className='gallery-item';
-   const src=p.storage_path?client.storage.from('haus-portfolio').getPublicUrl(p.storage_path).data.publicUrl:p.image_path;
-   button.dataset.image=src;button.dataset.alt=p.alt_text;button.dataset.category=p.category;button.dataset.title=p.title;
-   const img=document.createElement('img');img.src=src;img.alt=p.alt_text;img.loading='lazy';img.decoding='async';
+   const src=p.storage_key?client.storage.from('haus-gallery').getPublicUrl(p.storage_key).data.publicUrl:p.local_filename;
+   button.dataset.image=src;button.dataset.alt=p.description||p.title;button.dataset.category=p.category;button.dataset.title=p.title;
+   const img=document.createElement('img');img.src=src;img.alt=p.description||p.title;img.loading='lazy';img.decoding='async';
    const label=document.createElement('span');const small=document.createElement('small');small.textContent=p.title.toLocaleUpperCase('pt-BR');label.append(small);button.append(img,label);fresh.push(button);
   });
   gallery.replaceChildren(...fresh);
