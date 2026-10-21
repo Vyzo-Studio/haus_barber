@@ -3478,7 +3478,7 @@ function getActionRpc(action) {
       'admin_cancel_booking',
 
     refund:
-      'refund_booking_payment'
+      'haus_refund_payment'
   };
 
   return (
