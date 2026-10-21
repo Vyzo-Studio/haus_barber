@@ -41,6 +41,7 @@
      select.disabled=false;if(booking)booking.disabled=false;note.textContent='';
    }catch(e){
      note.textContent='Não foi possível carregar preços atualizados. Para agendar, fale com a Haus pelo WhatsApp.';
+     document.querySelectorAll('.menu-prices').forEach(list=>{list.replaceChildren();const li=document.createElement('li');li.textContent='Consulte os valores diretamente com a Haus.';list.append(li);});
      console.error('Erro ao carregar serviços:',e);
    }
  }
@@ -58,7 +59,7 @@
      for(const s of data){
        const src=photoUrl(s);if(!src)continue;
        const button=document.createElement('button');
-       button.type='button';button.className='gallery-item reveal';
+       button.type='button';button.className='gallery-item';
        button.dataset.category=s.category;button.dataset.title=s.title;button.dataset.image=src;
        button.dataset.alt=s.description||s.title;
        const img=document.createElement('img');img.alt=s.description||s.title;img.src=src;img.loading='lazy';
