@@ -109,7 +109,7 @@
   <label class="haus-manual-barber">BARBEIRO (OPCIONAL)<select data-haus-manual-barber><option value="">Não informado</option></select></label>
   <p class="haus-pay-error" data-haus-manual-error role="alert" hidden></p>`;
  const paymentField=manualPayment.closest('.manual-sale-field');
- paymentField.insertAdjacentElement('afterend',mFields);
+ paymentField.closest('.manual-sale-grid').insertAdjacentElement('afterend',mFields);
  const manualToggle=mFields.querySelector('[data-haus-manual-split]'),
  manualParts=mFields.querySelector('[data-haus-manual-parts]'),
  manualInputs=Array.from(mFields.querySelectorAll('[data-haus-money]')),
