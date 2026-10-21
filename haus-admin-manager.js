@@ -64,6 +64,7 @@
    try{await guard();await load();}catch(e){message(errorText(e),true);}
  }));
  async function submitRow(table,payload,id){
+   if(state.saving)return;
    state.saving=true;message('Salvando...');
    try{
      await guard();
@@ -101,7 +102,10 @@
      const name=form.elements.name.value.trim();
      const val=Math.round(Number(form.elements.price.value)*100);
      if(name.length<2||!Number.isInteger(val)||val<=0){message('Nome e preço válidos são obrigatórios.',true);return;}
-     await submitRow('haus_services',{name,price_cents:val,category:form.elements.category.value,sort_order:Number(form.elements.sort_order.value)||0},form.elements.id.value||null);
+     const previous=state.services.find(x=>x.id===form.elements.id.value);
+     const payload={name,price_cents:val,category:form.elements.category.value,sort_order:Number(form.elements.sort_order.value)||0};
+     if(previous && previous.name!==name){payload.legacy_label=null;payload.legacy_price_cents=null;}
+     await submitRow('haus_services',payload,form.elements.id.value||null);
    });
  }
  function renderBarbers(){
