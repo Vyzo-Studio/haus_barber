@@ -300,3 +300,66 @@ begin
  end loop;
 end $$;
 -- Membership sale ledger is linked to cash_entries, never to fake bookings.
+
+-- A visit can consume cut and extras atomically in one administrative action.
+alter table public.haus_combo_uses add column if not exists visit_request_id uuid;
+create unique index if not exists haus_combo_visit_unique_kind
+ on public.haus_combo_uses(visit_request_id,kind) where visit_request_id is not null;
+create or replace function public.haus_combo_redeem_visit(
+ p_request_id uuid,p_membership_id uuid,p_kinds text[],p_used_on date,
+ p_used_time time default null,p_barber_id uuid default null,p_note text default null
+) returns jsonb language plpgsql security definer set search_path='' as $$
+declare
+ v_member public.haus_combo_memberships%rowtype;
+ v_kind text;
+ v_quota int;
+ v_used int;
+ v_id uuid;
+ v_ids jsonb:='[]'::jsonb;
+ v_today date:=timezone('America/Sao_Paulo',now())::date;
+ v_seen text[]:=array[]::text[];
+begin
+ if not coalesce(public.is_admin(),false) then raise exception 'Acesso administrativo obrigatório.'; end if;
+ if p_request_id is null or p_membership_id is null then raise exception 'Operação inválida.'; end if;
+ perform pg_advisory_xact_lock(hashtextextended('haus_combo_visit|'||p_membership_id::text,0));
+ if exists(select 1 from public.haus_combo_uses where visit_request_id=p_request_id) then
+   select coalesce(jsonb_agg(to_jsonb(x.id)),'[]'::jsonb) into v_ids
+   from public.haus_combo_uses x where x.visit_request_id=p_request_id;
+   return v_ids;
+ end if;
+ select * into v_member from public.haus_combo_memberships where id=p_membership_id for update;
+ if not found then raise exception 'Combo não encontrado.'; end if;
+ if v_member.status<>'active' then raise exception 'Combo cancelado.'; end if;
+ if p_used_on is null or p_used_on<v_member.start_date or p_used_on>=v_member.expires_on
+   or p_used_on>v_today then raise exception 'Data fora da validade do combo ou no futuro.'; end if;
+ if p_note is not null and char_length(p_note)>300 then raise exception 'Observação muito longa.'; end if;
+ if p_kinds is null or array_length(p_kinds,1) not between 1 and 3 then
+   raise exception 'Selecione pelo menos um serviço deste atendimento.'; end if;
+ if p_barber_id is not null and not exists(
+   select 1 from public.haus_barbers where id=p_barber_id and active)
+   then raise exception 'Barbeiro inativo ou não encontrado.'; end if;
+ foreach v_kind in array p_kinds loop
+   if v_kind is null or v_kind not in ('cut','beard','brows')
+      or v_kind=any(v_seen) then raise exception 'Serviços inválidos ou repetidos.'; end if;
+   v_seen:=array_append(v_seen,v_kind);
+   v_quota:=case v_kind when 'cut' then v_member.cuts_total
+                        when 'beard' then v_member.beards_total else v_member.brows_total end;
+   if v_quota=0 then raise exception 'Esse serviço não faz parte do combo.'; end if;
+   select count(*) into v_used from public.haus_combo_uses
+     where membership_id=p_membership_id and kind=v_kind and voided_at is null;
+   if v_used>=v_quota then raise exception 'Saldo esgotado para '||v_kind; end if;
+   if exists(select 1 from public.haus_combo_uses
+      where membership_id=p_membership_id and kind=v_kind and used_on=p_used_on and voided_at is null)
+     then raise exception 'Esse serviço já foi lançado nesta data.'; end if;
+ end loop;
+ foreach v_kind in array p_kinds loop
+   insert into public.haus_combo_uses
+    (request_id,visit_request_id,membership_id,kind,used_on,used_time,barber_id,note,created_by)
+   values(gen_random_uuid(),p_request_id,p_membership_id,v_kind,p_used_on,p_used_time,p_barber_id,
+     nullif(btrim(coalesce(p_note,'')),''),auth.uid()) returning id into v_id;
+   v_ids:=v_ids||jsonb_build_array(v_id);
+ end loop;
+ return v_ids;
+end $$;
+revoke all on function public.haus_combo_redeem_visit(uuid,uuid,text[],date,time,uuid,text) from public,anon,authenticated;
+grant execute on function public.haus_combo_redeem_visit(uuid,uuid,text[],date,time,uuid,text) to authenticated;
