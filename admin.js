@@ -1999,9 +1999,10 @@ function createBookingCard(booking) {
   }
 
   if (serviceElement) {
+    const barber = booking.haus_barbers?.name || '';
     serviceElement.textContent =
-      booking.service ||
-      '—';
+      (booking.service || '—') +
+      (barber ? ' • Barbeiro: ' + barber : '');
   }
 
   if (amountElement) {
@@ -2186,6 +2187,8 @@ async function loadBookings(
           service,
           service_amount_cents,
           is_manual,
+          haus_barber_id,
+          haus_barbers(name),
           booking_date,
           booking_time,
           status,
@@ -3478,7 +3481,7 @@ function getActionRpc(action) {
       'admin_cancel_booking',
 
     refund:
-      'refund_booking_payment'
+      'haus_refund_payment'
   };
 
   return (

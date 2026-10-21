@@ -57,8 +57,8 @@ test('campos de lançamento e nome opcional, sem IDs repetidos', () => {
   assert.match(css, /\.manual-week-days/);
   assert.match(sql, /lançamento antecipado/i);
   assert.doesNotMatch(sql, /Não é permitido lançar atendimentos aos domingos/);
-  assert.match(html, /admin\.css\?v=8\.0/);
-  assert.match(html, /admin\.js\?v=8\.0/);
+  assert.match(html, /admin\.css\?v=9\.0/);
+  assert.match(html, /admin\.js\?v=9\.0/);
   assert.match(css, /\.manual-sale-grid/);
   assert.match(css, /max-width:480px/);
   assert.equal([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]).length,new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1])).size);

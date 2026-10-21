@@ -1,0 +1,26 @@
+name: Haus validation
+on:
+  push:
+    branches:
+      - "feature/haus-management-gng-inspired-2026-10"
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JS syntax
+        run: |
+          node --check script.js
+          node --check admin.js
+          node --check haus-admin-manager.js
+          node --check haus-payments-ui.js
+          node --check haus-public-data.js
+      - name: Existing and new regression checks
+        run: node --test tests/*.test.cjs

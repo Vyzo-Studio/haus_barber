@@ -15,7 +15,7 @@ const lightboxClose = lightbox?.querySelector('.lightbox-close');
 const lightboxPrev = lightbox?.querySelector('.lightbox-prev');
 const lightboxNext = lightbox?.querySelector('.lightbox-next');
 
-const galleryItems = [
+let galleryItems = [
   ...document.querySelectorAll('.portfolio-gallery .gallery-item')
 ];
 
@@ -232,11 +232,9 @@ function moveLightbox(direction) {
   );
 }
 
-galleryItems.forEach((item) => {
-  item.addEventListener(
-    'click',
-    () => openLightbox(item)
-  );
+document.querySelector('.portfolio-gallery')?.addEventListener('click', (event) => {
+  const item=event.target.closest('.gallery-item');
+  if(item)openLightbox(item);
 });
 
 lightboxClose?.addEventListener(
@@ -366,6 +364,12 @@ filterButtons.forEach(
   }
 );
 
+window.hausSyncPortfolio = () => {
+  galleryItems = [...document.querySelectorAll('.portfolio-gallery .gallery-item')];
+  portfolioExpanded = false;
+  updatePortfolioFilterCounts();
+  applyPortfolioFilter(currentPortfolioFilter);
+};
 updatePortfolioFilterCounts();
 const initialPortfolioFilter = document.querySelector('.portfolio-filter[data-filter="all"]');
 applyPortfolioFilter('all', initialPortfolioFilter);
