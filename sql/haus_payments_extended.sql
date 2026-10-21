@@ -114,13 +114,14 @@ end $do$;
 -- temporary single sale with its payment parts within the same transaction.
 create or replace function public.haus_register_manual_parts(
  p_request_id uuid,p_service text,p_booking_date date,p_booking_time time without time zone,
- p_customer_name text,p_parts jsonb,p_cash_received_cents integer
+ p_customer_name text,p_parts jsonb,p_cash_received_cents integer,p_barber_id uuid default null
 ) returns uuid language plpgsql security definer set search_path='' as $$
 declare v_id uuid; v_existing uuid; v_batch uuid; v_session uuid; v_sale record; v_part record;
  v_total bigint;v_count integer;v_distinct integer;v_cash_part bigint;
 begin
  if not public.is_admin() then raise exception 'Acesso administrativo necessário.'; end if;
  if p_request_id is null then raise exception 'Operação inválida.'; end if;
+ if p_barber_id is not null and not exists(select 1 from public.haus_barbers where id=p_barber_id and active=true) then raise exception 'Barbeiro inválido ou inativo.'; end if;
  perform pg_advisory_xact_lock(hashtextextended('haus_manual_parts|'||p_request_id::text,0));
  select b.id into v_existing from public.bookings b where b.manual_request_id=p_request_id;
  if v_existing is not null then
@@ -148,13 +149,13 @@ begin
     case when v_part.method='cash' then p_cash_received_cents else null end,
     case when v_part.method='cash' then p_cash_received_cents-v_part.cents else null end);
  end loop;
- update public.bookings set payment_method=case when v_count=1 then p_parts->0->>'method' else null end where id=v_id;
+ update public.bookings set payment_method=case when v_count=1 then p_parts->0->>'method' else null end, haus_barber_id=p_barber_id where id=v_id;
  return v_id;
 end;
 $$;
 revoke all on function public.haus_register_payment_parts(uuid,jsonb,integer,uuid) from public,anon;
 revoke all on function public.haus_refund_payment(uuid) from public,anon;
-revoke all on function public.haus_register_manual_parts(uuid,text,date,time without time zone,text,jsonb,integer) from public,anon;
+revoke all on function public.haus_register_manual_parts(uuid,text,date,time without time zone,text,jsonb,integer,uuid) from public,anon;
 grant execute on function public.haus_register_payment_parts(uuid,jsonb,integer,uuid) to authenticated;
 grant execute on function public.haus_refund_payment(uuid) to authenticated;
-grant execute on function public.haus_register_manual_parts(uuid,text,date,time without time zone,text,jsonb,integer) to authenticated;
+grant execute on function public.haus_register_manual_parts(uuid,text,date,time without time zone,text,jsonb,integer,uuid) to authenticated;
