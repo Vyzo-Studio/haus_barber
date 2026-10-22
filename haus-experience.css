@@ -55,3 +55,9 @@ html[lang="de"] .haus-cookie-btn,html[lang="de"] .haus-global-link{overflow-wrap
 @media(max-width:620px){.haus-global-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px;justify-items:stretch}.haus-global-link,.haus-language-select{width:100%;font-size:10px;justify-content:center}.haus-language-field{width:100%}.haus-cookie-banner{bottom:8px;width:calc(100% - 16px);padding:16px;border-radius:12px}.haus-cookie-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.haus-cookie-btn{font-size:10px;padding:9px;min-height:46px}.haus-cookie-panel{padding:19px}.haus-cookie-panel-actions{gap:7px}}
 @media(max-width:360px){.haus-global-footer{grid-template-columns:1fr}.haus-cookie-actions{grid-template-columns:1fr}.haus-cookie-btn.full{grid-column:auto}.haus-cookie-pref{padding:11px}.haus-cookie-panel-actions{grid-template-columns:1fr}.haus-cookie-panel-actions .haus-cookie-btn:first-child{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){.haus-cookie-banner,.haus-cookie-overlay{animation:none!important;transition:none!important}}
+
+/* Keep the consent placeholder proportional to the existing Haus map card. */
+.location-map .haus-map-placeholder{min-height:500px;height:100%}
+html[lang="ja"] .hero h1,html[lang="ja"] .section h2,html[lang="ja"] .final-cta h2{font-family:YuGothic,Meiryo,'Noto Sans JP',sans-serif;line-height:1.22;letter-spacing:0;font-weight:800;overflow-wrap:anywhere}
+html[lang="de"] .hero h1{overflow-wrap:anywhere;font-size:clamp(51px,7vw,93px)}
+@media(max-width:760px){.location-map .haus-map-placeholder{min-height:365px}}
