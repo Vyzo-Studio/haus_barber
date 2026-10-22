@@ -40,3 +40,34 @@ jobs:
         run: node --test tests/haus-omega-repair.test.cjs
 
 # Do not put Supabase production keys or write-enabled database access in CI.
+
+  browser-smoke:
+    name: Real Chromium smoke — public and admin entrypoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Chromium test runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start isolated local site and inspect viewports
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/haus-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 2
+          node --test tests/haus-browser-smoke.test.cjs
+      - name: Keep public screenshot evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: haus-chromium-public-smoke
+          path: browser-artifacts/*.png
+          retention-days: 7
+          if-no-files-found: ignore
