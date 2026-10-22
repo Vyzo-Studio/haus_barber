@@ -524,3 +524,8 @@ h1,h2,h3 {line-height:.98}
   .brand-v3 .brand-lockup small {font-size:6px;letter-spacing:0}
   .header-inner {gap:10px}
 }
+
+/* Informações de privacidade junto ao pedido de agendamento */
+.haus-privacy-notice{margin-top:5px;line-height:1.7;max-width:650px;color:#b3bfd5}
+.haus-privacy-notice a{color:#ffe1d9;text-decoration:underline;text-underline-offset:3px;font-weight:700}
+.haus-privacy-notice a:hover{color:#fff}
