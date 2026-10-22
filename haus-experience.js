@@ -21,6 +21,7 @@
   let preferenceDialog=null;
   let banner=null;
   let prefExternal=null;
+  let modalInertState=[];
 
   const ui={
     'pt-BR':{
@@ -291,12 +292,16 @@
     lastFocus=document.activeElement;
     prefExternal.checked=decision?.external===true;
     preferenceDialog.hidden=false;
+    modalInertState=[...document.body.children].filter(el=>el!==preferenceDialog&&!['SCRIPT','STYLE'].includes(el.tagName)).map(el=>({el,wasInert:el.inert}));
+    modalInertState.forEach(({el})=>{el.inert=true});
     preferenceDialog.querySelector('.haus-cookie-dismiss').focus();
     document.body.style.overflow='hidden';
   }
   function closeSettings(){
     if(!preferenceDialog||preferenceDialog.hidden)return;
     preferenceDialog.hidden=true;
+    modalInertState.forEach(({el,wasInert})=>{if(el.isConnected)el.inert=wasInert});
+    modalInertState=[];
     document.body.style.overflow='';
     if(lastFocus?.isConnected)lastFocus.focus();
     lastFocus=null;
