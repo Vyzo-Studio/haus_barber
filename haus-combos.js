@@ -45,25 +45,64 @@ function setSaving(busy){
   state.saving=busy;
   ['createSubmit','visitSubmit'].forEach(id=>{const el=$(id);if(el)el.disabled=busy});
 }
+const modalOrigin=new WeakMap();
+const modalFocusable='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function topModal(){
+  return [...document.querySelectorAll('.modal-backdrop:not([hidden])')].pop()||null;
+}
+function focusInside(modal,preferLast=false){
+  const controls=[...modal.querySelectorAll(modalFocusable)].filter(el=>!el.hidden&&!el.closest('[hidden]'));
+  const target=preferLast?controls.at(-1):controls[0];
+  (target||modal.querySelector('[role="dialog"]'))?.focus();
+}
+function syncModalInert(){
+  const open=!!topModal();
+  const app=$('comboApp');
+  if(app)app.inert=open;
+  const gate=$('authGate');
+  if(gate)gate.inert=open;
+}
 function openModal(id){
-  const m=$(id);if(!m)return;
-  m.hidden=false;document.body.classList.add('locked');
-  m.querySelector('input,select,button')?.focus();
+  const modal=$(id);if(!modal)return;
+  modalOrigin.set(modal,document.activeElement);
+  modal.hidden=false;document.body.classList.add('locked');
+  syncModalInert();
+  focusInside(modal);
 }
 function closeModal(id){
   if(state.saving)return;
-  const m=$(id);if(!m)return;
-  m.hidden=true;document.body.classList.toggle('locked',!!document.querySelector('.modal-backdrop:not([hidden])'));
+  const modal=$(id);if(!modal)return;
+  modal.hidden=true;
+  syncModalInert();
+  const current=topModal();
+  document.body.classList.toggle('locked',!!current);
+  const origin=modalOrigin.get(modal);
+  if(origin?.isConnected&&!origin.closest('[hidden]')&&!origin.closest('[inert]')){
+    origin.focus();
+  }else if(current)focusInside(current);
+  else $('newButton')?.focus();
+  modalOrigin.delete(modal);
 }
 document.addEventListener('click',(event)=>{
   const close=event.target.closest('[data-close]');if(close)closeModal(close.dataset.close);
   if(event.target.classList?.contains('modal-backdrop'))closeModal(event.target.id);
 });
 document.addEventListener('keydown',(event)=>{
-  if(event.key==='Escape'&&!state.saving){
-    const modal=[...document.querySelectorAll('.modal-backdrop:not([hidden])')].pop();
-    if(modal){event.preventDefault();closeModal(modal.id)}
+  const modal=topModal();if(!modal)return;
+  if(event.key==='Escape'&&!state.saving){event.preventDefault();closeModal(modal.id);return}
+  if(event.key!=='Tab')return;
+  const controls=[...modal.querySelectorAll(modalFocusable)].filter(el=>!el.hidden&&!el.closest('[hidden]'));
+  if(!controls.length){event.preventDefault();focusInside(modal);return}
+  const first=controls[0],last=controls[controls.length-1];
+  if(event.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){
+    event.preventDefault();last.focus();
+  }else if(!event.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){
+    event.preventDefault();first.focus();
   }
+});
+document.addEventListener('focusin',(event)=>{
+  const modal=topModal();
+  if(modal&&!modal.contains(event.target))focusInside(modal);
 });
 async function verify(){
   if(!client){$('authMessage').textContent='Falha ao carregar a conexão segura. Recarregue a página.';return}
