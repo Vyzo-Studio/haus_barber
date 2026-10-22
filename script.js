@@ -64,6 +64,25 @@ const MONTHS = [
   'DEZ'
 ];
 
+function hausLocale() {
+  return window.hausExperience?.getLocale?.() || 'pt-BR';
+}
+function hausShortWeekday(date) {
+  const lang=hausLocale();
+  if(lang==='pt-BR')return WEEKDAYS[date.getDay()];
+  const str=new Intl.DateTimeFormat(lang,{weekday:'short'}).format(date);
+  return str.replace(/\.$/,'').toLocaleUpperCase(lang);
+}
+function hausShortMonth(date) {
+  const lang=hausLocale();
+  if(lang==='pt-BR')return MONTHS[date.getMonth()];
+  const str=new Intl.DateTimeFormat(lang,{month:'short'}).format(date);
+  return str.replace(/\.$/,'').toLocaleUpperCase(lang);
+}
+function hausLongDay(date) {
+  return new Intl.DateTimeFormat(hausLocale(),{weekday:'long',day:'numeric',month:'long'}).format(date);
+}
+
 const REFRESH_INTERVAL_MS = 30000;
 
 let currentLightboxIndex = 0;
@@ -787,10 +806,7 @@ function updateScheduleSummary() {
     return;
   }
 
-  const weekday =
-    WEEKDAYS[
-      selectedScheduleDate.getDay()
-    ];
+  const weekday = hausShortWeekday(selectedScheduleDate);
 
   const day =
     String(
@@ -803,8 +819,12 @@ function updateScheduleSummary() {
         1
     ).padStart(2, '0');
 
+  const locale=hausLocale();
+  const dateText=locale==='pt-BR' ? `${day}/${month}` :
+    new Intl.DateTimeFormat(locale,{day:'2-digit',month:'2-digit'}).format(selectedScheduleDate);
+  const label=window.hausExperience?.t?.('Selecionado:')||'Selecionado:';
   scheduleSummary.innerHTML =
-    `Selecionado: <strong>${weekday} • ${day}/${month} • ${selectedScheduleTime}</strong>`;
+    `${label} <strong>${weekday} • ${dateText} • ${selectedScheduleTime}</strong>`;
 }
 
 function selectScheduleTime(
@@ -1185,13 +1205,13 @@ function renderScheduleDays() {
 
       button.setAttribute(
         'aria-label',
-        `${WEEKDAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]}`
+        hausLongDay(date)
       );
 
       button.innerHTML = `
-        <small>${WEEKDAYS[date.getDay()]}</small>
+        <small>${hausShortWeekday(date)}</small>
         <strong>${String(date.getDate()).padStart(2, '0')}</strong>
-        <span>${MONTHS[date.getMonth()]}</span>
+        <span>${hausShortMonth(date)}</span>
       `;
 
       if (disabled) {
@@ -1562,24 +1582,23 @@ function getFriendlyBookingError(
   return 'Não foi possível reservar esse horário agora. Tente novamente.';
 }
 
-function buildWhatsAppMessage(
-  {
-    nome,
-    servico,
-    data,
-    horario
+function buildWhatsAppMessage({nome, servico, data, horario, telefone}) {
+  const locale=hausLocale();
+  const templates={
+    'pt-BR': ['Olá! Vim pelo site da Haus Barber.','Nome','Telefone / WhatsApp','Serviço','Data desejada','Horário desejado','O site reservou esse horário temporariamente. Gostaria de confirmar meu agendamento.'],
+    en: ['Hello! I came through the Haus Barber website.','Name','Phone / WhatsApp','Service','Requested date','Requested time','The site temporarily held this time slot. I would like to confirm my appointment.'],
+    es: ['¡Hola! Vengo del sitio de Haus Barber.','Nombre','Teléfono / WhatsApp','Servicio','Fecha solicitada','Horario solicitado','El sitio reservó temporalmente este horario. Quisiera confirmar mi cita.'],
+    ja: ['こんにちは。Haus Barber のサイトから連絡しています。','名前','電話番号 / WhatsApp','サービス','希望日','希望時間','サイトで時間枠を仮予約しました。予約を確認したいです。'],
+    de: ['Hallo! Ich komme über die Website von Haus Barber.','Name','Telefon / WhatsApp','Leistung','Wunschdatum','Wunschuhrzeit','Die Website hat den Zeitraum vorläufig reserviert. Ich möchte meinen Termin bestätigen.']
+  };
+  const t=templates[locale]||templates['pt-BR'];
+  let dateText=formatDateForMessage(data);
+  if(locale!=='pt-BR'&&/^\d{4}-\d{2}-\d{2}$/.test(data)){
+    const [year,month,day]=data.split('-').map(Number);
+    dateText=new Intl.DateTimeFormat(locale,{year:'numeric',month:'2-digit',day:'2-digit',timeZone:'UTC'}).format(new Date(Date.UTC(year,month-1,day)));
   }
-) {
-  return [
-    'Olá! Vim pelo site da Haus Barber.',
-    '',
-    `Nome: ${nome}`,
-    `Serviço: ${servico}`,
-    `Data desejada: ${formatDateForMessage(data)}`,
-    `Horário desejado: ${horario}`,
-    '',
-    'O site reservou esse horário temporariamente. Gostaria de confirmar meu agendamento.'
-  ].join('\n');
+  return [t[0],'',`${t[1]}: ${nome}`,...(telefone?[`${t[2]}: ${telefone}`]:[]),
+    `${t[3]}: ${servico}`,`${t[4]}: ${dateText}`,`${t[5]}: ${horario}`,'',t[6]].join('\n');
 }
 
 async function createBookingRequest(
@@ -1667,6 +1686,19 @@ bookingForm?.addEventListener(
     const servico =
       serviceInput.value.trim();
 
+    const phoneInput=document.querySelector('#telefone');
+    const rememberInput=document.querySelector('#haus-remember');
+    const telefone=phoneInput?.value.trim()||'';
+    const validPhone=telefone ? window.hausExperience?.validPhone?.(telefone) : null;
+    if(telefone && !validPhone){
+      showBookingStatus(window.hausExperience?.t?.('Informe um telefone válido com DDD.')||'Informe um telefone válido com DDD.','error');
+      phoneInput?.focus();return;
+    }
+    if(rememberInput?.checked && !validPhone){
+      showBookingStatus(window.hausExperience?.t?.('Para lembrar seus dados, informe um telefone com DDD válido.')||'Para lembrar seus dados, informe um telefone com DDD válido.','error');
+      phoneInput?.focus();return;
+    }
+
     const data =
       selectedDateInput?.value ||
       '';
@@ -1753,6 +1785,10 @@ bookingForm?.addEventListener(
         }
       );
 
+      window.hausExperience?.rememberAfterBooking?.({
+        name:nome,phone:telefone,checked:rememberInput?.checked===true
+      });
+
       bookedSlots.set(
         getSlotKey(
           data,
@@ -1774,7 +1810,8 @@ bookingForm?.addEventListener(
             nome,
             servico,
             data,
-            horario
+            horario,
+            telefone
           }
         );
 
@@ -1959,3 +1996,8 @@ bookingForm?.querySelectorAll('#nome, #servico').forEach((field) => {
 window.hausUpdateScheduleForService = () => {
   if (scheduleAvailabilityReady) renderScheduleDays();
 };
+
+window.addEventListener('haus-language-change',()=>{
+  if(scheduleAvailabilityReady)renderScheduleDays();
+  else updateScheduleSummary();
+});
