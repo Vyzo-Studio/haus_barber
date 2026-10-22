@@ -12,9 +12,12 @@ test('privacy notice is available before submission and in the footer',()=>{
  assert.match(html,/haus-privacy-notice/);
  assert.match(html,/privacidade\.html/);
  assert.ok(html.indexOf('haus-privacy-notice')<html.indexOf('</form>',html.indexOf('id="booking-form"')));
- assert.match(privacy,/WhatsApp/);
- assert.match(privacy,/Supabase/);
- assert.match(privacy,/45|financeiro|pagamento/);
+ // The five legal translations are centralized in a data dictionary.
+ const legal=read('haus-legal-data.js');
+ assert.match(privacy,/haus-legal-data\.js/);
+ assert.match(legal,/WhatsApp/);
+ assert.match(legal,/Supabase/);
+ assert.match(legal,/45|financeiro|pagamento/);
 });
 test('sitemap paths match canonical GitHub Pages with underscore',()=>{
  for(const file of ['robots.txt','sitemap.xml']){

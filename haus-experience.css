@@ -1,0 +1,63 @@
+/* Haus Barber: privacy, consent, opt-in and i18n. Original Navy / Cream / Red design preserved. */
+:root{--haus-exp-bg:#080d1a;--haus-exp-panel:#101936;--haus-exp-accent:#b83a30;--haus-exp-cream:#f1ede7;--haus-exp-muted:#c6c3be;--haus-exp-line:rgba(241,237,231,.22)}
+.haus-global-footer{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px 26px;padding:20px 0 23px;border-block:1px solid var(--haus-exp-line);min-width:0}
+.haus-global-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 4px;background:transparent;border:0;color:var(--haus-exp-cream);font:700 11px/1.5 Montserrat,Arial,sans-serif;text-decoration:none;text-align:center;cursor:pointer}
+.haus-global-link:hover,.haus-global-link:focus-visible{color:#ffb7b1;text-decoration:underline;text-underline-offset:4px}
+.haus-language-field{display:flex;align-items:center;min-width:0;position:relative}
+.haus-language-select{appearance:auto;min-height:44px;padding:8px 14px;max-width:min(100%,255px);background:#14203a;border:1px solid var(--haus-exp-line);border-radius:8px;color:var(--haus-exp-cream);font:700 11px/1.4 Montserrat,Arial,sans-serif;cursor:pointer}
+.haus-language-select option{background:#101936;color:white}
+.haus-language-select:focus-visible,.haus-cookie-btn:focus-visible,.haus-cookie-toggle:focus-visible,.haus-map-placeholder button:focus-visible,.haus-remember-label input:focus-visible,.haus-forget-link:focus-visible{outline:3px solid #f29288;outline-offset:3px}
+.haus-remember-field{border:1px solid var(--haus-exp-line);padding:15px 17px;border-radius:10px;background:rgba(16,25,54,.64)}
+.booking-form .haus-remember-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;min-height:30px;font-weight:800;font-size:12px;margin:0}
+.haus-remember-label input{flex:none;accent-color:var(--haus-exp-accent);margin:1px 0;width:19px;height:19px}
+.haus-remember-field p{margin:8px 0 0;color:var(--haus-exp-muted);font-size:11px;line-height:1.75}
+.haus-remember-field a{color:#ffe3da;text-decoration:underline;text-underline-offset:3px}
+.haus-forget-link{border:0;background:transparent;color:#ffb8b0;font-size:11px;font-weight:800;cursor:pointer;min-height:35px;padding:7px 0;margin-top:7px;text-decoration:underline;text-underline-offset:3px}
+.haus-contact-field small{font-weight:500;font-size:10px;color:var(--haus-exp-muted)}
+.haus-map-placeholder{width:100%;min-height:285px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;background:linear-gradient(145deg,#101936,#19274a);border:1px solid var(--haus-exp-line);border-radius:12px}
+.haus-map-placeholder strong{font:400 clamp(27px,4vw,39px)/1.08 'Bebas Neue',Impact,sans-serif;letter-spacing:.03em;color:var(--haus-exp-cream)}
+.haus-map-placeholder p{max-width:370px;margin:0;color:var(--haus-exp-muted);font-size:11px;line-height:1.7}
+.haus-map-placeholder button{border:1px solid #c6584c;border-radius:8px;background:var(--haus-exp-accent);color:#fff9f2;padding:12px 18px;font:800 11px Montserrat,Arial,sans-serif;cursor:pointer;min-height:44px}
+.haus-map-placeholder button:hover{background:#ce473c}
+#haus-external-map[hidden],.haus-cookie-banner[hidden],.haus-cookie-overlay[hidden]{display:none!important}
+#haus-external-map{width:100%;height:100%;min-height:300px;border:0}
+.haus-cookie-banner{position:fixed;z-index:250;bottom:18px;left:50%;transform:translateX(-50%);width:min(100% - 28px,930px);padding:22px 24px;border:1px solid rgba(241,237,231,.31);border-left:4px solid var(--haus-exp-accent);border-radius:14px;background:#0c152c;box-shadow:0 18px 70px rgba(0,0,0,.55);color:var(--haus-exp-cream);display:flex;align-items:center;justify-content:space-between;gap:25px}
+.haus-cookie-copy{min-width:0;max-width:530px}
+.haus-cookie-copy .haus-cookie-kicker{font:800 10px Montserrat,Arial,sans-serif;letter-spacing:.2em;color:#ef9288}
+.haus-cookie-copy h2{font:400 clamp(26px,4vw,33px)/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.03em;margin:7px 0 9px;color:var(--haus-exp-cream)}
+.haus-cookie-copy p{margin:0;color:var(--haus-exp-muted);font-size:11px;line-height:1.75}
+.haus-cookie-copy a{color:#f7d6d1;text-decoration:underline}
+.haus-cookie-actions{display:grid;grid-template-columns:repeat(2,minmax(118px,1fr));gap:9px;min-width:280px}
+.haus-cookie-btn{background:#253656;color:var(--haus-exp-cream);border:1px solid rgba(241,237,231,.26);border-radius:8px;min-height:45px;padding:11px 13px;font:800 10px/1.3 Montserrat,Arial,sans-serif;white-space:normal;cursor:pointer}
+.haus-cookie-btn:hover{background:#344563}
+.haus-cookie-btn.primary{background:var(--haus-exp-accent);border-color:#d66e62}
+.haus-cookie-btn.primary:hover{background:#ce473c}
+.haus-cookie-btn.full{grid-column:1 / -1}
+.haus-cookie-overlay{position:fixed;inset:0;z-index:260;display:grid;place-items:center;padding:14px;background:rgba(3,7,17,.82);backdrop-filter:blur(7px)}
+.haus-cookie-panel{width:min(100%,520px);max-height:calc(100dvh - 28px);overflow-y:auto;border:1px solid var(--haus-exp-line);border-radius:15px;padding:27px;background:#111d37;box-shadow:0 20px 75px rgba(0,0,0,.55);color:var(--haus-exp-cream)}
+.haus-cookie-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.haus-cookie-panel h2{font:400 clamp(28px,5vw,42px)/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.03em;margin:0 0 14px}
+.haus-cookie-panel p{font-size:11px;line-height:1.7;color:var(--haus-exp-muted);margin:8px 0}
+.haus-cookie-dismiss{min-width:38px;min-height:38px;border:1px solid var(--haus-exp-line);border-radius:8px;color:var(--haus-exp-cream);background:#283553;font-size:22px;cursor:pointer}
+.haus-cookie-pref{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-top:17px;border:1px solid var(--haus-exp-line);border-radius:10px;padding:14px;background:#192944}
+.haus-cookie-pref strong{display:block;font-size:12px;margin-bottom:4px}
+.haus-cookie-pref p{margin:0;font-size:10px}
+.haus-cookie-pref input{flex:none;width:22px;height:22px;accent-color:var(--haus-exp-accent);margin:3px 0;cursor:pointer}
+.haus-cookie-pref .haus-essential-tag{font-size:9px;font-weight:800;color:#bbd9c7;white-space:nowrap}
+.haus-cookie-panel-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:23px}
+.haus-cookie-panel-actions .haus-cookie-btn:first-child{grid-column:1/-1}
+.haus-privacy-sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+html[lang="ja"] body{font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN',YuGothic,Meiryo,Montserrat,Arial,sans-serif}
+html[lang="ja"] .haus-global-link,html[lang="ja"] .haus-cookie-btn,html[lang="ja"] .haus-cookie-copy p{font-family:inherit;letter-spacing:0}
+html[lang="de"] .haus-cookie-btn,html[lang="de"] .haus-global-link{overflow-wrap:anywhere}
+.haus-global-footer *{min-width:0}
+@media(max-width:900px){.haus-cookie-banner{flex-direction:column;align-items:stretch;gap:16px}.haus-cookie-actions{min-width:0}.haus-cookie-copy{max-width:none}}
+@media(max-width:620px){.haus-global-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px;justify-items:stretch}.haus-global-link,.haus-language-select{width:100%;font-size:10px;justify-content:center}.haus-language-field{width:100%}.haus-cookie-banner{bottom:8px;width:calc(100% - 16px);padding:16px;border-radius:12px}.haus-cookie-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.haus-cookie-btn{font-size:10px;padding:9px;min-height:46px}.haus-cookie-panel{padding:19px}.haus-cookie-panel-actions{gap:7px}}
+@media(max-width:360px){.haus-global-footer{grid-template-columns:1fr}.haus-cookie-actions{grid-template-columns:1fr}.haus-cookie-btn.full{grid-column:auto}.haus-cookie-pref{padding:11px}.haus-cookie-panel-actions{grid-template-columns:1fr}.haus-cookie-panel-actions .haus-cookie-btn:first-child{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.haus-cookie-banner,.haus-cookie-overlay{animation:none!important;transition:none!important}}
+
+/* Keep the consent placeholder proportional to the existing Haus map card. */
+.location-map .haus-map-placeholder{min-height:500px;height:100%}
+html[lang="ja"] .hero h1,html[lang="ja"] .section h2,html[lang="ja"] .final-cta h2{font-family:YuGothic,Meiryo,'Noto Sans JP',sans-serif;line-height:1.22;letter-spacing:0;font-weight:800;overflow-wrap:anywhere}
+html[lang="de"] .hero h1{overflow-wrap:anywhere;font-size:clamp(51px,7vw,93px)}
+@media(max-width:760px){.location-map .haus-map-placeholder{min-height:365px}}

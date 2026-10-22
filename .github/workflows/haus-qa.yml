@@ -28,7 +28,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           set -e
-          for f in script.js admin.js config.js haus-public-dynamic.js haus-admin-extensions.js haus-combos.js; do
+          for f in script.js admin.js config.js haus-public-dynamic.js haus-admin-extensions.js haus-combos.js haus-experience.js haus-i18n-data.js haus-legal.js haus-legal-data.js; do
             node --check "$f"
           done
           for f in tests/*.test.cjs; do
@@ -38,7 +38,7 @@ jobs:
         run: |
           files=()
           for f in tests/*.test.cjs; do
-            if [[ "$f" != "tests/haus-browser-smoke.test.cjs" ]]; then
+            if [[ "$f" != "tests/haus-browser-smoke.test.cjs" && "$f" != "tests/haus-global-experience.browser.test.cjs" ]]; then
               files+=("$f")
             fi
           done
@@ -69,7 +69,7 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 2
-          node --test tests/haus-browser-smoke.test.cjs
+          node --test tests/haus-browser-smoke.test.cjs tests/haus-global-experience.browser.test.cjs
       - name: Keep public screenshot evidence
         uses: actions/upload-artifact@v4
         if: always()
