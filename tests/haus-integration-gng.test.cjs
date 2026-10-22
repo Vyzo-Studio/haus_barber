@@ -34,10 +34,14 @@ test('active catalog and portfolio load from Haus source, not GNG', () => {
   assert.match(publicExt, /precos/);
   assert.doesNotMatch(publicExt, /gng_barbearia|theme-selector|colorPicker/);
 });
-test('photo upload validates MIME and size, removes DB metadata without deleting backup asset', () => {
+test('photo upload validates MIME/size and deletion preserves repository-managed assets', () => {
   assert.match(adminExt, /image\/png/);
   assert.match(adminExt, /5\*1024\*1024/);
   assert.match(adminExt, /\.upload\(storage_path/);
   assert.match(adminExt, /\.from\('haus_gallery'\)\.delete\(\)/);
-  assert.match(adminExt, /arquivo original não será apagado/i);
+  assert.match(adminExt, /Foto arquivada\. O arquivo original foi preservado/);
+  assert.match(adminExt, /EXCLUIR DEFINITIVAMENTE/);
+  assert.match(adminExt, /Digite EXCLUIR|digite EXCLUIR/);
+  assert.match(adminExt, /references\.length!==1/);
+  assert.match(adminExt, /p\.storage_key/);
 });
