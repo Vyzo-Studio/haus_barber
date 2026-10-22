@@ -39,3 +39,9 @@
   .quota-adjust-row{flex-wrap:wrap}
   .quota-adjust-buttons{width:100%;justify-content:flex-start}
 }
+
+/* Paginação administrativa do portfólio de contratos */
+.haus-pagination{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);padding:23px 8px 4px;margin-top:23px}
+.haus-pagination output{font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums;text-align:center}
+.haus-pagination button{min-width:110px}
+@media(max-width:450px){.haus-pagination{gap:10px}.haus-pagination button{flex:1;min-width:0}.haus-pagination output{order:-1;flex-basis:100%}}
