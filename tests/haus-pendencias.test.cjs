@@ -34,7 +34,7 @@ test('historical cash stays intact and finance review requires admin',()=>{
  assert.match(c,/grant execute on function public\.haus_admin_cash_reconciliation\(\) to authenticated/);
 });
 test('reconciliation interface is private, audit-only, no payment mutation controls',()=>{
- assert.match(admin,/href="admin-reconciliation\.html"/);
+ assert.doesNotMatch(admin,/href="admin-reconciliation\.html"/);
  assert.match(ui,/id="authGate"/);
  assert.match(ui,/id="reconciliationApp" hidden/);
  assert.match(js,/client\.auth\.getUser\(\)/);
