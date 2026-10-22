@@ -1176,6 +1176,8 @@
             <form id="haus-service-form" class="haus-manager-form">
               <label>NOME DO SERVIÇO<input id="haus-service-name" maxlength="80" required placeholder="Ex.: Corte degradê"></label>
               <label>PREÇO (R$)<input id="haus-service-price" inputmode="decimal" required placeholder="25,00"></label>
+              <label>DURAÇÃO REAL (MINUTOS)<input id="haus-service-duration" type="number" inputmode="numeric" min="30" max="480" step="30" placeholder="Ex.: 60" aria-describedby="haus-duration-help"></label>
+              <small id="haus-duration-help">Informe a duração confirmada do atendimento para bloquear corretamente os horários. Deixe vazio enquanto não souber; serviços de química/estilo não poderão ser reservados online até a configuração.</small>
               <label>CATEGORIA<select id="haus-service-category" required><option value="cortes">Cortes</option><option value="detalhes">Barba e detalhes</option><option value="estilo">Química e estilo</option></select></label>
               <label>ORDEM<input id="haus-service-order" type="number" step="1" value="50" min="0" max="999"></label>
               <button type="submit" id="haus-service-submit">ADICIONAR SERVIÇO</button>
@@ -1701,7 +1703,7 @@
   <script src="config.js?v=1.3"></script>
 
   <script src="admin.js?v=9.0"></script>
-  <script src="haus-admin-extensions.js?v=1.1"></script>
+  <script src="haus-admin-extensions.js?v=1.2"></script>
 
 </body>
 </html>
