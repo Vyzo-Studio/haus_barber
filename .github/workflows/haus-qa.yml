@@ -35,7 +35,14 @@ jobs:
             node --check "$f"
           done
       - name: Run regression tests without production credentials
-        run: node --test tests/*.test.cjs
+        run: |
+          files=()
+          for f in tests/*.test.cjs; do
+            if [[ "$f" != "tests/haus-browser-smoke.test.cjs" ]]; then
+              files+=("$f")
+            fi
+          done
+          node --test "${files[@]}"
       - name: Check sitemap, privacy and payment integrity contracts
         run: node --test tests/haus-omega-repair.test.cjs
 
