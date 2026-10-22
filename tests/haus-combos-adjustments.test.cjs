@@ -17,7 +17,7 @@ function section(from,to){
 }
 test('new JavaScript is valid and HTML loads versioned assets',()=>{
  assert.doesNotThrow(()=>new Function(js));
- assert.match(html,/haus-combos\.js\?v=1\.1/);
+ assert.match(html,/haus-combos\.js\?v=1\.2/);
  assert.match(html,/haus-combos\.css\?v=1\.1/);
 });
 test('all view excludes canceled memberships, while archive view includes them',()=>{
