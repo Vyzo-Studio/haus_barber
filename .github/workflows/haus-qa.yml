@@ -1,0 +1,42 @@
+name: Haus Barber QA
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: haus-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: JavaScript syntax and regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          set -e
+          for f in script.js admin.js config.js haus-public-dynamic.js haus-admin-extensions.js haus-combos.js; do
+            node --check "$f"
+          done
+          for f in tests/*.test.cjs; do
+            node --check "$f"
+          done
+      - name: Run regression tests without production credentials
+        run: node --test tests/*.test.cjs
+      - name: Check sitemap, privacy and payment integrity contracts
+        run: node --test tests/haus-omega-repair.test.cjs
+
+# Do not put Supabase production keys or write-enabled database access in CI.
