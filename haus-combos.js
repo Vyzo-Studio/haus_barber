@@ -2,7 +2,7 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const client = window.supabaseClient;
-const state = {plans:[],barbers:[],memberships:[],filter:'all',detailId:null,visitId:null,history:[],statusEvents:[],manage:null,loading:false,saving:false,createRequestId:null,visitRequestId:null};
+const state = {plans:[],barbers:[],memberships:[],filter:'all',page:1,pageSize:30,total:0,stats:null,catalogLoaded:false,requestSeq:0,detailId:null,visitId:null,history:[],statusEvents:[],manage:null,loading:false,saving:false,createRequestId:null,visitRequestId:null};
 const KINDS = [{id:'cut',label:'Corte',total:'cuts_total',used:'cuts_used'},{id:'beard',label:'Barba',total:'beards_total',used:'beards_used'},{id:'brows',label:'Sobrancelha',total:'brows_total',used:'brows_used'}];
 const PAY_FIELDS = {cash:$('payCash'),pix:$('payPix'),debit:$('payDebit'),credit:$('payCredit')};
 const money = (cents) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(cents)||0)/100);
@@ -203,38 +203,80 @@ function filtered(){
   });
 }
 function render(){
-  const counts={active:0,expiring:0,complete:0,expired:0};
-  state.memberships.forEach(m=>{
-    const s=computedStatus(m);if(['active','expiring','upcoming'].includes(s))counts.active++;
-    if(s==='expiring')counts.expiring++;
-    if(s==='complete')counts.complete++;
-    if(s==='expired')counts.expired++;
-  });
-  $('kpiActive').textContent=counts.active;$('kpiExpiring').textContent=counts.expiring;
-  $('kpiComplete').textContent=counts.complete;$('kpiExpired').textContent=counts.expired;
-  if($('canceledCount'))$('canceledCount').textContent=String(state.memberships.filter(m=>m.status==='canceled').length);
-  const items=filtered();$('memberships').innerHTML=items.map(memberCard).join('');
-  $('empty').hidden=items.length!==0;$('loading').hidden=true;
+  const counts=state.stats||{active:0,expiring:0,complete:0,expired:0,canceled:0};
+  $('kpiActive').textContent=counts.active;
+  $('kpiExpiring').textContent=counts.expiring;
+  $('kpiComplete').textContent=counts.complete;
+  $('kpiExpired').textContent=counts.expired;
+  $('canceledCount').textContent=String(counts.canceled||0);
+  const items=filtered();
+  $('memberships').innerHTML=items.map(memberCard).join('');
+  $('empty').hidden=items.length!==0;
+  $('loading').hidden=true;
+  const pages=Math.max(1,Math.ceil(state.total/state.pageSize));
+  $('comboPager').hidden=state.total===0;
+  $('comboPageInfo').textContent=state.total+' resultado'+(state.total===1?'':'s')+
+    ' · página '+state.page+' de '+pages;
+  $('comboPagePrev').disabled=state.page<=1;
+  $('comboPageNext').disabled=state.page>=pages;
 }
 async function refresh(){
-  if(state.loading)return;
+  const ticket=++state.requestSeq;
   state.loading=true;
-  $('loading').hidden=false;$('loading').textContent='Atualizando assinaturas…';
+  $('loading').hidden=false;
+  $('loading').textContent='Atualizando assinaturas…';
   try{
-    const snapshot=await rpc('haus_combo_admin_summary');
-    if(!snapshot||!Array.isArray(snapshot.memberships)||!Array.isArray(snapshot.plans))throw new Error('Resposta do sistema de combos inválida.');
-    state.plans=snapshot.plans;state.memberships=snapshot.memberships;state.barbers=snapshot.barbers||[];
+    const catalog=state.catalogLoaded
+      ?null:await rpc('haus_combo_admin_catalog');
+    const page=await rpc('haus_combo_admin_list',{
+      p_page:state.page,p_page_size:state.pageSize,
+      p_search:$('searchInput').value.trim(),p_filter:state.filter
+    });
+    if(ticket!==state.requestSeq)return;
+    if(catalog){
+      if(!Array.isArray(catalog.plans)||!Array.isArray(catalog.barbers))
+        throw new Error('Catálogo administrativo inválido.');
+      state.plans=catalog.plans;
+      state.barbers=catalog.barbers;
+      state.catalogLoaded=true;
+    }
+    if(!page||!Array.isArray(page.memberships)||!page.stats)
+      throw new Error('Resposta de paginação inválida.');
+    state.memberships=page.memberships;
+    state.total=Number(page.total)||0;
+    state.stats=page.stats;
+    const lastPage=Math.max(1,Math.ceil(state.total/state.pageSize));
+    if(state.page>lastPage){state.page=lastPage;refresh();return}
     render();
-  }catch(error){$('loading').textContent=friendly(error);toast(friendly(error),true)}
-  finally{state.loading=false}
+  }catch(error){
+    if(ticket===state.requestSeq){
+      $('loading').textContent=friendly(error);
+      toast(friendly(error),true);
+    }
+  }finally{if(ticket===state.requestSeq)state.loading=false}
 }
-$('refreshButton').addEventListener('click',refresh);
-$('searchInput').addEventListener('input',render);
+$('refreshButton').addEventListener('click',()=>{state.catalogLoaded=false;refresh()});
+let searchDelay=null;
+$('searchInput').addEventListener('input',()=>{
+  clearTimeout(searchDelay);
+  searchDelay=setTimeout(()=>{state.page=1;refresh()},270);
+});
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
   state.filter=b.dataset.filter;
-  document.querySelectorAll('[data-filter]').forEach(el=>{const on=el===b;el.classList.toggle('is-active',on);el.setAttribute('aria-pressed',String(on))});
-  render();
+  state.page=1;
+  document.querySelectorAll('[data-filter]').forEach(el=>{
+    const on=el===b;
+    el.classList.toggle('is-active',on);
+    el.setAttribute('aria-pressed',String(on));
+  });
+  refresh();
 }));
+$('comboPagePrev').addEventListener('click',()=>{
+  if(state.page>1){state.page--;refresh()}
+});
+$('comboPageNext').addEventListener('click',()=>{
+  if(state.page*state.pageSize<state.total){state.page++;refresh()}
+});
 $('memberships').addEventListener('click',(event)=>{
   const target=event.target.closest('button[data-action]');if(!target)return;
   const m=state.memberships.find(x=>x.id===target.dataset.id);if(!m)return;
@@ -320,6 +362,11 @@ $('createForm').addEventListener('submit',async(event)=>{
     state.createRequestId=null;
     setSaving(false);closeModal('createModal');
     toast('Plano cadastrado e pagamento registrado no caixa de hoje.');
+    state.page=1;state.filter='all';$('searchInput').value='';
+    document.querySelectorAll('[data-filter]').forEach(el=>{
+      const active=el.dataset.filter==='all';
+      el.classList.toggle('is-active',active);el.setAttribute('aria-pressed',String(active));
+    });
     await refresh();if(id)await openDetail(id);
   }catch(error){toast(friendly(error),true)}
   finally{setSaving(false);$('createSubmit').textContent='CADASTRAR E RECEBER';updatePayment()}
