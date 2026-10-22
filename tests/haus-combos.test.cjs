@@ -53,7 +53,7 @@ test('subscriptions panel requires authenticated admin session',()=>{
 test('ledger contains customer search, renew, correction, and visit form',()=>{
  for(const id of ['searchInput','newButton','createForm','planStart','customerPhone','visitForm','detailModal','renewButton','cashChange','payCash','payPix','payDebit','payCredit'])
   assert.ok(html.includes('id="'+id+'"'),id);
- for(const term of ['haus_combo_create','haus_combo_admin_summary','haus_combo_admin_history','haus_combo_redeem_visit','haus_combo_void_use'])assert.ok(js.includes(term),term);
+ for(const term of ['haus_combo_create','haus_combo_admin_catalog','haus_combo_admin_list','haus_combo_admin_history','haus_combo_redeem_visit','haus_combo_void_use'])assert.ok(js.includes(term),term);
  assert.match(js,/escapeHtml\(/);
  assert.match(js,/brasilToday\(/);
 });
