@@ -101,24 +101,90 @@
     const list=$('#haus-photos-list');if(!list)return;
     list.replaceChildren();
     portfolio.forEach(p=>{
-      const [row,actions,info]=line(p.title,`${p.category.replace(/\s+/g,', ')} • ${p.active?'Visível':'Oculta'} • ordem ${p.sort_order}`,!p.active);
+      const archived=Boolean(p.archived_at);
+      const subtitle=archived?'Arquivada (fora do site)':
+        (p.active?'Visível':'Oculta')+' • ordem '+p.sort_order;
+      const [row,actions,info]=line(p.title,p.category.replace(/\s+/g,', ')+' • '+subtitle,archived||!p.active);
       const img=el('img',{src:photoUrl(p),alt:p.description||p.title,loading:'lazy'});
       info.prepend(img);
       const toggle=el('button',{type:'button'},p.active?'OCULTAR':'EXIBIR');
-      toggle.addEventListener('click',async()=>{try{await run(client().from('haus_gallery').update({active:!p.active}).eq('id',p.id));await refreshCatalogs();setMessage('Visibilidade da foto atualizada.');}catch(e){fail(e);}});
+      toggle.disabled=archived;
+      toggle.title=archived?'Restaure o registro antes de exibir':'Alterar visibilidade pública';
+      toggle.addEventListener('click',async()=>{
+        if(archived)return;
+        try{
+          await run(client().from('haus_gallery').update({active:!p.active}).eq('id',p.id).is('archived_at',null));
+          await refreshCatalogs();
+          setMessage('Visibilidade da foto atualizada. O arquivo foi preservado.');
+        }catch(e){fail(e)}
+      });
       const edit=el('button',{type:'button'},'EDITAR');
+      edit.disabled=archived;
       edit.addEventListener('click',async()=>{
-        const title=prompt('Título da foto',p.title);
-        if(title===null)return;
-        const clean=title.trim();if(clean.length<2||clean.length>100){setMessage('Título deve ter de 2 a 100 caracteres.',true);return;}
-        try{await run(client().from('haus_gallery').update({title:clean,description:`${clean} realizado na Haus Barber`}).eq('id',p.id));await refreshCatalogs();}catch(e){fail(e);}
+        if(archived)return;
+        const title=prompt('Título da foto',p.title);if(title===null)return;
+        const clean=title.trim();
+        if(clean.length<2||clean.length>100){setMessage('Título deve ter de 2 a 100 caracteres.',true);return}
+        try{
+          await run(client().from('haus_gallery').update({title:clean,description:clean+' realizado na Haus Barber'}).eq('id',p.id).is('archived_at',null));
+          await refreshCatalogs();
+        }catch(e){fail(e)}
       });
-      const remove=el('button',{type:'button'},'RETIRAR');
-      remove.addEventListener('click',async()=>{
-        if(!confirm('Retirar esta foto da galeria? O arquivo original não será apagado.'))return;
-        try{await run(client().from('haus_gallery').delete().eq('id',p.id));await refreshCatalogs();setMessage('Foto retirada do portfólio, mantendo o arquivo como backup.');}catch(e){fail(e);}
+      const archive=el('button',{type:'button'},archived?'RESTAURAR':'ARQUIVAR');
+      archive.addEventListener('click',async()=>{
+        const message=archived
+          ?'Restaurar esta foto como oculta? Você poderá exibi-la depois.'
+          :'Arquivar esta foto? Ela deixará de aparecer no site e poderá ser restaurada.';
+        if(!confirm(message))return;
+        try{
+          if(archived){
+            await run(client().from('haus_gallery').update({archived_at:null,active:false}).eq('id',p.id));
+          }else{
+            await run(client().from('haus_gallery').update({archived_at:new Date().toISOString(),active:false}).eq('id',p.id));
+          }
+          await refreshCatalogs();
+          setMessage(archived?'Foto restaurada como oculta.':'Foto arquivada. O arquivo original foi preservado.');
+        }catch(e){fail(e)}
       });
-      actions.append(edit,toggle,remove);list.append(row);
+      actions.append(edit,toggle,archive);
+      if(p.storage_key){
+        const permanent=el('button',{type:'button'},'EXCLUIR DEFINITIVAMENTE');
+        permanent.className='haus-delete-permanent';
+        permanent.addEventListener('click',async()=>{
+          if(!allowed)return;
+          const first='Esta ação exclui o arquivo original do armazenamento e remove a foto do portfólio. Não há recuperação automática. Continuar?';
+          if(!confirm(first))return;
+          const proof=prompt('Para confirmar, digite EXCLUIR');
+          if(proof!=='EXCLUIR'){setMessage('Exclusão permanente cancelada.');return}
+          permanent.disabled=true;
+          try{
+            const {data:references,error:checkError}=await client().from('haus_gallery')
+              .select('id').eq('storage_key',p.storage_key);
+            if(checkError)throw checkError;
+            if(!Array.isArray(references)||references.length!==1||references[0].id!==p.id){
+              throw new Error('O arquivo tem referência compartilhada ou não pode ser verificado. Exclusão bloqueada.');
+            }
+            await run(client().from('haus_gallery').update({
+              active:false,archived_at:p.archived_at||new Date().toISOString()
+            }).eq('id',p.id));
+            const {data:removed,error:removeError}=await client().storage.from(BUCKET).remove([p.storage_key]);
+            if(removeError)throw new Error('A foto foi arquivada, mas o arquivo não foi excluído: '+removeError.message);
+            if(!Array.isArray(removed)||!removed.length){
+              throw new Error('Exclusão do arquivo não confirmada. O cadastro permanece arquivado para verificação.');
+            }
+            const {error:dbError}=await client().from('haus_gallery').delete().eq('id',p.id);
+            if(dbError)throw new Error('Arquivo removido do armazenamento; cadastro preservado como arquivado. Consulte suporte: '+dbError.message);
+            await refreshCatalogs();
+            setMessage('Arquivo excluído permanentemente do armazenamento e cadastro removido.');
+          }catch(e){fail(e);await refreshCatalogs().catch(()=>{})}
+          finally{permanent.disabled=false}
+        });
+        actions.append(permanent);
+      }else{
+        const note=el('small',{},'Original no GitHub: use o repositório para excluir o arquivo definitivamente.');
+        actions.append(note);
+      }
+      list.append(row);
     });
   }
   async function onServiceSave(event) {
