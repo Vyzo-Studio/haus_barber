@@ -687,23 +687,42 @@ function getSlotKey(
   );
 }
 
+function getSelectedServiceDuration() {
+  const option = document.querySelector('#servico')?.selectedOptions?.[0];
+  const raw = option?.dataset?.duration;
+  const minutes = raw ? Number(raw) : null;
+
+  // Never guess durations of chemical/long styling treatments.
+  if (option?.dataset?.category === 'estilo' && !minutes) return null;
+  if (minutes && Number.isInteger(minutes) && minutes >= 30 &&
+      minutes <= 480 && minutes % 30 === 0) return minutes;
+
+  // The previous calendar had 30-minute slots. This is a minimum slot,
+  // not a claim about the actual length of unconfigured services.
+  return 30;
+}
+
 function getSlotStatus(
   dateValue,
   timeValue
 ) {
-  if (!scheduleAvailabilityReady) {
-    return 'unavailable';
+  if (!scheduleAvailabilityReady) return 'unavailable';
+  const duration = getSelectedServiceDuration();
+  if (!duration) return 'unavailable';
+  const parts = String(timeValue).split(':').map(Number);
+  if (parts.length !== 2 || !parts.every(Number.isInteger)) return 'unavailable';
+  const start = parts[0] * 60 + parts[1];
+  if (start < 540 || start + duration > 1200) return 'unavailable';
+  let hasPending = false;
+  for (let delta = 0; delta < duration; delta += 30) {
+    const absolute = start + delta;
+    const slot = String(Math.floor(absolute / 60)).padStart(2, '0') +
+      ':' + String(absolute % 60).padStart(2, '0');
+    const status = bookedSlots.get(getSlotKey(dateValue, slot));
+    if (status === 'occupied') return 'occupied';
+    if (status === 'pending') hasPending = true;
   }
-
-  return (
-    bookedSlots.get(
-      getSlotKey(
-        dateValue,
-        timeValue
-      )
-    ) ||
-    'available'
-  );
+  return hasPending ? 'pending' : 'available';
 }
 
 function showBookingStatus(
@@ -1489,6 +1508,16 @@ function getFriendlyBookingError(
     return 'Esse horário acabou de ficar indisponível. Escolha outro horário.';
   }
 
+  if (message.includes('duração cadastrada')) {
+    return 'A duração desse serviço ainda não foi configurada. Fale com a Haus pelo WhatsApp para agendar.';
+  }
+  if (message.includes('ultrapassaria o horário de fechamento')) {
+    return 'Esse serviço precisa terminar até 20h. Escolha um horário mais cedo.';
+  }
+  if (message.includes('período já está ocupado')) {
+    return 'Esse período está ocupado. Escolha outro horário.';
+  }
+
   if (
     message.includes(
       'domingo'
@@ -1916,5 +1945,17 @@ if (window.matchMedia('(max-width: 900px)').matches) {
 }
 
 bookingForm?.querySelectorAll('#nome, #servico').forEach((field) => {
-  field.addEventListener('change', () => hideBookingStatus(true));
+  field.addEventListener('change', () => {
+    hideBookingStatus(true);
+    if (field.id === 'servico') {
+      if (scheduleAvailabilityReady) renderScheduleDays();
+      const option = field.selectedOptions?.[0];
+      if (option?.dataset?.category === 'estilo' && !option?.dataset?.duration) {
+        showBookingStatus('Este serviço precisa ter a duração confirmada pela Haus antes de permitir agendamento online. Fale com a equipe pelo WhatsApp.', 'info');
+      }
+    }
+  });
 });
+window.hausUpdateScheduleForService = () => {
+  if (scheduleAvailabilityReady) renderScheduleDays();
+};
