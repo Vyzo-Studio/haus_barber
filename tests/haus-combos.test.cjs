@@ -60,7 +60,7 @@ test('ledger contains customer search, renew, correction, and visit form',()=>{
 test('front end files parse',()=>{
  assert.doesNotThrow(()=>new Function(js));
  assert.match(html,/haus-combos\.css\?v=1\.1/);
- assert.match(html,/haus-combos\.js\?v=1\.1/);
+ assert.match(html,/haus-combos\.js\?v=1\.2/);
 });
 test('entry point exists in existing admin panel',()=>{
  const admin=read('admin.html');
