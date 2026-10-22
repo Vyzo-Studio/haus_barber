@@ -88,45 +88,23 @@ function createMemoryStorage() {
   };
 }
 
+// O login administrativo utiliza armazenamento da aba. Esse ajuste limita
+// a persistência local, mas não substitui segurança contra scripts maliciosos.
 function resolveAuthStorage() {
+  // Evite manter tokens antigos persistentes após a migração para sessionStorage.
   try {
-    if (
-      storageWorks(
-        window.localStorage
-      )
-    ) {
-      return {
-        storage:
-          window.localStorage,
-        mode:
-          'localStorage'
-      };
+    if (storageWorks(window.localStorage)) {
+      window.localStorage.removeItem('sb-pmhpgrdeknzbvegkrnxi-auth-token');
     }
-  } catch (error) {
-  }
+  } catch (error) { /* Navegador sem armazenamento permanente */ }
 
   try {
-    if (
-      storageWorks(
-        window.sessionStorage
-      )
-    ) {
-      return {
-        storage:
-          window.sessionStorage,
-        mode:
-          'sessionStorage'
-      };
+    if (storageWorks(window.sessionStorage)) {
+      return { storage: window.sessionStorage, mode: 'sessionStorage' };
     }
-  } catch (error) {
-  }
+  } catch (error) { /* Modo privado */ }
 
-  return {
-    storage:
-      createMemoryStorage(),
-    mode:
-      'memory'
-  };
+  return { storage: createMemoryStorage(), mode: 'memory' };
 }
 
 if (

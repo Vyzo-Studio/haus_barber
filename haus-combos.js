@@ -2,7 +2,7 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const client = window.supabaseClient;
-const state = {plans:[],barbers:[],memberships:[],filter:'all',detailId:null,visitId:null,history:[],statusEvents:[],manage:null,loading:false,saving:false,createRequestId:null,visitRequestId:null};
+const state = {plans:[],barbers:[],memberships:[],filter:'all',page:1,pageSize:30,total:0,stats:null,catalogLoaded:false,requestSeq:0,detailId:null,visitId:null,history:[],statusEvents:[],manage:null,loading:false,saving:false,createRequestId:null,visitRequestId:null};
 const KINDS = [{id:'cut',label:'Corte',total:'cuts_total',used:'cuts_used'},{id:'beard',label:'Barba',total:'beards_total',used:'beards_used'},{id:'brows',label:'Sobrancelha',total:'brows_total',used:'brows_used'}];
 const PAY_FIELDS = {cash:$('payCash'),pix:$('payPix'),debit:$('payDebit'),credit:$('payCredit')};
 const money = (cents) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(cents)||0)/100);
@@ -45,25 +45,64 @@ function setSaving(busy){
   state.saving=busy;
   ['createSubmit','visitSubmit'].forEach(id=>{const el=$(id);if(el)el.disabled=busy});
 }
+const modalOrigin=new WeakMap();
+const modalFocusable='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function topModal(){
+  return [...document.querySelectorAll('.modal-backdrop:not([hidden])')].pop()||null;
+}
+function focusInside(modal,preferLast=false){
+  const controls=[...modal.querySelectorAll(modalFocusable)].filter(el=>!el.hidden&&!el.closest('[hidden]'));
+  const target=preferLast?controls.at(-1):controls[0];
+  (target||modal.querySelector('[role="dialog"]'))?.focus();
+}
+function syncModalInert(){
+  const open=!!topModal();
+  const app=$('comboApp');
+  if(app)app.inert=open;
+  const gate=$('authGate');
+  if(gate)gate.inert=open;
+}
 function openModal(id){
-  const m=$(id);if(!m)return;
-  m.hidden=false;document.body.classList.add('locked');
-  m.querySelector('input,select,button')?.focus();
+  const modal=$(id);if(!modal)return;
+  modalOrigin.set(modal,document.activeElement);
+  modal.hidden=false;document.body.classList.add('locked');
+  syncModalInert();
+  focusInside(modal);
 }
 function closeModal(id){
   if(state.saving)return;
-  const m=$(id);if(!m)return;
-  m.hidden=true;document.body.classList.toggle('locked',!!document.querySelector('.modal-backdrop:not([hidden])'));
+  const modal=$(id);if(!modal)return;
+  modal.hidden=true;
+  syncModalInert();
+  const current=topModal();
+  document.body.classList.toggle('locked',!!current);
+  const origin=modalOrigin.get(modal);
+  if(origin?.isConnected&&!origin.closest('[hidden]')&&!origin.closest('[inert]')){
+    origin.focus();
+  }else if(current)focusInside(current);
+  else $('newButton')?.focus();
+  modalOrigin.delete(modal);
 }
 document.addEventListener('click',(event)=>{
   const close=event.target.closest('[data-close]');if(close)closeModal(close.dataset.close);
   if(event.target.classList?.contains('modal-backdrop'))closeModal(event.target.id);
 });
 document.addEventListener('keydown',(event)=>{
-  if(event.key==='Escape'&&!state.saving){
-    const modal=[...document.querySelectorAll('.modal-backdrop:not([hidden])')].pop();
-    if(modal){event.preventDefault();closeModal(modal.id)}
+  const modal=topModal();if(!modal)return;
+  if(event.key==='Escape'&&!state.saving){event.preventDefault();closeModal(modal.id);return}
+  if(event.key!=='Tab')return;
+  const controls=[...modal.querySelectorAll(modalFocusable)].filter(el=>!el.hidden&&!el.closest('[hidden]'));
+  if(!controls.length){event.preventDefault();focusInside(modal);return}
+  const first=controls[0],last=controls[controls.length-1];
+  if(event.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){
+    event.preventDefault();last.focus();
+  }else if(!event.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){
+    event.preventDefault();first.focus();
   }
+});
+document.addEventListener('focusin',(event)=>{
+  const modal=topModal();
+  if(modal&&!modal.contains(event.target))focusInside(modal);
 });
 async function verify(){
   if(!client){$('authMessage').textContent='Falha ao carregar a conexão segura. Recarregue a página.';return}
@@ -164,38 +203,80 @@ function filtered(){
   });
 }
 function render(){
-  const counts={active:0,expiring:0,complete:0,expired:0};
-  state.memberships.forEach(m=>{
-    const s=computedStatus(m);if(['active','expiring','upcoming'].includes(s))counts.active++;
-    if(s==='expiring')counts.expiring++;
-    if(s==='complete')counts.complete++;
-    if(s==='expired')counts.expired++;
-  });
-  $('kpiActive').textContent=counts.active;$('kpiExpiring').textContent=counts.expiring;
-  $('kpiComplete').textContent=counts.complete;$('kpiExpired').textContent=counts.expired;
-  if($('canceledCount'))$('canceledCount').textContent=String(state.memberships.filter(m=>m.status==='canceled').length);
-  const items=filtered();$('memberships').innerHTML=items.map(memberCard).join('');
-  $('empty').hidden=items.length!==0;$('loading').hidden=true;
+  const counts=state.stats||{active:0,expiring:0,complete:0,expired:0,canceled:0};
+  $('kpiActive').textContent=counts.active;
+  $('kpiExpiring').textContent=counts.expiring;
+  $('kpiComplete').textContent=counts.complete;
+  $('kpiExpired').textContent=counts.expired;
+  $('canceledCount').textContent=String(counts.canceled||0);
+  const items=filtered();
+  $('memberships').innerHTML=items.map(memberCard).join('');
+  $('empty').hidden=items.length!==0;
+  $('loading').hidden=true;
+  const pages=Math.max(1,Math.ceil(state.total/state.pageSize));
+  $('comboPager').hidden=state.total===0;
+  $('comboPageInfo').textContent=state.total+' resultado'+(state.total===1?'':'s')+
+    ' · página '+state.page+' de '+pages;
+  $('comboPagePrev').disabled=state.page<=1;
+  $('comboPageNext').disabled=state.page>=pages;
 }
 async function refresh(){
-  if(state.loading)return;
+  const ticket=++state.requestSeq;
   state.loading=true;
-  $('loading').hidden=false;$('loading').textContent='Atualizando assinaturas…';
+  $('loading').hidden=false;
+  $('loading').textContent='Atualizando assinaturas…';
   try{
-    const snapshot=await rpc('haus_combo_admin_summary');
-    if(!snapshot||!Array.isArray(snapshot.memberships)||!Array.isArray(snapshot.plans))throw new Error('Resposta do sistema de combos inválida.');
-    state.plans=snapshot.plans;state.memberships=snapshot.memberships;state.barbers=snapshot.barbers||[];
+    const catalog=state.catalogLoaded
+      ?null:await rpc('haus_combo_admin_catalog');
+    const page=await rpc('haus_combo_admin_list',{
+      p_page:state.page,p_page_size:state.pageSize,
+      p_search:$('searchInput').value.trim(),p_filter:state.filter
+    });
+    if(ticket!==state.requestSeq)return;
+    if(catalog){
+      if(!Array.isArray(catalog.plans)||!Array.isArray(catalog.barbers))
+        throw new Error('Catálogo administrativo inválido.');
+      state.plans=catalog.plans;
+      state.barbers=catalog.barbers;
+      state.catalogLoaded=true;
+    }
+    if(!page||!Array.isArray(page.memberships)||!page.stats)
+      throw new Error('Resposta de paginação inválida.');
+    state.memberships=page.memberships;
+    state.total=Number(page.total)||0;
+    state.stats=page.stats;
+    const lastPage=Math.max(1,Math.ceil(state.total/state.pageSize));
+    if(state.page>lastPage){state.page=lastPage;refresh();return}
     render();
-  }catch(error){$('loading').textContent=friendly(error);toast(friendly(error),true)}
-  finally{state.loading=false}
+  }catch(error){
+    if(ticket===state.requestSeq){
+      $('loading').textContent=friendly(error);
+      toast(friendly(error),true);
+    }
+  }finally{if(ticket===state.requestSeq)state.loading=false}
 }
-$('refreshButton').addEventListener('click',refresh);
-$('searchInput').addEventListener('input',render);
+$('refreshButton').addEventListener('click',()=>{state.catalogLoaded=false;refresh()});
+let searchDelay=null;
+$('searchInput').addEventListener('input',()=>{
+  clearTimeout(searchDelay);
+  searchDelay=setTimeout(()=>{state.page=1;refresh()},270);
+});
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
   state.filter=b.dataset.filter;
-  document.querySelectorAll('[data-filter]').forEach(el=>{const on=el===b;el.classList.toggle('is-active',on);el.setAttribute('aria-pressed',String(on))});
-  render();
+  state.page=1;
+  document.querySelectorAll('[data-filter]').forEach(el=>{
+    const on=el===b;
+    el.classList.toggle('is-active',on);
+    el.setAttribute('aria-pressed',String(on));
+  });
+  refresh();
 }));
+$('comboPagePrev').addEventListener('click',()=>{
+  if(state.page>1){state.page--;refresh()}
+});
+$('comboPageNext').addEventListener('click',()=>{
+  if(state.page*state.pageSize<state.total){state.page++;refresh()}
+});
 $('memberships').addEventListener('click',(event)=>{
   const target=event.target.closest('button[data-action]');if(!target)return;
   const m=state.memberships.find(x=>x.id===target.dataset.id);if(!m)return;
@@ -281,6 +362,11 @@ $('createForm').addEventListener('submit',async(event)=>{
     state.createRequestId=null;
     setSaving(false);closeModal('createModal');
     toast('Plano cadastrado e pagamento registrado no caixa de hoje.');
+    state.page=1;state.filter='all';$('searchInput').value='';
+    document.querySelectorAll('[data-filter]').forEach(el=>{
+      const active=el.dataset.filter==='all';
+      el.classList.toggle('is-active',active);el.setAttribute('aria-pressed',String(active));
+    });
     await refresh();if(id)await openDetail(id);
   }catch(error){toast(friendly(error),true)}
   finally{setSaving(false);$('createSubmit').textContent='CADASTRAR E RECEBER';updatePayment()}

@@ -9,7 +9,7 @@
  }
  const currency=cents=>(Number(cents)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:2});
  async function loadServices(){
-  const {data,error}=await client.from('haus_services').select('name,category,price_cents,sort_order').eq('active',true).order('sort_order');
+  const {data,error}=await client.from('haus_services').select('name,category,price_cents,sort_order,duration_minutes').eq('active',true).order('sort_order');
   if(error||!Array.isArray(data))throw error||Error('Catálogo inválido');
   const select=document.querySelector('#servico');
   if(select){
@@ -19,9 +19,12 @@
    data.forEach(s=>{
     const option=new Option(`${s.name} — ${currency(s.price_cents)}`,s.name);
     option.dataset.price=s.price_cents;
+    option.dataset.category=s.category;
+    option.dataset.duration=s.duration_minutes||'';
     select.appendChild(option);
    });
    if(data.some(s=>s.name===saved))select.value=saved;
+   window.hausUpdateScheduleForService?.();
   }
   const minCut=data.filter(s=>s.category==='cortes').reduce((min,s)=>Math.min(min,s.price_cents),Infinity);
   const heroPrice=[...document.querySelectorAll('.info-bar strong')].find(x=>/CORTES A PARTIR/i.test(x.textContent));
