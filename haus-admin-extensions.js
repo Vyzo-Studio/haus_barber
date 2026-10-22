@@ -65,12 +65,13 @@
     const list = $('#haus-services-list'); if (!list) return;
     list.replaceChildren();
     services.forEach(s=>{
-      const [row,actions]=line(s.name,`${money(s.price_cents)} • ${s.category} • ${s.active?'Disponível':'Oculto no site'}`,!s.active);
+      const [row,actions]=line(s.name,`${money(s.price_cents)} • ${s.category} • ${s.duration_minutes ? s.duration_minutes+' min confirmados' : 'duração não cadastrada'} • ${s.active?'Disponível':'Oculto no site'}`,!s.active);
       const edit = el('button',{type:'button'},'EDITAR');
       edit.addEventListener('click',()=>{
         editingService=s.id;
         $('#haus-service-name').value=s.name;
         $('#haus-service-price').value=(Number(s.price_cents)/100).toFixed(2).replace('.',',');
+        $('#haus-service-duration').value=s.duration_minutes||'';
         $('#haus-service-category').value=s.category;
         $('#haus-service-order').value=s.sort_order;
         $('#haus-service-submit').textContent='SALVAR ALTERAÇÕES';
@@ -192,12 +193,15 @@
     const name=$('#haus-service-name').value.trim();
     const price=parseBRL($('#haus-service-price').value);
     const category=$('#haus-service-category').value;
+    const durationRaw=$('#haus-service-duration').value.trim();
+    const duration=durationRaw===''?null:Number(durationRaw);
     const sort_order=Number($('#haus-service-order').value || 0);
+    if((duration!==null&&(!Number.isInteger(duration)||duration<30||duration>480||duration%30!==0))){setMessage('Duração precisa ser de 30 a 480 minutos, em intervalos de 30.',true);return;}
     if(name.length<2||name.length>80||price===null||price<=0||price>2000000||!['cortes','detalhes','estilo'].includes(category)){setMessage('Preencha nome, categoria e preço válido.',true);return;}
     const btn=$('#haus-service-submit');btn.disabled=true;
     try{
-      if(editingService) await run(client().from('haus_services').update({name,price_cents:price,category,sort_order}).eq('id',editingService));
-      else await run(client().from('haus_services').insert({id:crypto.randomUUID(),name,price_cents:price,category,sort_order,active:true}));
+      if(editingService) await run(client().from('haus_services').update({name,price_cents:price,category,sort_order,duration_minutes:duration}).eq('id',editingService));
+      else await run(client().from('haus_services').insert({id:crypto.randomUUID(),name,price_cents:price,category,sort_order,duration_minutes:duration,active:true}));
       editingService=null;event.target.reset();btn.textContent='ADICIONAR SERVIÇO';
       await refreshCatalogs();setMessage('Serviços atualizados. O site mostrará os preços novos sem alterar vendas anteriores.');
     }catch(e){fail(e);}finally{btn.disabled=false;}
