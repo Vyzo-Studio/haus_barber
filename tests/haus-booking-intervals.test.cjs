@@ -53,7 +53,7 @@ test('Postgres exclusion checks half-open ranges atomically',()=>{
  assert.match(functions,/&& tsrange\(v_start,v_finish/);
  assert.match(functions,/v_finish>p_booking_date\+time '20:00'/);
  assert.match(functions,/generate_series\(/);
- assert.match(functions,/duration_minutes,'pending'/);
+ assert.match(functions,/v_duration\s*,\s*'pending'/);
 });
 test('catalog and admin editor honor real configured service durations',()=>{
  assert.match(pub,/duration_minutes/);
