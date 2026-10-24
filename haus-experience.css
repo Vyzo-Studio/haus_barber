@@ -95,3 +95,41 @@ html[lang="de"] .hero h1{overflow-wrap:anywhere;font-size:clamp(51px,7vw,93px)}
   .booking-form .haus-remember-label{gap:9px;font-size:11.5px}
   .booking-form .haus-remember-field p{font-size:10px}
 }
+
+
+/* Footer language selector: compact control, accessible label, no overlapping links.
+   The visually hidden text is still read by assistive technology. */
+.haus-global-footer{
+  column-gap:clamp(10px,1.65vw,20px);
+  row-gap:10px;
+}
+.haus-global-footer .haus-global-link{
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+.haus-global-footer .haus-language-field{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  max-width:100%;
+}
+.haus-global-footer .haus-language-select{
+  display:block;
+  box-sizing:border-box;
+  width:156px;
+  min-width:0;
+  max-width:100%;
+  min-height:44px;
+  padding:8px 9px;
+  font:700 10px/1.4 Montserrat,Arial,sans-serif;
+  text-overflow:clip;
+}
+@media(max-width:620px){
+  .haus-global-footer .haus-language-field{width:100%}
+  .haus-global-footer .haus-language-select{width:min(100%,156px)}
+}
+@media(max-width:360px){
+  .haus-global-footer .haus-language-field{width:auto;max-width:100%;margin-inline:auto}
+}
