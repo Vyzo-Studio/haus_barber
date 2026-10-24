@@ -168,6 +168,42 @@ test('five languages persist; privacy and terms fully re-render in selected lang
   }finally{await finish(t)}
  }
 });
+test('footer language selector stays compact and accessible without clipping links',async()=>{
+ const x=await usePage();try{
+  const {page}=x;
+  await page.locator('#haus-cookie-banner .haus-cookie-actions button').first().click();
+  for(const lang of LOCALES){
+   await page.selectOption('#haus-language',lang);
+   for(const width of [320,390,620,760,1024,1240,1366]){
+    await page.setViewportSize({width,height:900});
+    const data=await page.evaluate(()=>{
+     const footer=document.querySelector('.site-footer .haus-global-footer');
+     const field=footer.querySelector('.haus-language-field');
+     const label=field.querySelector('.haus-privacy-sr-only');
+     const select=field.querySelector('select');
+     const links=[...footer.querySelectorAll('.haus-global-link')];
+     const box=el=>{const b=el.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height}};
+     return {label:box(label),select:box(select),links:links.map(box),
+      selected:select.value,lang:document.documentElement.lang,
+      footerOverflow:footer.scrollWidth-footer.clientWidth};
+    });
+    const tag=lang+' '+width;
+    assert.ok(data.label.width<=2,tag+' screen reader label must be visually hidden');
+    assert.ok(data.select.width<=158,tag+' selector too wide: '+data.select.width);
+    assert.ok(data.select.width>=125,tag+' selector too narrow: '+data.select.width);
+    assert.equal(data.selected,lang,tag+' language changed unexpectedly');
+    assert.equal(data.lang,lang,tag+' document language mismatch');
+    assert.ok(data.footerOverflow<=2,tag+' footer content overflows horizontally');
+    for(const box of data.links){
+     const overlapX=Math.min(box.right,data.select.right)-Math.max(box.left,data.select.left);
+     const overlapY=Math.min(box.bottom,data.select.bottom)-Math.max(box.top,data.select.top);
+     assert.ok(overlapX<=1||overlapY<=1,tag+' language dropdown overlaps footer text');
+    }
+    await noOverflow(page,'footer language selector '+tag);
+   }
+  }
+ }finally{await finish(x)}
+});
 test('mobile-to-desktop layouts do not overflow across languages',async()=>{
  const x=await usePage();try{
   const {page}=x;
