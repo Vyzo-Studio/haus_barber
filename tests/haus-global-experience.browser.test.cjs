@@ -80,6 +80,37 @@ test('remembered contact data requires opt-in, persists and can be forgotten',as
   assert.equal(await page.locator('#nome').inputValue(),'');
  }finally{await finish(x)}
 });
+test('mobile remember-data card keeps checkbox small and copy within bounds in every locale',async()=>{
+ const x=await usePage();try{
+  const {page}=x;
+  await page.locator('#haus-cookie-banner .haus-cookie-actions button').first().click();
+  for(const lang of LOCALES){
+   await page.selectOption('#haus-language',lang);
+   for(const width of [320,375,390,430,640]){
+    await page.setViewportSize({width,height:900});
+    const m=await page.evaluate(()=>{
+     const field=document.querySelector('.haus-remember-field');
+     const label=field.querySelector('.haus-remember-label');
+     const checkbox=field.querySelector('input[type="checkbox"]');
+     const copy=label.querySelector('span');
+     const help=field.querySelector('#haus-remember-help');
+     const rect=(el)=>{const b=el.getBoundingClientRect();return {left:b.left,right:b.right,width:b.width}};
+     return {field:rect(field),check:rect(checkbox),copy:rect(copy),help:rect(help),
+      scrollWidth:field.scrollWidth,clientWidth:field.clientWidth};
+    });
+    const tag=lang+' '+width;
+    assert.ok(m.check.width>=16&&m.check.width<=22,tag+' checkbox too large: '+m.check.width);
+    assert.ok(m.check.right<m.copy.left,tag+' label must follow checkbox');
+    assert.ok(m.copy.right<=m.field.right+1,tag+' label extends beyond card');
+    assert.ok(m.help.right<=m.field.right+1,tag+' helper copy extends beyond card');
+    assert.ok(m.scrollWidth<=m.clientWidth+2,tag+' card content overflows');
+    await noOverflow(page,'remember card '+tag);
+   }
+  }
+  await page.locator('#haus-remember').check();
+  assert.equal(await page.locator('#haus-remember').isChecked(),true);
+ }finally{await finish(x)}
+});
 test('five languages persist; privacy and terms fully re-render in selected language',async()=>{
  const x=await usePage();try{
   const {page}=x;
