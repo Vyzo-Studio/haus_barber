@@ -332,13 +332,15 @@
     return /^(\d{10}|\d{11}|55\d{10}|55\d{11})$/.test(digits)?digits:null;
   }
   function initRemember(){
-    const input=$('nome'),phone=$('telefone'),opt=$('haus-remember'),forget=$('haus-forget');
+    const input=$('nome'),phone=$('telefone'),opt=$('haus-remember'),forget=$('haus-forget'),contactOptions=$('haus-contact-options');
     if(!input||!phone||!opt||!forget)return;
     const saved=readRemembered();
     if(saved){
       if(!input.value)input.value=saved.name;
       if(!phone.value)phone.value=saved.phone;
       opt.checked=true;forget.hidden=false;
+      // Returning visitors can review the prefilled phone and opt-in immediately.
+      if(contactOptions)contactOptions.open=true;
     }
     opt.addEventListener('change',()=>{
       if(!opt.checked&&readRemembered()){
