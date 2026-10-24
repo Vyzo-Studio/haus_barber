@@ -73,6 +73,7 @@ test('remembered contact data requires opt-in, persists and can be forgotten',as
   assert.equal(await page.locator('#nome').inputValue(),'Teste Local');
   assert.equal((await page.locator('#telefone').inputValue()).replace(/\D/g,''),'61999998888');
   assert.equal(await page.locator('#haus-remember').isChecked(),true);
+  assert.equal(await page.locator('#haus-contact-options').getAttribute('open'),'');
   await page.locator('#haus-forget').click();
   assert.equal(await page.evaluate(()=>localStorage.getItem('vyzo:haus_barber:remember:v1')),null);
   await page.reload({waitUntil:'domcontentloaded'});
@@ -80,10 +81,35 @@ test('remembered contact data requires opt-in, persists and can be forgotten',as
   assert.equal(await page.locator('#nome').inputValue(),'');
  }finally{await finish(x)}
 });
+test('booking is simpler, service-first, and optional contact stays accessible',async()=>{
+ const x=await usePage();try{
+  const {page}=x;
+  await page.locator('#haus-cookie-banner .haus-cookie-actions button').first().click();
+  const details=page.locator('#haus-contact-options');
+  assert.equal(await details.evaluate(el=>el.open),false,'optional contact starts collapsed');
+  assert.equal(await page.locator('#telefone').isVisible(),false);
+  assert.equal(await page.locator('#haus-remember').isVisible(),false);
+  const order=await page.evaluate(()=>{
+   const form=document.querySelector('#booking-form');
+   return [...form.querySelectorAll('#servico,#schedule-days,#schedule-times,#nome,#haus-contact-options,#booking-submit')].map(el=>el.id);
+  });
+  assert.deepEqual(order,['servico','schedule-days','schedule-times','nome','haus-contact-options','booking-submit']);
+  await page.locator('#haus-contact-options summary').click();
+  assert.equal(await page.locator('#telefone').isVisible(),true);
+  assert.equal(await page.locator('#haus-remember').isVisible(),true);
+  await page.locator('#haus-remember').check();
+  assert.equal(await page.locator('#haus-remember').isChecked(),true);
+  await page.locator('#haus-contact-options summary').click();
+  assert.equal(await page.locator('#haus-remember').isVisible(),false);
+  await page.locator('#haus-contact-options summary').click();
+  assert.equal(await page.locator('#haus-remember').isChecked(),true);
+ }finally{await finish(x)}
+});
 test('mobile remember-data card keeps checkbox small and copy within bounds in every locale',async()=>{
  const x=await usePage();try{
   const {page}=x;
   await page.locator('#haus-cookie-banner .haus-cookie-actions button').first().click();
+  await page.locator('#haus-contact-options summary').click();
   for(const lang of LOCALES){
    await page.selectOption('#haus-language',lang);
    for(const width of [320,375,390,430,640]){
@@ -115,7 +141,9 @@ test('five languages persist; privacy and terms fully re-render in selected lang
  const x=await usePage();try{
   const {page}=x;
   await page.locator('#haus-cookie-banner .haus-cookie-actions button').first().click();
-  await page.locator('#nome').fill('Nome do Cliente');await page.locator('#telefone').fill('(61) 99999-0000');
+  await page.locator('#nome').fill('Nome do Cliente');
+  await page.locator('#haus-contact-options summary').click();
+  await page.locator('#telefone').fill('(61) 99999-0000');
   for(const lang of LOCALES){
    await page.selectOption('#haus-language',lang);
    assert.equal(await page.locator('html').getAttribute('lang'),lang);
@@ -181,6 +209,7 @@ test('mock successful booking stores opt-in contact only after RPC success and r
   await page.waitForFunction(()=>document.querySelector('#servico')?.options?.length>1);
   await page.locator('#servico').selectOption('Corte Social');
   await page.locator('#nome').fill('Cliente Teste');
+  await page.locator('#haus-contact-options summary').click();
   await page.locator('#telefone').fill('(61) 99999-2222');
   await page.locator('#haus-remember').check();
   await page.waitForSelector('.schedule-day:not([disabled])',{timeout:10000});
