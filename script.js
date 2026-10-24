@@ -1692,11 +1692,13 @@ bookingForm?.addEventListener(
     const validPhone=telefone ? window.hausExperience?.validPhone?.(telefone) : null;
     if(telefone && !validPhone){
       showBookingStatus(window.hausExperience?.t?.('Informe um telefone válido com DDD.')||'Informe um telefone válido com DDD.','error');
-      phoneInput?.focus();return;
+      document.querySelector('#haus-contact-options')?.setAttribute('open','');
+       phoneInput?.focus();return;
     }
     if(rememberInput?.checked && !validPhone){
       showBookingStatus(window.hausExperience?.t?.('Para lembrar seus dados, informe um telefone com DDD válido.')||'Para lembrar seus dados, informe um telefone com DDD válido.','error');
-      phoneInput?.focus();return;
+      document.querySelector('#haus-contact-options')?.setAttribute('open','');
+       phoneInput?.focus();return;
     }
 
     const data =
